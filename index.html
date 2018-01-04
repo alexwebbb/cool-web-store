@@ -8,17 +8,17 @@
     </head>     
     <body> 
         <div class="container">
-            <header role="banner" aria-live="polite" class="row"> 
+            <header role="banner" aria-live="polite" class="row header-style"> 
                 <nav role="navigation">Nav</nav>                 
             </header>
             <aside role="alert" aria-live="assertive" class="row">Alert</aside>
-            <div class="row">
-                <aside role="complementary" aria-live="polite" class="col-md-4">Aside pre</aside>
-                <main role="main" aria-live="polite" class="col-md-8">Main</main>
-                <aside role="complementary" aria-live="polite" class="col-md-4">Aside post</aside>
+            <div class="row content-row-style">
+                <aside role="complementary" aria-live="polite" id="js-aside-pre" class="col-md-4"></aside>
+                <main role="main" aria-live="polite" class="main-style col" id="js-main">Main</main>
+                <aside role="complementary" aria-live="polite"></aside>
             </div>
-            <footer role="contentinfo" class="row">Footer</footer>
-        </div>                                                      
+            <footer role="contentinfo" class="row footer-style">Footer</footer>
+        </div>         
     </body>     
     <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>     

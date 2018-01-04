@@ -1,0 +1,50 @@
+.header-style {
+    height: 80px;
+    background-color: yellow;
+}
+
+.content-row-style {
+    height: 600px;
+}
+
+.footer-style {
+    height: 60px;
+    background-color: orange;
+}
+
+.main-style {
+    background-color: cornflowerblue;
+}
+
+
+
+/*This creates a transition when the asides disappear*/
+
+/*
+#js-aside-pre {
+	background-color: red;
+	width: 0;
+	transition: width 0.5s ease, margin 0.5s ease;
+}
+
+
+#js-aside-pre.hidden {
+	width: 30%;
+	margin: 0;
+}*/
+
+.col-md-4 {
+	width: 33%;
+	flex-shrink: 1;
+	transition: all 400ms ease;
+}
+
+.col-md-8 {
+	flex-grow: 1;
+	transition: all 400ms ease;	
+}
+
+
+
+
+

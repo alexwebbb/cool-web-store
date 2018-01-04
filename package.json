@@ -1,0 +1,12 @@
+{
+  "name": "cool-web-store",
+  "version": "1.0.0",
+  "description": "SPA web store using jquery and mongo",
+  "main": "server.js",
+  "repository": "https://github.com/alexwebbb/cool-web-store.git",
+  "author": "Alex Webb <alexwebbb@protonmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
