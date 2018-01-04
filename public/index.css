@@ -33,13 +33,14 @@
 	margin: 0;
 }*/
 
-.col-md-4 {
-	width: 33%;
+.col-md-1 {
+	/*width: 0;*/
+	position: absolute;
 	flex-shrink: 1;
 	transition: all 400ms ease;
 }
 
-.col-md-8 {
+.col-md-4 {
 	flex-grow: 1;
 	transition: all 400ms ease;	
 }
