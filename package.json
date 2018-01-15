@@ -1,13 +1,18 @@
 {
   "name": "cool-web-store",
-  "version": "1.0.0",
-  "description": "SPA web store using jquery and mongo",
-  "main": "server.js",
-  "repository": "https://github.com/alexwebbb/cool-web-store.git",
-  "author": "Alex Webb <alexwebbb@protonmail.com>",
-  "license": "MIT",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "devstart": "nodemon ./bin/www"
+  },
   "dependencies": {
-    "express": "^4.16.2",
-    "stripe": "^5.4.0"
+    "body-parser": "~1.18.2",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.15.5",
+    "morgan": "~1.9.0",
+    "pug": "2.0.0-beta11",
+    "serve-favicon": "~2.4.5"
   }
 }

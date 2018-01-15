@@ -1,0 +1,24 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    title= title
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ', crossorigin='anonymous')
+    link(rel='stylesheet', href='stylesheets/style.css')
+  body
+    .container
+      header.row.header-style(role='banner', aria-live='polite')
+        nav(role='navigation') Nav
+      aside.row(role='alert', aria-live='assertive') Alert
+      .row.content-row-style
+        aside#js-aside-pre.col-md-1(role='complementary', aria-live='polite')
+          | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni illum eum earum maxime, pariatur natus porro vero culpa eaque assumenda nisi delectus, quia, id alias!
+        main#js-main.main-style.col-md-12(role='main', aria-live='polite')
+          block content
+        aside(role='complementary', aria-live='polite')
+      footer.row.footer-style(role='contentinfo') Footer
+  script(src='https://code.jquery.com/jquery-3.1.1.slim.min.js', integrity='sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n', crossorigin='anonymous')
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js', integrity='sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb', crossorigin='anonymous')
+  script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js', integrity='sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn', crossorigin='anonymous')
+  script(src='https://js.stripe.com/v3/')
+  script(src='javascripts/style.js')
