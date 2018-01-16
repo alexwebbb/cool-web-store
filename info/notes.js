@@ -29,11 +29,38 @@ const userSchema = new Schema({
 		state: String,
 		zipCode: Number
 	},
-	currentOrder: [
+	currentCart: [
 		{
 			itemId: Schema.Types.ObjectId,
 			quantity: Number
 		}
 	],
 	orders: [Schema.Types.ObjectId]
+});
+
+const orderSchema = new Schema({
+	user_id: Schema.Types.ObjectId, // maybe
+	cart: [
+		{
+			itemId: Schema.Types.ObjectId,
+			quantity: Number
+		}
+	],
+	dateCreated: Date,
+	dateSaved: Date,
+	dateSubmitted: Date,
+	completed: Boolean
+});
+
+const itemSchema = new Schema({
+	name: type: String,
+	description: String,
+	priceSchedule: [
+		{
+			price: Number,
+			date: Date
+		}
+	],
+	availability: Number,
+	group: { type: [String], index: true }
 });
