@@ -12,10 +12,11 @@ html(lang='en')
       aside.row(role='alert', aria-live='assertive') Alert
       .row.content-row-style
         aside#js-aside-pre.col-md-1(role='complementary', aria-live='polite')
-          | Lorem ipsum dolor sit amet, consectetur adipisicing elit. Magni illum eum earum maxime, pariatur natus porro vero culpa eaque assumenda nisi delectus, quia, id alias!
+          block aside-pre
         main#js-main.main-style.col-md-12(role='main', aria-live='polite')
-          block content
-        aside(role='complementary', aria-live='polite')
+          block main
+        aside#js-aside-post(role='complementary', aria-live='polite')
+          block aside-post
       footer.row.footer-style(role='contentinfo') Footer
   script(src='https://code.jquery.com/jquery-3.1.1.slim.min.js', integrity='sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n', crossorigin='anonymous')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js', integrity='sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb', crossorigin='anonymous')

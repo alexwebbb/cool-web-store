@@ -15,9 +15,7 @@ const app = express();
 
 
 // initialize mongoose
-mongoose.connect(keys.mongoURI, {
-	useMongoClient: true
-});
+mongoose.connect(keys.mongoURI);
 
 const db = mongoose.connection;
 
