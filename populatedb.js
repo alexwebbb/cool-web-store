@@ -3,8 +3,8 @@
 console.log("This script populates some test data to the database.");
 
 const async = require("async"),
-  Item = require("./models/item"),
   Group = require("./models/item_group"),
+  Item = require("./models/item"),
   Coupon = require("./models/coupon");
 
 const mongoose = require("mongoose"),
@@ -22,7 +22,7 @@ const items = [],
   coupons = [];
 
 function couponCreate(name, description, discount, groups, cb) {
-  const coupon = new Coupon({
+  let coupon = new Coupon({
     name: name,
     description: description,
     discount_percent: parseInt(discount),
@@ -32,52 +32,53 @@ function couponCreate(name, description, discount, groups, cb) {
   coupon.save(function(err) {
     if (err) {
       cb(err, null);
-      return;
+    } else {
+      console.log("New Coupon: " + coupon);
+      coupons.push(coupon);
+      cb(null, coupon);
     }
-    console.log("New Coupon: " + coupon);
-    coupons.push(coupon);
-    cb(null, coupon);
   });
 }
 
 function groupCreate(name, cb) {
-  const group = new Group({ name: name });
+  let group = new Group({ name: name });
 
   group.save(function(err) {
     if (err) {
       cb(err, null);
-      return;
+    } else {
+      console.log("New Group: " + group);
+      groups.push(group);
+      cb(null, group);
     }
-    console.log("New Group: " + group);
-    groups.push(group);
-    cb(null, group);
   });
 }
 
-function itemCreate(title, description, price, group, cb) {
-  const itemDetail = {
-    title: title,
+function itemCreate(name, description, price, groups, cb) {
+  let itemDetail = {
+    name: name,
     description: description,
-    price_history: [{ price: parseInt(price) }]
+    price_history: [{ price: parseInt(price) }],
+    item_groups: groups
   };
 
-  if (group != false) itemDetail.group = group;
-
-  const item = new Item(itemDetail);
+  let item = new Item(itemDetail);
 
   item.save(function(err) {
     if (err) {
+      console.log(err);
       cb(err, null);
-      return;
+    } else {
+      console.log("New Book: " + item);
+      items.push(item);
+      cb(null, item);
     }
-    console.log("New Book: " + item);
-    items.push(item);
-    cb(null, item);
   });
 }
 
 function createGroupsNCoupons(cb) {
-  async.parallel(
+  console.log("creating groups and coupons");
+  async.series(
     [
       function(callback) {
         groupCreate("All", callback);
@@ -125,6 +126,7 @@ function createGroupsNCoupons(cb) {
 }
 
 function createItems(cb) {
+  console.log("creating items");
   async.parallel(
     [
       function(callback) {
@@ -133,7 +135,7 @@ function createItems(cb) {
           "An Incredibly powerful scepter",
           "225.00",
           [groups[0], groups[1]],
-          cb
+          callback
         );
       },
       function(callback) {
@@ -142,7 +144,7 @@ function createItems(cb) {
           "An interesting book",
           "5.00",
           [groups[0], groups[2]],
-          cb
+          callback
         );
       },
       function(callback) {
@@ -151,7 +153,7 @@ function createItems(cb) {
           "A powerful rocket ship, designed to reach Jupiter. Fuel not included",
           "670,000,000,000.00",
           [groups[0], groups[3]],
-          cb
+          callback
         );
       },
       function(callback) {
@@ -160,7 +162,7 @@ function createItems(cb) {
           "The 1978 album by Kenny Rogers",
           "12.95",
           [groups[0], groups[1]],
-          cb
+          callback
         );
       },
       function(callback) {
@@ -169,7 +171,7 @@ function createItems(cb) {
           "The 2003 music film by Daft Punk",
           "21.95",
           [groups[0], groups[2], groups[3]],
-          cb
+          callback
         );
       },
       function(callback) {
@@ -181,16 +183,12 @@ function createItems(cb) {
   );
 }
 
-async.series(
-  [createGroupsNCoupons, createItems],
-  // optional callback
-  function(err, results) {
-    if (err) {
-      console.log("FINAL ERR: " + err);
-    } else {
-      console.log("BOOKInstances: " + bookinstances);
-    }
-    //All done, disconnect from database
-    mongoose.connection.close();
+async.series([createGroupsNCoupons, createItems], function(err, results) {
+  if (err) {
+    console.log("FINAL ERR: " + err);
+  } else {
+    console.log("Items: " + items);
   }
-);
+  //All done, disconnect from database
+  mongoose.connection.close();
+});
