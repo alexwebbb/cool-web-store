@@ -7,7 +7,7 @@ const CouponSchema = new Schema({
 	discount_percent: { type: Number, required: true, min: 0, max: 100 },
 	valid_range: {
 		begin: { type: Date, required: true, default: Date.now },
-		end: { type: Date }
+		end: { type: Date, default: null }
 	},
 	valid_item_groups: {
 		type: [

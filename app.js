@@ -1,18 +1,22 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const path = require("path");
-const favicon = require("serve-favicon");
-const logger = require("morgan");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
+"use strict";
 
-const keys = require("./config/keys");
-
-const index = require("./routes/index");
-const users = require("./routes/users");
-
-const app = express();
-
+const express = require("express"),
+	// Middleware
+	mongoose = require("mongoose"),
+	path = require("path"),
+	favicon = require("serve-favicon"),
+	logger = require("morgan"),
+	cookieParser = require("cookie-parser"),
+	bodyParser = require("body-parser"),
+	moment = require("moment"),
+	// Secure info
+	keys = require("./config/keys"),
+	// Routes
+	index = require("./routes/index"),
+	users = require("./routes/users"),
+	store = require("./routes/catalog"),
+	// Instantiate express
+	app = express();
 
 // initialize mongoose
 mongoose.connect(keys.mongoURI);
@@ -33,8 +37,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+// Declare routes as middleware
 app.use("/", index);
 app.use("/users", users);
+app.use("/store", store);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

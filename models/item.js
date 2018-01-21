@@ -8,13 +8,25 @@ const ValidPrice = RegExp(
 const ItemSchema = new Schema({
 	name: { type: String, required: true },
 	description: String,
-	price_history: [
-		{
-			price: { type: Number, required: true },
-			date: { type: Date, required: true, default: Date.now() }
-		}
-	],
-	availability: { type: Number, required: true, min: -1 },
+	price_history: {
+		type: [
+			{
+				price: {
+					type: Number,
+					validate: {
+						validator: function(v) {
+							return ValidPrice.test(v);
+						},
+						message: "{VALUE} is not a valid price!"
+					},
+					required: true
+				},
+				date: { type: Date, required: true, default: Date.now() }
+			}
+		],
+		required: true
+	},
+	availability: { type: Number, required: true, min: -1, default: 0 },
 	item_groups: {
 		type: [
 			{ type: Schema.Types.ObjectId, ref: "ItemGroup", required: true }
@@ -36,6 +48,8 @@ ItemSchema.virtual("price")
 			this.price_history.sort(function(a, b) {
 				return a.date < b.date;
 			});
+		} else {
+			return new Error("Bad Format on the Price");
 		}
 	});
 
