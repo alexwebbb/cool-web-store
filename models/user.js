@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
 	username: { type: String, required: true, max: 24, lowercase: true },
-	password: { type: String, required: true, min: 7, max: 48 },
+	password: { type: String, required: true, min: 7, max: 256 },
 	email: { type: String, required: true, max: 24 },
 	addresses: [
 		{
