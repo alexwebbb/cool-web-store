@@ -27,12 +27,9 @@ const ItemSchema = new Schema({
 		required: true
 	},
 	availability: { type: Number, required: true, min: -1, default: 0 },
-	item_groups: {
-		type: [
-			{ type: Schema.Types.ObjectId, ref: "ItemGroup", required: true }
-		],
-		index: true
-	}
+	item_groups: [
+		{ type: Schema.Types.ObjectId, ref: "ItemGroup", required: true }
+	]
 });
 
 ItemSchema.virtual("price")
@@ -43,6 +40,7 @@ ItemSchema.virtual("price")
 		if (ValidPrice.test(value)) {
 			this.price_history.unshift({
 				price: parseInt(value),
+				// ternary operator
 				date: date ? new Date(date) : Date.now()
 			});
 			this.price_history.sort(function(a, b) {
@@ -52,5 +50,9 @@ ItemSchema.virtual("price")
 			return new Error("Bad Format on the Price");
 		}
 	});
+
+ItemSchema.virtual("url").get(function() {
+	return "/catalog/item/" + this._id;
+});
 
 module.exports = mongoose.model("Item", ItemSchema);

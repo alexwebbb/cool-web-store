@@ -97,7 +97,7 @@ function createGroupsNCoupons(cb) {
           "Fun Mode",
           "This coupon is for fun mode fest",
           "10",
-          [groups[0]],
+          [groups[0]._id],
           callback
         );
       },
@@ -106,7 +106,7 @@ function createGroupsNCoupons(cb) {
           "Sad Mode",
           "This coupon is for sad people",
           "50",
-          [groups[2]],
+          [groups[2]._id],
           callback
         );
       },
@@ -115,7 +115,7 @@ function createGroupsNCoupons(cb) {
           "Starwind Mode",
           "This coupon is for people with expendable income",
           "5",
-          [groups[1], groups[3]],
+          [groups[1]._id, groups[3]._id],
           callback
         );
       }
@@ -134,7 +134,7 @@ function createItems(cb) {
           "Scepter of Power",
           "An Incredibly powerful scepter",
           "225.00",
-          [groups[0], groups[1]],
+          [groups[0]._id, groups[1]._id],
           callback
         );
       },
@@ -143,7 +143,7 @@ function createItems(cb) {
           "La Fete",
           "An interesting book",
           "5.00",
-          [groups[0], groups[2]],
+          [groups[0]._id, groups[2]._id],
           callback
         );
       },
@@ -152,7 +152,7 @@ function createItems(cb) {
           "Rocket Ship",
           "A powerful rocket ship, designed to reach Jupiter. Fuel not included",
           "670,000,000,000.00",
-          [groups[0], groups[3]],
+          [groups[0]._id, groups[3]._id],
           callback
         );
       },
@@ -161,7 +161,7 @@ function createItems(cb) {
           "The Gambler",
           "The 1978 album by Kenny Rogers",
           "12.95",
-          [groups[0], groups[1]],
+          [groups[0]._id, groups[1]._id],
           callback
         );
       },
@@ -170,12 +170,12 @@ function createItems(cb) {
           "Interstella 5555",
           "The 2003 music film by Daft Punk",
           "21.95",
-          [groups[0], groups[2], groups[3]],
+          [groups[0]._id, groups[2]._id, groups[3]._id],
           callback
         );
       },
       function(callback) {
-        itemCreate("Trash Bin", "Plastic trash bin", "15.00", [groups[0]], cb);
+        itemCreate("Trash Bin", "Plastic trash bin", "15.00", [groups[0]._id], cb);
       }
     ],
     // optional callback

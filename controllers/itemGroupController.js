@@ -33,7 +33,7 @@ exports.group_detail = function(req, res, next) {
 			res.render("group_detail", {
 				title: "Item Group Detail",
 				item_group: results.item_group,
-				group_books: results.group_items
+				group_items: results.group_items
 			});
 		}
 	);

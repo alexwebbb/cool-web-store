@@ -14,7 +14,7 @@ const express = require("express"),
 	// Routes
 	index = require("./routes/index"),
 	users = require("./routes/users"),
-	store = require("./routes/catalog"),
+	catalog = require("./routes/catalog"),
 	// Instantiate express
 	app = express();
 
@@ -40,7 +40,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Declare routes as middleware
 app.use("/", index);
 app.use("/users", users);
-app.use("/store", store);
+app.use("/catalog", catalog);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
