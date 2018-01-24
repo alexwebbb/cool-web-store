@@ -8,7 +8,6 @@ const express = require("express"),
 	logger = require("morgan"),
 	cookieParser = require("cookie-parser"),
 	bodyParser = require("body-parser"),
-	moment = require("moment"),
 	// Secure info
 	keys = require("./config/keys"),
 	// Routes
@@ -40,7 +39,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Declare routes as middleware
 app.use("/", index);
 app.use("/users", users);
-app.use("/catalog", catalog);
+app.use("/store", catalog);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -69,7 +69,7 @@ function itemCreate(name, description, price, groups, cb) {
       console.log(err);
       cb(err, null);
     } else {
-      console.log("New Book: " + item);
+      console.log("New Item: " + item);
       items.push(item);
       cb(null, item);
     }

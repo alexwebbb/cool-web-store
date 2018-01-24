@@ -1,0 +1,21 @@
+extends layout
+
+block main
+  h1= title
+
+  p #[strong Name:]
+    p 
+      a(href=coupon_detail.url) #{coupon_detail.name}
+    p #{coupon_detail.description}
+    p Discount: #{coupon_detail.discount_percent}%
+    p Valid from #{coupon_detail.begin_date_formatted} 
+    if  coupon_detail.end_date_formatted
+      | til #{coupon_detail.end_date_formatted}
+    section
+      h1 Valid Groups
+      ul
+        each group in coupon_detail.valid_item_groups
+          li 
+            p #{group.name}
+        else
+          li There are no valid groups.

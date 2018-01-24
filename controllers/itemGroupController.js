@@ -4,7 +4,15 @@ const async = require("async");
 
 // Display list of all item_group.
 exports.group_list = function(req, res) {
-	res.send("NOT IMPLEMENTED: item_group list");
+	Item_group.find({}, "name description")
+		.exec(function(err, group_list) {
+			if (err) return next(err);
+
+			res.render("group_list", {
+				title: "Group List",
+				group_list: group_list
+			});
+		});
 };
 
 // Display detail page for a specific item_group.

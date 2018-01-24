@@ -8,12 +8,12 @@ exports.index = function(req, res) {
 exports.item_list = function(req, res) {
 	Item.find({}, "name description price_history")
 		.populate("item_groups")
-		.exec(function(err, list_items) {
+		.exec(function(err, item_list) {
 			if (err) return next(err);
 
 			res.render("item_list", {
 				title: "Item List",
-				item_list: list_items
+				item_list: item_list
 			});
 		});
 };
@@ -21,16 +21,16 @@ exports.item_list = function(req, res) {
 // Display detail page for a specific item.
 exports.item_detail = function(req, res) {
 	Item.findById(req.params.id)
-		.exec(function(err, detail_item) {
+		.exec(function(err, item_detail) {
 			if (err) return next(err);
-			if (detail_item === null) {
+			if (item_detail === null) {
 				const err = new Error("Item not found");
 				err.status = 404;
 				return next(err);
 			}
 			res.render("item_detail", {
 				title: "Item Detail",
-				item_detail: detail_item
+				item_detail: item_detail
 			});
 		});
 };

@@ -1,0 +1,14 @@
+extends layout
+
+block main
+  h1= title
+
+  p #[strong Name:]
+    p 
+      a(href=item_group.url) #{item_group.name}
+    ul
+      each item in group_items
+        li 
+          p #{item.name}
+      else
+        li There are no items.

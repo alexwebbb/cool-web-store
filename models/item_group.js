@@ -6,4 +6,8 @@ const ItemGroupSchema = new Schema({
 	description: String
 });
 
+ItemGroupSchema.virtual("url").get(function() {
+	return "/store/group/" + this._id;
+});
+
 module.exports = mongoose.model("ItemGroup", ItemGroupSchema);

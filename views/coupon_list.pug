@@ -1,0 +1,13 @@
+extends layout
+
+block main
+  h1= title
+
+  ul
+  each coupon in coupon_list
+    li
+      a(href=coupon.url) #{coupon.name}
+      |   - Discount: #{coupon.discount_percent}%
+
+  else
+    li There are no items.
