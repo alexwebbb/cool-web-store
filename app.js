@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Declare routes as middleware
 app.use("/", index);
-app.use("/users", users);
+app.use("/", users);
 app.use("/store", catalog);
 
 // catch 404 and forward to error handler

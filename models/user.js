@@ -1,10 +1,15 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
 	username: { type: String, required: true, max: 24, lowercase: true },
 	password: { type: String, required: true, min: 7, max: 256 },
 	email: { type: String, required: true, max: 24 },
+	names: {
+		first_name: { type: String, required: true, max: 24 },
+		middle_name: { type: String, max: 24 },
+		last_name: { type: String, required: true, max: 24 }
+	},
 	addresses: [
 		{
 			street_address: { type: String, required: true, max: 48 },
@@ -34,13 +39,36 @@ const UserSchema = new Schema({
 		}
 	],
 	orders: [{ type: Schema.Types.ObjectId, ref: "Order", required: true }],
-	sessions: [{ type: Schema.Types.ObjectId, ref: "Session", required: true }]
+	sessions: [{ type: Schema.Types.ObjectId, ref: "Session", required: true }],
 	user_group: {
 		type: String,
 		required: true,
 		enum: ["user", "admin", "owner"],
 		default: "user"
 	}
+});
+
+UserSchema.virtual("url").get(function() {
+	return "/user/" + this._id;
+});
+
+UserSchema.virtual("address")
+	.get(function() {
+		const { street_address, city, state, zip_code } = this.addresses[0];
+		return `${street_address}, ${city} ${state} ${zip_code}`;
+	})
+	.set(function(street_address, city, state, zip_code) {
+		this.addresses.unshift({
+			street_address: street_address,
+			city: city,
+			state: state,
+			zip_code: zip_code
+		});
+	});
+
+UserSchema.virtual("name").get(function() {
+	const { first_name, middle_name, last_name } = this.names;
+	return `${first_name} ${middle_name} ${last_name}`;
 });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -1,0 +1,18 @@
+extends layout
+
+block main
+  h1= title
+  p User: #{user_detail.name} - #{user_detail.username}
+
+  div(style='margin-left:20px;margin-top:20px')
+
+    h4 Orders
+    
+    ul
+    each order in order_list
+      li 
+        a(href=order.url) #{order.title}
+        p #{book.summary}
+
+    else
+      p This author has no books.

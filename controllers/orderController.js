@@ -7,7 +7,34 @@ exports.order_list = function(req, res) {
 
 // Display detail page for a specific order.
 exports.order_detail = function(req, res) {
-    res.send('NOT IMPLEMENTED: Order detail: ' + req.params.id);
+    async.parallel(
+		{
+			order_detail: function(callback) {
+				Order.findById(req.params.id).exec(callback);
+			},
+
+			group_items: function(callback) {
+				Item.find({ order_details: req.params.id }).exec(callback);
+			}
+		},
+		function(err, results) {
+			if (err) {
+				return next(err);
+			}
+			if (results.order_detail == null) {
+				// No results.
+				var err = new Error("order_detail not found");
+				err.status = 404;
+				return next(err);
+			}
+			// Successful, so render
+			res.render("group_detail", {
+				title: "Item Group Detail",
+				order_detail: results.order_detail,
+				group_items: results.group_items
+			});
+		}
+	);
 };
 
 // Display order create form on GET.
