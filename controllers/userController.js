@@ -1,5 +1,7 @@
 const User = require("../models/user"),
-	Order = require("../models/order");
+	Order = require("../models/order"),
+	{ body, validationResult } = require("express-validator/check"),
+	{ sanitizeBody } = require("express-validator/filter");
 
 // Display list of all users.
 exports.user_list = function(req, res) {
@@ -17,47 +19,107 @@ exports.user_list = function(req, res) {
 
 // Display detail page for a specific user.
 exports.user_detail = function(req, res) {
-	async.parallel(
-		{
-			user_detail: function(callback) {
-				User.findById(req.params.id).exec(callback);
-			},
-
-			order_list: function(callback) {
-				Order.find({ user: req.params.id })
-				.populate("cart")
-				.exec(callback);
-			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
+	User.findById(req.params.id)
+		.populate({
+			path: "orders",
+			populate: { path: "cart" }
+		})
+		.exec(function(err, user_detail) {
+			if (err) return next(err);
 			if (results.user_detail == null) {
 				// No results.
-				var err = new Error("user not found");
+				const err = new Error("user not found");
 				err.status = 404;
 				return next(err);
 			}
 			// Successful, so render
 			res.render("user_detail", {
 				title: "User Detail",
-				user_detail: results.user_detail,
-				order_list: results.order_list
+				user_detail: user_detail
 			});
-		}
-	);
-};
-
-// Display user create form on GET.
-exports.user_create_get = function(req, res) {
-	res.send("NOT IMPLEMENTED: user create GET");
+		});
 };
 
 // Handle user create on POST.
-exports.user_create_post = function(req, res) {
-	res.send("NOT IMPLEMENTED: user create POST");
+exports.user_create_get = function(req, res) {
+	res.send("NOT IMPLEMENTED: user create get");
 };
+
+// Display user create form on post.
+exports.user_create_post = [
+	// Validate fields.
+	body("username")
+		.exists().withMessage("Username must be specified.")
+		.isLength({ min: 6, max: 24 }).withMessage("Username must be between 6 and 24 characters.")
+		.isAlphanumeric().withMessage("Username has non-alphanumeric characters."),
+	body("password")
+		.exists().withMessage("Password must be specified."),
+		.isLength({ min: 7, max: 256 }).withMessage("Password must be between 7 and 256 characters.")
+	body("email")
+		.exists().withMessage("Email must be specified.")
+		.isEmail().withMessage("Email is in an invalid format.")
+	body("first_name")
+		.exists().withMessage("First name must be specified.")
+		.isLength({ min: 1, max: 24 }).withMessage("First name is too long.")
+		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
+	body("middle_name")
+		.optional({ checkFalsy: true })
+		.isLength({ min: 1, max: 24 }).withMessage("Middle name is too long.")
+		.isAlphanumeric().withMessage("Middle name has non-alphanumeric characters."),
+	body("last_name")
+		.exists().withMessage("Last name must be specified.")
+		.isLength({ min: 1, max: 24 }).withMessage("Last name is too long.")
+		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
+
+	// Sanitize fields.
+	sanitizeBody("first_name")
+		.trim()
+		.escape(),
+	sanitizeBody("middle_name")
+		.trim()
+		.escape(),
+	sanitizeBody("last_name")
+		.trim()
+		.escape()
+
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req);
+
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/errors messages.
+			res.render("author_form", {
+				title: "Create User",
+				user: req.body,
+				errors: errors.array()
+			});
+			return;
+		} else {
+			// Data from form is valid.
+
+			// Create an user object with escaped and trimmed data.
+			var user = new User({
+				username: req.body.username,
+				password: req.body.password,
+				email: req.body.email,
+				names: {
+					first_name: req.body.first_name,
+					middle_name: req.body.middle_name,
+					last_name: req.body.last_name
+				},
+				date_of_birth: req.body.date_of_birth
+			});
+			user.save(function(err) {
+				if (err) {
+					return next(err);
+				}
+				// Successful - redirect to new user record.
+				res.redirect(user.url);
+			});
+		}
+	}
+];
 
 // Handle user delete on POST.
 exports.user_delete_get = function(req, res) {
