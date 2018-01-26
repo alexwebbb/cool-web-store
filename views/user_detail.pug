@@ -7,12 +7,12 @@ block main
   div(style='margin-left:20px;margin-top:20px')
 
     h4 Orders
-    
-    ul
-    each order in order_list
-      li 
-        a(href=order.url) #{order.title}
-        p #{book.summary}
+    if order_list
+      ul
+      each order in order_list
+        li 
+          a(href=order.url) #{order.title}
+          p #{book.summary}
 
     else
-      p This author has no books.
+      p This user has no orders.
