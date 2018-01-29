@@ -8,14 +8,20 @@ const express = require("express"),
 	logger = require("morgan"),
 	cookieParser = require("cookie-parser"),
 	bodyParser = require("body-parser"),
+	// passport
+	cookieSession = require("cookie-session"),
+	passport = require("passport"),
 	// Secure info
 	keys = require("./config/keys"),
 	// Routes
 	index = require("./routes/index"),
 	users = require("./routes/users"),
 	catalog = require("./routes/catalog"),
+	authRoutes = require("./routes/authRoutes"),
 	// Instantiate express
 	app = express();
+
+
 
 // initialize mongoose
 mongoose.connect(keys.mongoURI);
@@ -35,6 +41,20 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+
+// set up passport authentication
+
+require("./services/passport");
+
+app.use(cookieSession({
+	maxAge: 30 * 24 * 60 * 60 * 1000,
+	keys: [keys.cookieKey]
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+require("./routes/authRoutes")(app);
 
 // Declare routes as middleware
 app.use("/", index);

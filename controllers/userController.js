@@ -109,7 +109,7 @@ exports.user_create_post = [
 			// Data from form is valid.
 
 			// Create an user object with escaped and trimmed data.
-			var user = new User({
+			const user = new User({
 				username: req.body.username,
 				password: req.body.password,
 				email: req.body.email,

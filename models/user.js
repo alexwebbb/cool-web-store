@@ -43,7 +43,7 @@ const UserSchema = new Schema({
 	user_group: {
 		type: String,
 		required: true,
-		enum: ["user", "admin", "owner"],
+		enum: ["user", "admin"],
 		default: "user"
 	}
 });
