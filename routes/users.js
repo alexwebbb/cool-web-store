@@ -1,7 +1,8 @@
-const express = require('express');
-const router = express.Router();
+"use strict";
 
-const user_controller = require("../controllers/userController");
+const express = require("express"),
+	router = express.Router(),
+	user_controller = require("../controllers/userController");
 
 // GET request for creating a user. NOTE This must come before routes that display user (uses id).
 router.get("/user/create", user_controller.user_create_get);

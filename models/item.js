@@ -1,36 +1,36 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+"use strict";
 
-const ValidPrice = RegExp(
-	/(?=.)^\$?(([1-9][0-9]{0,2}(,[0-9]{3})*)|[0-9]+)?(\.[0-9]{1,2})?$/
-);
-
-const ItemSchema = new Schema({
-	name: { type: String, required: true },
-	description: String,
-	price_history: {
-		type: [
-			{
-				price: {
-					type: Number,
-					validate: {
-						validator: function(v) {
-							return ValidPrice.test(v);
+const mongoose = require("mongoose"),
+	Schema = mongoose.Schema,
+	ValidPrice = RegExp(
+		/(?=.)^\$?(([1-9][0-9]{0,2}(,[0-9]{3})*)|[0-9]+)?(\.[0-9]{1,2})?$/
+	),
+	ItemSchema = new Schema({
+		name: { type: String, required: true },
+		description: String,
+		price_history: {
+			type: [
+				{
+					price: {
+						type: Number,
+						validate: {
+							validator: function(v) {
+								return ValidPrice.test(v);
+							},
+							message: "{VALUE} is not a valid price!"
 						},
-						message: "{VALUE} is not a valid price!"
+						required: true
 					},
-					required: true
-				},
-				date: { type: Date, required: true, default: Date.now() }
-			}
-		],
-		required: true
-	},
-	availability: { type: Number, required: true, min: -1, default: 0 },
-	item_groups: [
-		{ type: Schema.Types.ObjectId, ref: "ItemGroup", required: true }
-	]
-});
+					date: { type: Date, required: true, default: Date.now() }
+				}
+			],
+			required: true
+		},
+		availability: { type: Number, required: true, min: -1, default: 0 },
+		item_groups: [
+			{ type: Schema.Types.ObjectId, ref: "ItemGroup", required: true }
+		]
+	});
 
 ItemSchema.virtual("price")
 	.get(function() {

@@ -4,7 +4,7 @@ const Item_group = require("../models/item_group"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter");
 
-// Display list of all item_group.
+// Display list of all item_groups.
 exports.group_list = function(req, res) {
 	Item_group.find({}, "name description").exec(function(err, group_list) {
 		if (err) return next(err);

@@ -1,52 +1,61 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+"use strict";
 
-const UserSchema = new Schema({
-	username: { type: String, required: true, min: 6, max: 24, lowercase: true },
-	password: { type: String, required: true, min: 7, max: 256 },
-	email: { type: String, required: true, max: 320 },
-	names: {
-		first_name: { type: String, required: true, max: 24 },
-		middle_name: { type: String, max: 24 },
-		last_name: { type: String, required: true, max: 24 }
-	},
-	addresses: [
-		{
-			street_address: { type: String, required: true, max: 48 },
-			city: { type: String, required: true, max: 24 },
-			state: { type: String, required: true, max: 2 },
-			zip_code: { type: Number, required: true, min: 5, max: 5 }
+const mongoose = require("mongoose"),
+	Schema = mongoose.Schema,
+	UserSchema = new Schema({
+		username: {
+			type: String,
+			required: true,
+			min: 6,
+			max: 24,
+			lowercase: true
+		},
+		password: { type: String, required: true, min: 7, max: 256 },
+		email: { type: String, required: true, max: 320 },
+		names: {
+			first_name: { type: String, required: true, max: 24 },
+			middle_name: { type: String, max: 24 },
+			last_name: { type: String, required: true, max: 24 }
+		},
+		addresses: [
+			{
+				street_address: { type: String, required: true, max: 48 },
+				city: { type: String, required: true, max: 24 },
+				state: { type: String, required: true, max: 2 },
+				zip_code: { type: Number, required: true, min: 5, max: 5 }
+			}
+		],
+		current_cart: [
+			{
+				item_id: {
+					type: Schema.Types.ObjectId,
+					ref: "Item",
+					required: true
+				},
+				quantity: { type: Number, required: true, min: 1 }
+			}
+		],
+		current_session: [
+			{
+				item_id: {
+					type: Schema.Types.ObjectId,
+					ref: "Item",
+					required: true
+				},
+				time: { type: Date, required: true, default: Date.now }
+			}
+		],
+		orders: [{ type: Schema.Types.ObjectId, ref: "Order", required: true }],
+		sessions: [
+			{ type: Schema.Types.ObjectId, ref: "Session", required: true }
+		],
+		user_group: {
+			type: String,
+			required: true,
+			enum: ["user", "admin"],
+			default: "user"
 		}
-	],
-	current_cart: [
-		{
-			item_id: {
-				type: Schema.Types.ObjectId,
-				ref: "Item",
-				required: true
-			},
-			quantity: { type: Number, required: true, min: 1 }
-		}
-	],
-	current_session: [
-		{
-			item_id: {
-				type: Schema.Types.ObjectId,
-				ref: "Item",
-				required: true
-			},
-			time: { type: Date, required: true, default: Date.now }
-		}
-	],
-	orders: [{ type: Schema.Types.ObjectId, ref: "Order", required: true }],
-	sessions: [{ type: Schema.Types.ObjectId, ref: "Session", required: true }],
-	user_group: {
-		type: String,
-		required: true,
-		enum: ["user", "admin"],
-		default: "user"
-	}
-});
+	});
 
 UserSchema.virtual("url").get(function() {
 	return "/user/" + this._id;
@@ -70,5 +79,9 @@ UserSchema.virtual("name").get(function() {
 	const { first_name, middle_name, last_name } = this.names;
 	return `${first_name} ${middle_name} ${last_name}`;
 });
+
+UserSchema.methods.verifyPassword = function(password) {
+	return this.password === password;
+};
 
 module.exports = mongoose.model("User", UserSchema);

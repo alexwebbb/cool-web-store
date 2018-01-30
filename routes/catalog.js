@@ -1,10 +1,11 @@
-const express = require("express");
-const router = express.Router();
+"use strict";
 
-// Require controller modules.
-const item_controller = require("../controllers/itemController");
-const item_group_controller = require("../controllers/itemGroupController");
-const coupon_controller = require("../controllers/couponController");
+const express = require("express"),
+	router = express.Router(),
+	// Require controller modules.
+	item_controller = require("../controllers/itemController"),
+	item_group_controller = require("../controllers/itemGroupController"),
+	coupon_controller = require("../controllers/couponController");
 
 /// item ROUTES ///
 
