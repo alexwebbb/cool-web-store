@@ -50,19 +50,17 @@ exports.item_create_post = [
 		.withMessage("item name must be specified.")
 		.isLength({ min: 6, max: 24 })
 		.withMessage("item name must be between 6 and 24 characters.")
-		.isAlphanumeric()
+		.isAscii()
 		.withMessage("item name has non-alphanumeric characters."),
 	body("description")
 		.optional({ checkFalsy: true })
 		.isLength({ max: 480 })
-		.withMessage("First name is too long.")
-		.isAlphanumeric()
-		.withMessage("First name has non-alphanumeric characters."),
+		.withMessage("description is too long."),
 	body("price")
 		.optional({ checkFalsy: true })
 		.isLength({ max: 124 })
 		.withMessage("price is too long.")
-		.isNumeric()
+		.isCurrency()
 		.withMessage("price has non-numeric characters."),
 
 	// Sanitize fields.
@@ -96,7 +94,6 @@ exports.item_create_post = [
 			const item = new item({
 				name: req.body.item_name,
 				description: req.body.description,
-				email: req.body.email,
 				price_history: {
 					price: req.body.price
 				}

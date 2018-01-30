@@ -1,0 +1,36 @@
+extends layout
+
+block main
+  h1=title
+
+  form(method='POST' action='')
+    div.form-group
+      label('item_name') item_name:
+      input#item_name.form-control(
+        type='text' 
+        placeholder='item_name (select a item_name)' 
+        name='item_name'
+        required='true' 
+        value=(undefined===item ? '' : item.item_name) 
+        )
+      label(for='description') description:
+      input#description.form-control(
+        type='text' 
+        placeholder='description (7 to 256 characters)' 
+        name='description' 
+        required='true' 
+        value=(undefined===item ? '' : item.description)
+        )
+      label(for='price') price:
+      input#price.form-control(
+        type='text' 
+        placeholder='price (put your price address)' 
+        name='price' 
+        required='true' 
+        value=(undefined===item ? '' : item.price)
+        )
+    button.btn.btn-primary(type='submit') Submit
+  if errors 
+    ul
+      for error in errors
+        li!= error.msg

@@ -11,7 +11,7 @@ block main
         placeholder='Username (select a username)' 
         name='username'
         required='true' 
-        value=(undefined===user ? '' : user.first_name) 
+        value=(undefined===user ? '' : user.username) 
         )
       label(for='password') Password:
       input#password.form-control(

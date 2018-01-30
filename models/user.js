@@ -1,7 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose"),
-	bcrypt = require("bcryptjs"),
+	salt = require("password-hash-and-salt"),
 	Schema = mongoose.Schema,
 	UserSchema = new Schema({
 		username: {
@@ -85,14 +85,5 @@ UserSchema.virtual("name").get(function() {
 	const { first_name, middle_name, last_name } = this.names;
 	return `${first_name} ${middle_name} ${last_name}`;
 });
-
-// user authentication
-UserSchema.methods.verifyPassword = function(password) {
-	return bcrypt.compare(password, this.hashedPassword);
-};
-
-UserSchema.statics.hashPassword = function(password) {
-	return bcrypt.hash(password, 10);
-};
 
 module.exports = mongoose.model("User", UserSchema);

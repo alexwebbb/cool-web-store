@@ -1,4 +1,4 @@
-var Order = require('../models/order');
+const Order = require('../models/order');
 
 // Display list of all orders.
 exports.order_list = function(req, res) {

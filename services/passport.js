@@ -2,6 +2,7 @@
 
 const passport = require("passport"),
 	LocalStrategy = require("passport-local").Strategy,
+	salt = require("password-hash-and-salt"),
 	mongoose = require("mongoose"),
 	keys = require("../config/keys"),
 	User = require("../models/user");
@@ -18,17 +19,27 @@ passport.deserializeUser((id, done) => {
 
 passport.use(
 	new LocalStrategy(function(username, password, done) {
+		// retrieve the user object
 		User.findOne({ username: username }, function(err, user) {
 			if (err) {
 				return done(err);
 			}
+			// if no result, return
 			if (!user) {
 				return done(null, false);
 			}
-			if (!user.verifyPassword(password)) {
-				return done(null, false);
-			}
-			return done(null, user);
+
+			// check the submitted password against the hash
+			salt(password).verifyAgainst(user.hashedPassword, function(
+				error,
+				verified
+			) {
+				if (error) throw new Error("Something went wrong in the decryption");
+				if (!verified) {
+					return done(null, false);
+				}
+				return done(null, user);
+			});
 		});
 	})
 );

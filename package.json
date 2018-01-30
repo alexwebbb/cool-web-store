@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "async": "^2.6.0",
-    "bcryptjs": "^2.4.3",
     "body-parser": "~1.18.2",
     "connect-ensure-login": "^0.1.1",
     "cookie-parser": "~1.4.3",
@@ -21,6 +20,7 @@
     "morgan": "~1.9.0",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
+    "password-hash-and-salt": "^0.1.4",
     "pug": "2.0.0-beta11",
     "serve-favicon": "~2.4.5"
   }

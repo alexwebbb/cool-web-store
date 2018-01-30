@@ -1,6 +1,6 @@
 const User = require("../models/user"),
 	Order = require("../models/order"),
-	async = require("async"),
+	salt = require("password-hash-and-salt"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter");
 
@@ -123,7 +123,7 @@ exports.user_create_post = [
 			});
 			return;
 		} else {
-			User.hashPassword(req.body.password).then(function(hash) {
+			salt(req.body.password).hash(function(err, hash) {
 				// Create an user object with escaped and trimmed data.
 				const user = new User({
 					username: req.body.username,
