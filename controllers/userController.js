@@ -1,5 +1,6 @@
 const User = require("../models/user"),
 	Order = require("../models/order"),
+	async = require("async"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter");
 
@@ -41,35 +42,51 @@ exports.user_detail = function(req, res) {
 };
 
 // Display User create form on GET.
-exports.user_create_get = function(req, res, next) {       
-    res.render('user_form', { title: 'Create User'});
+exports.user_create_get = function(req, res, next) {
+	res.render("user_form", { title: "Create User" });
 };
 
 // Display user create form on post.
 exports.user_create_post = [
 	// Validate fields.
 	body("username")
-		.exists().withMessage("Username must be specified.")
-		.isLength({ min: 6, max: 24 }).withMessage("Username must be between 6 and 24 characters.")
-		.isAlphanumeric().withMessage("Username has non-alphanumeric characters."),
+		.exists()
+		.withMessage("Username must be specified.")
+		.isLength({ min: 6, max: 24 })
+		.withMessage("Username must be between 6 and 24 characters.")
+		.isAlphanumeric()
+		.withMessage("Username has non-alphanumeric characters."),
 	body("password")
-		.trim().exists().withMessage("Password must be specified.")
-		.isLength({ min: 7, max: 256 }).withMessage("Password must be between 7 and 256 characters."),
+		.trim()
+		.exists()
+		.withMessage("Password must be specified.")
+		.isLength({ min: 7, max: 256 })
+		.withMessage("Password must be between 7 and 256 characters."),
 	body("email")
-		.exists().withMessage("Email must be specified.")
-		.isEmail().withMessage("Email is in an invalid format."),
+		.exists()
+		.withMessage("Email must be specified.")
+		.isEmail()
+		.withMessage("Email is in an invalid format."),
 	body("first_name")
-		.exists().withMessage("First name must be specified.")
-		.isLength({ max: 24 }).withMessage("First name is too long.")
-		.isAlphanumeric().withMessage("First name has non-alphanumeric characters."),
+		.exists()
+		.withMessage("First name must be specified.")
+		.isLength({ max: 24 })
+		.withMessage("First name is too long.")
+		.isAlphanumeric()
+		.withMessage("First name has non-alphanumeric characters."),
 	body("middle_name")
 		.optional({ checkFalsy: true })
-		.isLength({ max: 24 }).withMessage("Middle name is too long.")
-		.isAlphanumeric().withMessage("Middle name has non-alphanumeric characters."),
+		.isLength({ max: 24 })
+		.withMessage("Middle name is too long.")
+		.isAlphanumeric()
+		.withMessage("Middle name has non-alphanumeric characters."),
 	body("last_name")
-		.exists().withMessage("Last name must be specified.")
-		.isLength({ max: 24 }).withMessage("Last name is too long.")
-		.isAlphanumeric().withMessage("Last name has non-alphanumeric characters."),
+		.exists()
+		.withMessage("Last name must be specified.")
+		.isLength({ max: 24 })
+		.withMessage("Last name is too long.")
+		.isAlphanumeric()
+		.withMessage("Last name has non-alphanumeric characters."),
 
 	// Sanitize fields.
 	sanitizeBody("username")
@@ -106,25 +123,27 @@ exports.user_create_post = [
 			});
 			return;
 		} else {
-			// Data from form is valid.
+			User.hashPassword(req.body.password).then(function(hash) {
+				// Create an user object with escaped and trimmed data.
+				const user = new User({
+					username: req.body.username,
+					hashedPassword: hash,
+					email: req.body.email,
+					names: {
+						first_name: req.body.first_name,
+						middle_name: req.body.middle_name,
+						last_name: req.body.last_name
+					}
+				});
 
-			// Create an user object with escaped and trimmed data.
-			const user = new User({
-				username: req.body.username,
-				password: req.body.password,
-				email: req.body.email,
-				names: {
-					first_name: req.body.first_name,
-					middle_name: req.body.middle_name,
-					last_name: req.body.last_name
-				}
-			});
-			user.save(function(err) {
-				if (err) {
-					return next(err);
-				}
-				// Successful - redirect to new user record.
-				res.redirect(user.url);
+				console.log(user);
+				user.save(function(err) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to new user record.
+					res.redirect(user.url);
+				});
 			});
 		}
 	}

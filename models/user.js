@@ -1,6 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose"),
+	bcrypt = require("bcryptjs"),
 	Schema = mongoose.Schema,
 	UserSchema = new Schema({
 		username: {
@@ -10,7 +11,8 @@ const mongoose = require("mongoose"),
 			max: 24,
 			lowercase: true
 		},
-		password: { type: String, required: true, min: 7, max: 256 },
+		// password: { type: String, required: true, min: 7, max: 256 },
+		hashedPassword: { type: String, required: true },
 		email: { type: String, required: true, max: 320 },
 		names: {
 			first_name: { type: String, required: true, max: 24 },
@@ -66,13 +68,17 @@ UserSchema.virtual("address")
 		const { street_address, city, state, zip_code } = this.addresses[0];
 		return `${street_address}, ${city} ${state} ${zip_code}`;
 	})
-	.set(function(street_address, city, state, zip_code) {
-		this.addresses.unshift({
-			street_address: street_address,
-			city: city,
-			state: state,
-			zip_code: zip_code
-		});
+	.set(function(v) {
+		const { street_address, city, state, zip_code } = v;
+
+		if (street_address && city && state && zipcode) {
+			this.addresses.unshift({
+				street_address: street_address,
+				city: city,
+				state: state,
+				zip_code: zip_code
+			});
+		}
 	});
 
 UserSchema.virtual("name").get(function() {
@@ -80,8 +86,13 @@ UserSchema.virtual("name").get(function() {
 	return `${first_name} ${middle_name} ${last_name}`;
 });
 
+// user authentication
 UserSchema.methods.verifyPassword = function(password) {
-	return this.password === password;
+	return bcrypt.compare(password, this.hashedPassword);
+};
+
+UserSchema.statics.hashPassword = function(password) {
+	return bcrypt.hash(password, 10);
 };
 
 module.exports = mongoose.model("User", UserSchema);
