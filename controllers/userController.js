@@ -136,7 +136,6 @@ exports.user_create_post = [
 					}
 				});
 
-				console.log(user);
 				user.save(function(err) {
 					if (err) {
 						return next(err);

@@ -46,9 +46,9 @@ exports.item_create_get = function(req, res, next) {
 			return next(err);
 		}
 		//Successful, so render
-		res.render("item_group_list", {
-			title: "item_group List",
-			item_group_list: item_group_list
+		res.render("item_form", {
+			title: "Create Item",
+			item_groups: item_group_list
 		});
 	});
 };
@@ -72,11 +72,13 @@ exports.item_create_post = [
 		.isLength({ min: 6, max: 24 })
 		.withMessage("item name must be between 6 and 24 characters.")
 		.isAscii()
-		.withMessage("item name has non-alphanumeric characters."),
+		.withMessage("item name has non-standard characters."),
 	body("description")
 		.optional({ checkFalsy: true })
 		.isLength({ max: 480 })
-		.withMessage("description is too long."),
+		.withMessage("description is too long.")
+		.isAscii()
+		.withMessage("item name has non-standard characters."),
 	body("price")
 		.optional({ checkFalsy: true })
 		.isLength({ max: 124 })
@@ -100,6 +102,14 @@ exports.item_create_post = [
 		// Extract the validation errors from a request.
 		const errors = validationResult(req);
 
+		// Create an item object with escaped and trimmed data.
+			const item = new Item({
+				name: req.body.item_name,
+				description: req.body.description,
+				price: req.body.price,
+				item_groups: req.body.item_groups
+			});
+
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.
 
@@ -109,10 +119,10 @@ exports.item_create_post = [
 					return next(err);
 				}
 
-				// Mark our selected item_groups as checked.
+				// Mark our selected item groups as checked.
 				for (let i = 0; i < item_group_list.length; i++) {
 					if (
-						req.body.item_groups.indexOf(item_group_list[i]._id) >
+						item.item_groups.indexOf(item_group_list[i]._id) >
 						-1
 					) {
 						item_group_list[i].checked = "true";
@@ -131,13 +141,6 @@ exports.item_create_post = [
 		} else {
 			// Data from form is valid.
 
-			// Create an item object with escaped and trimmed data.
-			const item = new Item({
-				name: req.body.item_name,
-				description: req.body.description,
-				price: req.body.price,
-				item_groups: req.body.item_groups
-			});
 
 			item.save(function(err) {
 				if (err) {

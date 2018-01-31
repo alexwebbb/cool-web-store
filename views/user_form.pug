@@ -54,6 +54,8 @@ block main
         value=(undefined===user ? '' : user.last_name)
         )
     button.btn.btn-primary(type='submit') Submit
+
+block alert
   if errors 
     ul
       for error in errors

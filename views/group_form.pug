@@ -9,6 +9,7 @@ block main
       input#name.form-control(type='text', placeholder='Fantasy, Poetry etc.' name='name' value=(undefined===group ? '' : group.name))
     button.btn.btn-primary(type='submit') Submit
 
+block alert
   if errors 
     ul
       for error in errors

@@ -5,15 +5,15 @@ block main
 
   form(method='POST' action='')
     div.form-group
-      label('item_name') item_name:
+      label('item_name') Item Name:
       input#item_name.form-control(
         type='text' 
-        placeholder='item_name (select a item_name)' 
+        placeholder='item name (select a name)' 
         name='item_name'
         required='true' 
         value=(undefined===item ? '' : item.item_name) 
         )
-      label(for='description') description:
+      label(for='description') Description:
       input#description.form-control(
         type='text' 
         placeholder='description (7 to 256 characters)' 
@@ -21,7 +21,7 @@ block main
         required='true' 
         value=(undefined===item ? '' : item.description)
         )
-      label(for='price') price:
+      label(for='price') Price:
       input#price.form-control(
         type='text' 
         placeholder='price (put your price address)' 
@@ -29,7 +29,22 @@ block main
         required='true' 
         value=(undefined===item ? '' : item.price)
         )
+    div.form-group
+      label Group:
+      div
+        for group in item_groups
+          div(style='display: inline; padding-right:10px;')
+            input.checkbox-input(
+              type='checkbox'
+              name='item_groups'
+              id=group._id
+              value=group._id
+              checked=group.checked
+              )
+            label(for=group._id) #{group.name}
     button.btn.btn-primary(type='submit') Submit
+
+block alert
   if errors 
     ul
       for error in errors
