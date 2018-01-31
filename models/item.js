@@ -27,9 +27,15 @@ const mongoose = require("mongoose"),
 			required: true
 		},
 		availability: { type: Number, required: true, min: -1, default: 0 },
-		item_groups: [
-			{ type: Schema.Types.ObjectId, ref: "ItemGroup", required: true }
-		]
+		item_groups: {
+			type: [
+				{
+					type: Schema.Types.ObjectId,
+					ref: "ItemGroup"
+				}
+			],
+			required: true
+		}
 	});
 
 ItemSchema.virtual("price")
@@ -39,9 +45,7 @@ ItemSchema.virtual("price")
 	.set(function(value, date) {
 		if (ValidPrice.test(value)) {
 			this.price_history.unshift({
-				price: parseInt(value),
-				// ternary operator
-				date: date ? new Date(date) : Date.now()
+				price: parseInt(value)
 			});
 			this.price_history.sort(function(a, b) {
 				return a.date < b.date;
