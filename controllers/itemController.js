@@ -59,16 +59,16 @@ exports.item_list = function(req, res) {
 
 // Display detail page for a specific item.
 exports.item_detail = function(req, res) {
-	Item.findById(req.params.id).exec(function(err, item_detail) {
+	Item.findById(req.params.id).exec(function(err, item) {
 		if (err) return next(err);
-		if (item_detail === null) {
+		if (item === null) {
 			const err = new Error("Item not found");
 			err.status = 404;
 			return next(err);
 		}
 		res.render("item_detail", {
 			title: "Item Detail",
-			item_detail: item_detail
+			item: item
 		});
 	});
 };
@@ -144,7 +144,18 @@ exports.item_create_post = [
 
 // Display item delete form on GET.
 exports.item_delete_get = function(req, res) {
-	res.send("NOT IMPLEMENTED: item delete GET");
+	Item.findById(req.params.id).exec(function(err, item) {
+		if (err) return next(err);
+		if (item === null) {
+			const err = new Error("Item not found");
+			err.status = 404;
+			return next(err);
+		}
+		res.render("item_delete", {
+			title: "Item Detail",
+			item: item
+		});
+	});
 };
 
 // Handle item delete on POST.

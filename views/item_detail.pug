@@ -4,9 +4,9 @@ block main
   h1= title
 
   p #[strong Name:]
-    p #{item_detail.name}
+    p #{item.name}
   hr
   p
-    a(href=item_detail.url+'/delete') Delete Book
+    a(href=item.url+'/delete') Delete Book
   p
-    a(href=item_detail.url+'/update') Update Book
+    a(href=item.url+'/update') Update Book
