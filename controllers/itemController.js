@@ -162,7 +162,7 @@ exports.item_delete_post = function(req, res) {
 
 // Display item update form on GET.
 exports.item_update_get = function(req, res) {
-	// Get book, authors and genres for form.
+	// Get items and groups for form.
 	async.parallel(
 		{
 			item: function(callback) {
@@ -274,26 +274,41 @@ exports.item_update_post = [
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.
 
-			// retrieve all item groups for use in the form
-			Item_group.find().exec(function(err, item_group_list) {
-				if (err) {
-					return next(err);
-				}
-
-				// Mark our selected item groups as checked.
-				for (let i = 0; i < item_group_list.length; i++) {
-					if (item.item_groups.indexOf(item_group_list[i]._id) > -1) {
-						item_group_list[i].checked = "true";
+			// retrieve existing data since form data was invalid
+			async.parallel(
+				{
+					item: function(callback) {
+						Item.findById(req.params.id)
+							.populate("item_groups")
+							.exec(callback);
+					},
+					groups: function(callback) {
+						Item_group.find(callback);
 					}
-				}
+				},
+				function(err, results) {
+					if (err) {
+						return next(err);
+					}
 
-				res.render("item_form", {
-					title: "Update Item",
-					item_groups: item_group_list,
-					item: item,
-					errors: errors.array()
-				});
-			});
+					// Mark our selected item groups as checked.
+					for (let i = 0; i < results.groups.length; i++) {
+						if (
+							item.item_groups.indexOf(results.groups[i]._id) >
+							-1
+						) {
+							results.groups[i].checked = "true";
+						}
+					}
+
+					res.render("item_form", {
+						title: "Update Item",
+						item_groups: results.groups,
+						item: results.item,
+						errors: errors.array()
+					});
+				}
+			);
 
 			return;
 		} else {
