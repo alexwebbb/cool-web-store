@@ -39,12 +39,12 @@ const Item = require("../models/item"),
 			.escape()
 	];
 
-exports.index = function(req, res) {
+exports.index = function(req, res, next) {
 	res.send("NOT IMPLEMENTED: Site Home Page");
 };
 
 // Display list of all items.
-exports.item_list = function(req, res) {
+exports.item_list = function(req, res, next) {
 	Item.find({}, "name description price_history")
 		.populate("item_groups")
 		.exec(function(err, item_list) {
@@ -58,7 +58,7 @@ exports.item_list = function(req, res) {
 };
 
 // Display detail page for a specific item.
-exports.item_detail = function(req, res) {
+exports.item_detail = function(req, res, next) {
 	Item.findById(req.params.id).exec(function(err, item) {
 		if (err) return next(err);
 		if (item === null) {
@@ -143,23 +143,40 @@ exports.item_create_post = [
 ];
 
 // Display item delete form on GET.
-exports.item_delete_get = function(req, res) {
-	Item.findById(req.params.id).exec(function(err, item) {
-		if (err) return next(err);
-		if (item === null) {
-			const err = new Error("Item not found");
-			err.status = 404;
-			return next(err);
+exports.item_delete_get = function(req, res, next) {
+	async.parallel(
+		{
+			item: function(callback) {
+				Item.findById(req.params.id).exec(callback);
+			},
+			orders: function(callback) {
+				Order.find({ "cart.item_id": req.params.id }).exec(callback);
+			},
+			sessions: function(callback) {
+				Session.find({ "views.item_id": req.params.id }).exec(callback);
+			}
+		},
+		function(err, results) {
+
+			console.log(results);
+			if (err) return next(err);
+			if (results.item === null) {
+				const err = new Error("Item not found");
+				err.status = 404;
+				return next(err);
+			}
+			res.render("item_delete", {
+				title: "Item Delete",
+				sessions: results.sessions,
+				orders: results.orders,
+				item: results.item
+			});
 		}
-		res.render("item_delete", {
-			title: "Item Detail",
-			item: item
-		});
-	});
+	);
 };
 
 // Handle item delete on POST.
-exports.item_delete_post = function(req, res) {
+exports.item_delete_post = function(req, res, next) {
 	async.parallel(
 		{
 			item: function(callback) {
@@ -205,7 +222,7 @@ exports.item_delete_post = function(req, res) {
 };
 
 // Display item update form on GET.
-exports.item_update_get = function(req, res) {
+exports.item_update_get = function(req, res, next) {
 	// Get items and groups for form.
 	async.parallel(
 		{
