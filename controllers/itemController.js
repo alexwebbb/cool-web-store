@@ -1,6 +1,7 @@
 const Item = require("../models/item"),
 	Item_group = require("../models/item_group"),
 	Order = require("../models/order"),
+	Session = require("../models/session"),
 	async = require("async"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter"),
@@ -148,7 +149,51 @@ exports.item_delete_get = function(req, res) {
 
 // Handle item delete on POST.
 exports.item_delete_post = function(req, res) {
-	res.send("NOT IMPLEMENTED: item delete POST");
+	async.parallel(
+		{
+			item: function(callback) {
+				Item.findById(req.body.id).exec(callback);
+			},
+			orders: function(callback) {
+				Order.find({ cart: req.body.id }).exec(callback);
+			},
+			sessions: function(callback) {
+				Session.find({ views: req.body.id }).exec(callback);
+			}
+		},
+		function(err, results) {
+			if (err) {
+				return next(err);
+			}
+			// Success
+			if (results.orders.length > 0 || results.sessions.length > 0) {
+				// in order to prevent corrupting orders or sessions, items in use are protected
+				res.render("error", {
+					message: "Delete Item Error - Item in use",
+					error: {
+						status: `There are ${
+							results.orders.length
+						} orders and ${
+							results.sessions.length
+						} sessions with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item, please change its availability.`
+					}
+				});
+				return;
+			} else {
+				// Author has no books. Delete object and redirect to the list of authors.
+				Author.findByIdAndRemove(
+					req.body.authorid,
+					function deleteAuthor(err) {
+						if (err) {
+							return next(err);
+						}
+						// Success - go to author list
+						res.redirect("/catalog/authors");
+					}
+				);
+			}
+		}
+	);
 };
 
 // Display item update form on GET.
