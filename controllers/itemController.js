@@ -3,7 +3,40 @@ const Item = require("../models/item"),
 	Order = require("../models/order"),
 	async = require("async"),
 	{ body, validationResult } = require("express-validator/check"),
-	{ sanitizeBody } = require("express-validator/filter");
+	{ sanitizeBody } = require("express-validator/filter"),
+	validateAndSanitizeFields = [
+		// Validate fields.
+		body("item_name")
+			.exists()
+			.withMessage("item name must be specified.")
+			.isLength({ min: 6, max: 24 })
+			.withMessage("item name must be between 6 and 24 characters.")
+			.isAscii()
+			.withMessage("item name has non-standard characters."),
+		body("description")
+			.optional({ checkFalsy: true })
+			.isLength({ max: 480 })
+			.withMessage("description is too long.")
+			.isAscii()
+			.withMessage("item name has non-standard characters."),
+		body("price")
+			.optional({ checkFalsy: true })
+			.isLength({ max: 124 })
+			.withMessage("price is too long.")
+			.isCurrency()
+			.withMessage("price has non-numeric characters."),
+
+		// Sanitize fields.
+		sanitizeBody("item_name")
+			.trim()
+			.escape(),
+		sanitizeBody("description")
+			.trim()
+			.escape(),
+		sanitizeBody("price")
+			.trim()
+			.escape()
+	];
 
 exports.index = function(req, res) {
 	res.send("NOT IMPLEMENTED: Site Home Page");
@@ -56,48 +89,7 @@ exports.item_create_get = function(req, res, next) {
 
 // Display item create form on post.
 exports.item_create_post = [
-	// Convert the item groups to an array.
-	(req, res, next) => {
-		if (!(req.body.item_groups instanceof Array)) {
-			if (typeof req.body.item_groups === "undefined")
-				req.body.item_groups = [];
-			else req.body.item_groups = new Array(req.body.item_groups);
-		}
-		next();
-	},
-
-	// Validate fields.
-	body("item_name")
-		.exists()
-		.withMessage("item name must be specified.")
-		.isLength({ min: 6, max: 24 })
-		.withMessage("item name must be between 6 and 24 characters.")
-		.isAscii()
-		.withMessage("item name has non-standard characters."),
-	body("description")
-		.optional({ checkFalsy: true })
-		.isLength({ max: 480 })
-		.withMessage("description is too long.")
-		.isAscii()
-		.withMessage("item name has non-standard characters."),
-	body("price")
-		.optional({ checkFalsy: true })
-		.isLength({ max: 124 })
-		.withMessage("price is too long.")
-		.isCurrency()
-		.withMessage("price has non-numeric characters."),
-
-	// Sanitize fields.
-	sanitizeBody("item_name")
-		.trim()
-		.escape(),
-	sanitizeBody("description")
-		.trim()
-		.escape(),
-	sanitizeBody("price")
-		.trim()
-		.escape(),
-
+	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
@@ -137,8 +129,7 @@ exports.item_create_post = [
 
 			return;
 		} else {
-			// Data from form is valid.
-
+			// Data from form is valid. Save the record
 			item.save(function(err) {
 				if (err) {
 					return next(err);
@@ -185,7 +176,7 @@ exports.item_update_get = function(req, res) {
 				return next(err);
 			}
 			// Success.
-			// Mark our selected genres as checked.
+			// Mark our selected groups as checked.
 			for (
 				let all_g_iter = 0;
 				all_g_iter < results.groups.length;
@@ -214,49 +205,8 @@ exports.item_update_get = function(req, res) {
 };
 
 // Handle item update on POST.
-// basically the same as other post route... could use some refectoring
 exports.item_update_post = [
-	// Convert the item groups to an array.
-
-	(req, res, next) => {
-		if (!(req.body.item_groups instanceof Array)) {
-			if (typeof req.body.item_groups === "undefined") {
-				req.body.item_groups = [];
-			} else req.body.item_groups = new Array(req.body.item_groups);
-		}
-
-		next();
-	},
-	// Validate fields.
-	body("item_name")
-		.exists()
-		.withMessage("item name must be specified.")
-		.isLength({ min: 6, max: 24 })
-		.withMessage("item name must be between 6 and 24 characters.")
-		.isAscii()
-		.withMessage("item name has non-standard characters."),
-	body("description")
-		.optional({ checkFalsy: true })
-		.isLength({ max: 480 })
-		.withMessage("description is too long.")
-		.isAscii()
-		.withMessage("item name has non-standard characters."),
-	body("price")
-		.optional({ checkFalsy: true })
-		.isLength({ max: 124 })
-		.withMessage("price is too long.")
-		.isCurrency()
-		.withMessage("price has non-numeric characters."),
-	// Sanitize fields.
-	sanitizeBody("item_name")
-		.trim()
-		.escape(),
-	sanitizeBody("description")
-		.trim()
-		.escape(),
-	sanitizeBody("price")
-		.trim()
-		.escape(),
+	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
@@ -294,8 +244,7 @@ exports.item_update_post = [
 					// Mark our selected item groups as checked.
 					for (let i = 0; i < results.groups.length; i++) {
 						if (
-							item.item_groups.indexOf(results.groups[i]._id) >
-							-1
+							item.item_groups.indexOf(results.groups[i]._id) > -1
 						) {
 							results.groups[i].checked = "true";
 						}
@@ -312,20 +261,16 @@ exports.item_update_post = [
 
 			return;
 		} else {
-			// Data from form is valid.
-
-			console.log("data is valid");
-
 			// Data from form is valid. Update the record.
 			Item.findByIdAndUpdate(req.params.id, item, {}, function(
 				err,
-				itsAnItem
+				_item
 			) {
 				if (err) {
 					return next(err);
 				}
 				// Successful - redirect to book detail page.
-				res.redirect(itsAnItem.url);
+				res.redirect(_item.url);
 			});
 		}
 	}
