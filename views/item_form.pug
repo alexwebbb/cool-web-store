@@ -11,7 +11,7 @@ block main
         placeholder='item name (select a name)' 
         name='item_name'
         required='true' 
-        value=(undefined===item ? '' : item.item_name) 
+        value=(undefined===item ? '' : item.name) 
         )
       label(for='description') Description:
       input#description.form-control(

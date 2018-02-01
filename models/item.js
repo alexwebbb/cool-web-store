@@ -43,7 +43,8 @@ ItemSchema.virtual("price")
 		return this.price_history[0].price;
 	})
 	.set(function(value, date) {
-		if (ValidPrice.test(value)) {
+
+		if (ValidPrice.test(value) ) {
 			this.price_history.unshift({
 				price: parseInt(value)
 			});
