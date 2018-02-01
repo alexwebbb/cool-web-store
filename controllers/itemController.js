@@ -175,22 +175,19 @@ exports.item_delete_post = function(req, res) {
 							results.orders.length
 						} orders and ${
 							results.sessions.length
-						} sessions with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item, please change its availability.`
+						} sessions with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
 					}
 				});
 				return;
 			} else {
-				// Author has no books. Delete object and redirect to the list of authors.
-				Author.findByIdAndRemove(
-					req.body.authorid,
-					function deleteAuthor(err) {
-						if (err) {
-							return next(err);
-						}
-						// Success - go to author list
-						res.redirect("/catalog/authors");
+				// Item is unused. It may be deleted
+				Item.findByIdAndRemove(req.body.id, function(err) {
+					if (err) {
+						return next(err);
 					}
-				);
+					// Success - go to item list
+					res.redirect("/store/items");
+				});
 			}
 		}
 	);

@@ -27,6 +27,7 @@ const mongoose = require("mongoose"),
 			required: true
 		},
 		availability: { type: Number, required: true, min: -1, default: 0 },
+		active: { type: Boolean, required: true, default: false },
 		item_groups: {
 			type: [
 				{
