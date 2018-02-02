@@ -150,15 +150,13 @@ exports.item_delete_get = function(req, res, next) {
 				Item.findById(req.params.id).exec(callback);
 			},
 			orders: function(callback) {
-				Order.find({ "cart.item_id": req.params.id }).exec(callback);
+				Order.findOne({ "cart.item_id": req.params.id }).exec(callback);
 			},
 			sessions: function(callback) {
-				Session.find({ "views.item_id": req.params.id }).exec(callback);
+				Session.findOne({ "views.item_id": req.params.id }).exec(callback);
 			}
 		},
 		function(err, results) {
-
-			console.log(results);
 			if (err) return next(err);
 			if (results.item === null) {
 				const err = new Error("Item not found");
@@ -186,7 +184,9 @@ exports.item_delete_post = function(req, res, next) {
 				Order.findOne({ "cart.item_id": req.body.id }).exec(callback);
 			},
 			sessions: function(callback) {
-				Session.findOne({ "views.item_id": req.body.id }).exec(callback);
+				Session.findOne({ "views.item_id": req.body.id }).exec(
+					callback
+				);
 			}
 		},
 		function(err, results) {
@@ -200,10 +200,10 @@ exports.item_delete_post = function(req, res, next) {
 					message: "Delete Item Error - Item in use",
 					error: {
 						status: `There are ${
-							results.orders.length
-						} orders and ${
-							results.sessions.length
-						} sessions with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
+							results.sessions ? "sessions" : ""
+						} ${
+							results.orders ? "and orders" : ""
+						}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
 					}
 				});
 				return;

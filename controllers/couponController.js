@@ -20,12 +20,11 @@ const Coupon = require("../models/coupon"),
 			.withMessage("description is too long.")
 			.isAscii()
 			.withMessage("coupon name has non-standard characters."),
-		body("price")
-			.optional({ checkFalsy: true })
-			.isLength({ max: 124 })
-			.withMessage("price is too long.")
-			.isCurrency()
-			.withMessage("price has non-numeric characters."),
+		body("discount_percent")
+			.exists()
+			.withMessage("discount percent field is empty")
+			.isFloat({ min: 0, max: 100 })
+			.withMessage("discount percent is out of range"),
 
 		// Sanitize fields.
 		sanitizeBody("coupon_name")
@@ -34,7 +33,7 @@ const Coupon = require("../models/coupon"),
 		sanitizeBody("description")
 			.trim()
 			.escape(),
-		sanitizeBody("price")
+		sanitizeBody("discount_percent")
 			.trim()
 			.escape()
 	];
@@ -98,7 +97,8 @@ exports.coupon_create_post = [
 		const coupon = new Coupon({
 			name: req.body.coupon_name,
 			description: req.body.description,
-			price: req.body.price,
+			discount_percent: req.body.discount_percent,
+			expiration_date: req.body.expiration_date,
 			item_groups: req.body.item_groups
 		});
 
@@ -113,7 +113,9 @@ exports.coupon_create_post = [
 
 				// Mark our selected coupon groups as checked.
 				for (let i = 0; i < item_group_list.length; i++) {
-					if (coupon.item_groups.indexOf(item_group_list[i]._id) > -1) {
+					if (
+						coupon.item_groups.indexOf(item_group_list[i]._id) > -1
+					) {
 						item_group_list[i].checked = "true";
 					}
 				}
@@ -148,15 +150,10 @@ exports.coupon_delete_get = function(req, res, next) {
 				Coupon.findById(req.params.id).exec(callback);
 			},
 			orders: function(callback) {
-				Order.find({ "cart.coupon_id": req.params.id }).exec(callback);
-			},
-			sessions: function(callback) {
-				Session.find({ "views.coupon_id": req.params.id }).exec(callback);
+				Order.findOne({ coupons_present: req.body.id }).exec(callback);
 			}
 		},
 		function(err, results) {
-
-			console.log(results);
 			if (err) return next(err);
 			if (results.coupon === null) {
 				const err = new Error("Coupon not found");
@@ -165,7 +162,6 @@ exports.coupon_delete_get = function(req, res, next) {
 			}
 			res.render("coupon_delete", {
 				title: "Coupon Delete",
-				sessions: results.sessions,
 				orders: results.orders,
 				coupon: results.coupon
 			});
@@ -181,31 +177,26 @@ exports.coupon_delete_post = function(req, res, next) {
 				Coupon.findById(req.body.id).exec(callback);
 			},
 			orders: function(callback) {
-				Order.find({ cart: req.body.id }).exec(callback);
-			},
-			sessions: function(callback) {
-				Session.find({ views: req.body.id }).exec(callback);
+				Order.findOne({ coupons_present: req.body.id }).exec(callback);
 			}
 		},
 		function(err, results) {
 			if (err) {
 				return next(err);
 			}
+
 			// Success
-			if (results.orders.length > 0 || results.sessions.length > 0) {
+			if (results.orders || results.sessions) {
 				// in order to prevent corrupting orders or sessions, coupons in use are protected
 				res.render("error", {
 					message: "Delete Coupon Error - Coupon in use",
 					error: {
-						status: `There are ${
-							results.orders.length
-						} orders and ${
-							results.sessions.length
-						} sessions with existing records of this coupon. Thus, the coupon cannot be deleted. If you need to remove the coupon from the store, please change the 'active' property to false.`
+						status: `There are orders with existing records of this coupon. Thus, the coupon cannot be deleted. If you need to remove the coupon from the store, please change the 'active' property to false.`
 					}
 				});
 				return;
 			} else {
+				
 				// Coupon is unused. It may be deleted
 				Coupon.findByIdAndRemove(req.body.id, function(err) {
 					if (err) {
@@ -284,7 +275,8 @@ exports.coupon_update_post = [
 		const coupon = new Coupon({
 			name: req.body.coupon_name,
 			description: req.body.description,
-			price: req.body.price,
+			discount_percent: req.body.discount_percent,
+			expiration_date: req.body.expiration_date,
 			item_groups: req.body.item_groups,
 			_id: req.params.id
 		});
@@ -312,7 +304,8 @@ exports.coupon_update_post = [
 					// Mark our selected coupon groups as checked.
 					for (let i = 0; i < results.groups.length; i++) {
 						if (
-							coupon.item_groups.indexOf(results.groups[i]._id) > -1
+							coupon.item_groups.indexOf(results.groups[i]._id) >
+							-1
 						) {
 							results.groups[i].checked = "true";
 						}
