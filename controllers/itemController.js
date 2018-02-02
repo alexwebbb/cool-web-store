@@ -183,10 +183,10 @@ exports.item_delete_post = function(req, res, next) {
 				Item.findById(req.body.id).exec(callback);
 			},
 			orders: function(callback) {
-				Order.find({ cart: req.body.id }).exec(callback);
+				Order.findOne({ "cart.item_id": req.body.id }).exec(callback);
 			},
 			sessions: function(callback) {
-				Session.find({ views: req.body.id }).exec(callback);
+				Session.findOne({ "views.item_id": req.body.id }).exec(callback);
 			}
 		},
 		function(err, results) {
@@ -194,7 +194,7 @@ exports.item_delete_post = function(req, res, next) {
 				return next(err);
 			}
 			// Success
-			if (results.orders.length > 0 || results.sessions.length > 0) {
+			if (results.orders || results.sessions) {
 				// in order to prevent corrupting orders or sessions, items in use are protected
 				res.render("error", {
 					message: "Delete Item Error - Item in use",
