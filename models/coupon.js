@@ -8,7 +8,7 @@ const mongoose = require("mongoose"),
 		description: String,
 		discount_percent: { type: Number, required: true, min: 0, max: 100 },
 		valid_range: {
-			begin: { type: Date, required: true, default: Date.now },
+			begin: { type: Date, required: true, default: Date.now() },
 			end: { type: Date, default: null }
 		},
 		valid_item_groups: {
@@ -36,6 +36,16 @@ CouponSchema.virtual("end_date_formatted").get(function() {
 	} else {
 		return null;
 	}
+});
+
+CouponSchema.virtual("expiration_date").get(function() {
+	if (this.valid_range.end) {
+		return moment(this.valid_range.end).format("MMMM Do, YYYY");
+	} else {
+		return null;
+	}
+}).set(function(value) {
+	this.valid_range.end = value;
 });
 
 module.exports = mongoose.model("Coupon", CouponSchema);

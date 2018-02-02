@@ -14,8 +14,9 @@ const mongoose = require("mongoose"),
 				quantity: { type: Number, required: true, min: 1 }
 			}
 		],
-		coupon_id: { type: Schema.Types.ObjectId, ref: "Coupon" },
-		date_created: { type: Date, required: true, default: Date.now },
+		coupons_present: [{ type: Schema.Types.ObjectId, ref: "Coupon" }],
+		item_groups_present: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }],
+		date_created: { type: Date, required: true, default: Date.now() },
 		date_saved: Date,
 		date_submitted: Date,
 		shipping_address: {
