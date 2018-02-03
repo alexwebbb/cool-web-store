@@ -1,8 +1,33 @@
 const Item_group = require("../models/item_group"),
 	Item = require("../models/item"),
+	Coupon = require("../models/coupon"),
+	Order = require("../models/order"),
 	async = require("async"),
 	{ body, validationResult } = require("express-validator/check"),
-	{ sanitizeBody } = require("express-validator/filter");
+	{ sanitizeBody } = require("express-validator/filter"),
+	validateAndSanitizeFields = [
+		// Validate fields.
+		body("group_name")
+			.exists()
+			.withMessage("group name must be specified.")
+			.isLength({ min: 6, max: 24 })
+			.withMessage("group name must be between 6 and 24 characters.")
+			.isAscii()
+			.withMessage("group name has non-standard characters."),
+		body("description")
+			.optional({ checkFalsy: true })
+			.isLength({ max: 480 })
+			.withMessage("description is too long.")
+			.isAscii()
+			.withMessage("description has non-standard characters."),
+		// Sanitize fields.
+		sanitizeBody("group_name")
+			.trim()
+			.escape(),
+		sanitizeBody("description")
+			.trim()
+			.escape()
+	];
 
 // Display list of all item_groups.
 exports.group_list = function(req, res) {
@@ -55,22 +80,17 @@ exports.group_create_get = function(req, res) {
 
 // Handle group create on POST.
 exports.group_create_post = [
-	// Validate that the name field is not empty.
-	body("name", "Group name required")
-		.isLength({ min: 1 })
-		.trim(),
-
-	// Sanitize (trim and escape) the name field.
-	sanitizeBody("name")
-		.trim()
-		.escape(),
+	...validateAndSanitizeFields,
 
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
 		const errors = validationResult(req),
-			// Create a genre object with escaped and trimmed data.
-			group = new Item_group({ name: req.body.name });
+			// Create a group object with escaped and trimmed data.
+			group = new Item_group({
+			name: req.body.group_name,
+			description: req.body.description
+		});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render the form again with sanitized values/error messages.
@@ -110,20 +130,163 @@ exports.group_create_post = [
 
 // Display item_group delete form on GET.
 exports.group_delete_get = function(req, res) {
-	res.send("NOT IMPLEMENTED: item_group delete GET");
+	async.parallel(
+		{
+			group: function(callback) {
+				Item_group.findById(req.params.id).exec(callback);
+			},
+			items: function(callback) {
+				Item.findOne({ item_groups: req.params.id }).exec(callback);
+			},
+			coupons: function(callback) {
+				Coupon.findOne({ valid_item_groups: req.params.id }).exec(
+					callback
+				);
+			},
+			orders: function(callback) {
+				Order.findOne({ item_groups_present: req.params.id }).exec(
+					callback
+				);
+			}
+		},
+		function(err, results) {
+			if (err) return next(err);
+			if (results.item === null) {
+				const err = new Error("Group not found");
+				err.status = 404;
+				return next(err);
+			}
+			res.render("group_delete", {
+				title: "Group Delete",
+				orders: results.orders,
+				coupons: results.coupons,
+				items: results.items,
+				group: results.group
+			});
+		}
+	);
 };
 
 // Handle item_group delete on POST.
 exports.group_delete_post = function(req, res) {
-	res.send("NOT IMPLEMENTED: item_group delete POST");
+	async.parallel(
+		{
+			group: function(callback) {
+				Item_group.findById(req.params.id).exec(callback);
+			},
+			items: function(callback) {
+				Item.findOne({ item_groups: req.params.id }).exec(callback);
+			},
+			coupons: function(callback) {
+				Coupon.findOne({ valid_item_groups: req.params.id }).exec(
+					callback
+				);
+			},
+			orders: function(callback) {
+				Order.findOne({ item_groups_present: req.params.id }).exec(
+					callback
+				);
+			}
+		},
+		function(err, results) {
+			if (err) {
+				return next(err);
+			}
+			// Success
+			if (results.orders || results.coupons || results.items) {
+				// in order to prevent corrupting orders, groups in use are protected
+				res.render("error", {
+					message: "Delete Group Error - Group in use",
+					error: {
+						status: `There are ${
+							results.sessions ? "items, " : ""
+						} ${
+							results.sessions ? "coupons, " : ""
+						} ${
+							results.orders ? "and orders" : ""
+						}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
+					}
+				});
+				return;
+			} else {
+				// Group is unused. It may be deleted
+				Item_group.findByIdAndRemove(req.body.id, function(err) {
+					if (err) {
+						return next(err);
+					}
+					// Success - go to item list
+					res.redirect("/store/groups");
+				});
+			}
+		}
+	);
 };
 
 // Display item_group update form on GET.
 exports.group_update_get = function(req, res) {
-	res.send("NOT IMPLEMENTED: item_group update GET");
+	Item_group.findById(req.params.id).exec(function(err, group) {
+			if (err) {
+				return next(err);
+			}
+			if (group == null) {
+				// No results.
+				const err = new Error("item not found");
+				err.status = 404;
+				return next(err);
+			}
+			// Success.
+			
+			res.render("group_form", {
+				title: "Update group",
+				group: group
+			});
+		}
+	);
 };
 
 // Handle item_group update on POST.
-exports.group_update_post = function(req, res) {
-	res.send("NOT IMPLEMENTED: item_group update POST");
-};
+exports.group_update_post = [
+	...validateAndSanitizeFields,
+	// Process request after validation and sanitization.
+	(req, res, next) => {
+		// Extract the validation errors from a request.
+		const errors = validationResult(req),
+			// Create a group object with escaped and trimmed data.
+			group = new Item_group({
+			name: req.body.group_name,
+			description: req.body.description
+		});
+
+		if (!errors.isEmpty()) {
+			// There are errors. Render form again with sanitized values/errors messages.
+
+			// retrieve existing data since form data was invalid
+			Item_group.findById(req.params.id).exec(function(err, group) {
+					if (err) {
+						return next(err);
+					}
+
+					res.render("group_form", {
+						title: "Create Group",
+						group: group,
+						errors: errors.array()
+					});
+			});
+
+			return;
+		} else {
+			// Data from form is valid. Update the record.
+			Item_group.findByIdAndUpdate(req.params.id, group, {}, function(
+				err,
+				_group
+			) {
+				if (err) {
+					return next(err);
+				}
+				// Successful - redirect to book detail page.
+				res.redirect(_group.url);
+			});
+		}
+	}
+
+];

@@ -8,6 +8,8 @@ const express = require("express"),
 	logger = require("morgan"),
 	cookieParser = require("cookie-parser"),
 	bodyParser = require("body-parser"),
+	// security middleware
+	helmet = require('helmet'),
 	// passport
 	cookieSession = require("cookie-session"),
 	passport = require("passport"),
@@ -21,7 +23,7 @@ const express = require("express"),
 	// Instantiate express
 	app = express();
 
-
+app.use(helmet());
 
 // initialize mongoose
 mongoose.connect(keys.mongoURI);

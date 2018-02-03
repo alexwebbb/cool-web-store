@@ -19,7 +19,7 @@ const Coupon = require("../models/coupon"),
 			.isLength({ max: 480 })
 			.withMessage("description is too long.")
 			.isAscii()
-			.withMessage("coupon name has non-standard characters."),
+			.withMessage("description has non-standard characters."),
 		body("discount_percent")
 			.exists()
 			.withMessage("discount percent field is empty")
@@ -91,16 +91,15 @@ exports.coupon_create_post = [
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
-		const errors = validationResult(req);
-
-		// Create an coupon object with escaped and trimmed data.
-		const coupon = new Coupon({
-			name: req.body.coupon_name,
-			description: req.body.description,
-			discount_percent: req.body.discount_percent,
-			expiration_date: req.body.expiration_date,
-			item_groups: req.body.item_groups
-		});
+		const errors = validationResult(req),
+			// Create an coupon object with escaped and trimmed data.
+			coupon = new Coupon({
+				name: req.body.coupon_name,
+				description: req.body.description,
+				discount_percent: req.body.discount_percent,
+				expiration_date: req.body.expiration_date,
+				item_groups: req.body.item_groups
+			});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.
@@ -196,7 +195,6 @@ exports.coupon_delete_post = function(req, res, next) {
 				});
 				return;
 			} else {
-				
 				// Coupon is unused. It may be deleted
 				Coupon.findByIdAndRemove(req.body.id, function(err) {
 					if (err) {
@@ -269,17 +267,16 @@ exports.coupon_update_post = [
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
-		const errors = validationResult(req);
-
-		// Create an coupon object with escaped and trimmed data.
-		const coupon = new Coupon({
-			name: req.body.coupon_name,
-			description: req.body.description,
-			discount_percent: req.body.discount_percent,
-			expiration_date: req.body.expiration_date,
-			item_groups: req.body.item_groups,
-			_id: req.params.id
-		});
+		const errors = validationResult(req),
+			// Create an coupon object with escaped and trimmed data.
+			coupon = new Coupon({
+				name: req.body.coupon_name,
+				description: req.body.description,
+				discount_percent: req.body.discount_percent,
+				expiration_date: req.body.expiration_date,
+				item_groups: req.body.item_groups,
+				_id: req.params.id
+			});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.

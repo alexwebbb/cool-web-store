@@ -19,7 +19,7 @@ const Item = require("../models/item"),
 			.isLength({ max: 480 })
 			.withMessage("description is too long.")
 			.isAscii()
-			.withMessage("item name has non-standard characters."),
+			.withMessage("description has non-standard characters."),
 		body("price")
 			.optional({ checkFalsy: true })
 			.isLength({ max: 124 })
@@ -94,15 +94,14 @@ exports.item_create_post = [
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
-		const errors = validationResult(req);
-
-		// Create an item object with escaped and trimmed data.
-		const item = new Item({
-			name: req.body.item_name,
-			description: req.body.description,
-			price: req.body.price,
-			item_groups: req.body.item_groups
-		});
+		const errors = validationResult(req),
+			// Create an item object with escaped and trimmed data.
+			item = new Item({
+				name: req.body.item_name,
+				description: req.body.description,
+				price: req.body.price,
+				item_groups: req.body.item_groups
+			});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.
@@ -153,7 +152,9 @@ exports.item_delete_get = function(req, res, next) {
 				Order.findOne({ "cart.item_id": req.params.id }).exec(callback);
 			},
 			sessions: function(callback) {
-				Session.findOne({ "views.item_id": req.params.id }).exec(callback);
+				Session.findOne({ "views.item_id": req.params.id }).exec(
+					callback
+				);
 			}
 		},
 		function(err, results) {
@@ -280,16 +281,15 @@ exports.item_update_post = [
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
-		const errors = validationResult(req);
-
-		// Create an item object with escaped and trimmed data.
-		const item = new Item({
-			name: req.body.item_name,
-			description: req.body.description,
-			price: req.body.price,
-			item_groups: req.body.item_groups,
-			_id: req.params.id
-		});
+		const errors = validationResult(req),
+			// Create an item object with escaped and trimmed data.
+			item = new Item({
+				name: req.body.item_name,
+				description: req.body.description,
+				price: req.body.price,
+				item_groups: req.body.item_groups,
+				_id: req.params.id
+			});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.
