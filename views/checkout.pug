@@ -1,0 +1,12 @@
+extends layout
+
+block main
+  form#payment-form(action='/charge', method='post')
+    .form-row
+      label(for='card-element')
+        | Credit or debit card
+      #card-element
+        // a Stripe Element will be inserted here.
+      // Used to display Element errors
+      #card-errors(role='alert')
+    button Submit Payment

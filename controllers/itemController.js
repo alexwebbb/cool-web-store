@@ -66,6 +66,9 @@ exports.item_detail = function(req, res, next) {
 			err.status = 404;
 			return next(err);
 		}
+
+		
+		
 		res.render("item_detail", {
 			title: "Item Detail",
 			item: item

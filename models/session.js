@@ -11,10 +11,10 @@ const mongoose = require("mongoose"),
 					ref: "Item",
 					required: true
 				},
-				time: { type: Date, required: true }
+				time: { type: Date, required: true, default: Date.now() }
 			}
 		],
-		date_created: { type: Date, required: true, default: Date.now }
+		date_created: { type: Date, required: true, default: Date.now() }
 	});
 
 module.exports = mongoose.model("Session", SessionSchema);
