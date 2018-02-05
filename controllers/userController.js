@@ -124,7 +124,7 @@ exports.user_create_post = [
 			return;
 		} else {
 			salt(req.body.password).hash(function(err, hash) {
-				// Create an user object with escaped and trimmed data.
+				// Create a user object with escaped and trimmed data.
 				const user = new User({
 					username: req.body.username,
 					hashedPassword: hash,

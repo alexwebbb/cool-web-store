@@ -2,7 +2,9 @@
 
 const mongoose = require("mongoose"),
 	salt = require("password-hash-and-salt"),
+	moment = require("moment"),
 	Schema = mongoose.Schema,
+	Session = require('../models/session'),
 	UserSchema = new Schema({
 		username: {
 			type: String,
@@ -44,7 +46,7 @@ const mongoose = require("mongoose"),
 					ref: "Item",
 					required: true
 				},
-				time: { type: Date, required: true, default: Date.now }
+				time: { type: Date, required: true, default: Date.now() }
 			}
 		],
 		orders: [{ type: Schema.Types.ObjectId, ref: "Order", required: true }],
@@ -85,5 +87,56 @@ UserSchema.virtual("name").get(function() {
 	const { first_name, middle_name, last_name } = this.names;
 	return `${first_name} ${middle_name} ${last_name}`;
 });
+
+UserSchema.virtual("current_view")
+	.get(function() {
+		if (this.current_session) {
+			return this.current_session[0];
+		}
+	})
+	.set(function(v) {
+		if (mongoose.Types.ObjectId.isValid(v)) {
+			console.log(this.current_session);
+			if (this.current_session.length > 0) {
+				if (
+					moment(this.current_session[0].time)
+						.add(1, "minutes")
+						.isBefore(Date.now())
+				) {
+					console.log("timeout");
+					// timeout, save session and start new one
+					const session = new Session({
+						user_id: this._id,
+						views: this.current_session
+					});
+
+					session.save(function(err) {
+						if (err) {
+							return next(err);
+						}
+
+						this.current_session = null;
+						this.current_session = [{ item_id: v }];
+					});
+				} else {
+
+					console.log("add view");
+
+					// set new current view
+					this.current_session.unshift({ item_id: v });
+				}
+			} else {
+
+				console.log("set initial");
+
+				// set initial item
+				this.current_session.unshift({ item_id: v });
+			}
+		} else {
+			return new Error(
+				"Invalid item id. Something is wrong with the call of this function"
+			);
+		}
+	});
 
 module.exports = mongoose.model("User", UserSchema);
