@@ -96,6 +96,7 @@ UserSchema.virtual("current_view")
 	})
 	.set(function(v) {
 		if (mongoose.Types.ObjectId.isValid(v)) {
+			console.log("this is v: " + v);
 			console.log(this.current_session);
 			if (this.current_session.length > 0) {
 				if (
@@ -115,7 +116,6 @@ UserSchema.virtual("current_view")
 							return next(err);
 						}
 
-						this.current_session = null;
 						this.current_session = [{ item_id: v }];
 					});
 				} else {
@@ -131,6 +131,9 @@ UserSchema.virtual("current_view")
 
 				// set initial item
 				this.current_session.unshift({ item_id: v });
+
+
+				console.log("after the push" + this.current_session);
 			}
 		} else {
 			return new Error(

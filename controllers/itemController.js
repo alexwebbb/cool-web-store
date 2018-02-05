@@ -1,6 +1,6 @@
 const Item = require("../models/item"),
 	Item_group = require("../models/item_group"),
-	User = require('../models/user'),
+	User = require("../models/user"),
 	Order = require("../models/order"),
 	Session = require("../models/session"),
 	async = require("async"),
@@ -67,9 +67,12 @@ exports.item_detail = function(req, res, next) {
 			err.status = 404;
 			return next(err);
 		}
-		if(req.user) {
+		if (req.user) {
 			User.findById(req.user._id).exec(function(err, user) {
 				user.current_view = req.params.id;
+				user.save().then(function(res) {
+					console.log("saved probably: " + res);
+				});
 			});
 		}
 
