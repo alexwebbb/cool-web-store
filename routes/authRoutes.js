@@ -1,9 +1,9 @@
 "use strict";
 
-const passport = require("passport");
+const passport = require("passport"),
+	{ ensureLoggedIn } = require("connect-ensure-login");
 
 module.exports = app => {
-	
 	app.get("/login", function(req, res) {
 		res.render("login");
 	});
@@ -23,7 +23,7 @@ module.exports = app => {
 
 	app.get(
 		"/profile",
-		require("connect-ensure-login").ensureLoggedIn(),
+		ensureLoggedIn(),
 		function(req, res) {
 			res.render("profile", { user: req.user });
 		}

@@ -96,12 +96,12 @@ UserSchema.virtual("current_view")
 	})
 	.set(function(v) {
 		if (mongoose.Types.ObjectId.isValid(v)) {
-			console.log("this is v: " + v);
-			console.log(this.current_session);
+			console.log("session length: " + this.current_session.length);
+			console.log(this.current_session[0].time);
 			if (this.current_session.length > 0) {
 				if (
 					moment(this.current_session[0].time)
-						.add(1, "minutes")
+						.add(15, "minutes")
 						.isBefore(Date.now())
 				) {
 					console.log("timeout");
@@ -111,13 +111,11 @@ UserSchema.virtual("current_view")
 						views: this.current_session
 					});
 
-					session.save(function(err) {
-						if (err) {
-							return next(err);
-						}
-
-						this.current_session = [{ item_id: v }];
+					session.save().then(function(res) {
+						console.log("inside the save attempt.. here is this " + this);
 					});
+
+					this.current_session = [{ item_id: v }];
 				} else {
 
 					console.log("add view");
