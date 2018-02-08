@@ -1,0 +1,24 @@
+extends layout
+
+block main
+  h1= title
+
+  form(method='POST' action='')
+    ul
+    each item in user_cart
+      li
+        a(href=item.url) #{item.name}
+        |   - $#{item.price}.00
+
+        input.checkbox-input(
+              type='checkbox'
+              name='shopping_cart'
+              id=item._id
+              value=item._id
+              checked=false
+              )
+            label(for=item._id) #{item.name}
+  
+    else
+      li There are no items.
+    button.btn.btn-primary(type='submit') Submit

@@ -1,28 +1,23 @@
 const Order = require('../models/order');
 
-// Display list of all orders.
-exports.order_list = function(req, res) {
-    res.send('NOT IMPLEMENTED: Order list');
+/// SHOPPING CART MODIFICATION ROUTES ///
 
-    // This will require 
-    // Orders (populate the user field)
-    // user_id from request (filter order list based on current user)
-    // date created
-
+// adds item in question to the user cart
+exports.item_add_post = function(req, res) {
+    res.send('NOT IMPLEMENTED: Item add POST');
+    // this is called from each item page as a button
+    // adds an item to the user object cart
 };
 
-// Display detail page for a specific order.
-exports.order_detail = function(req, res) {
-    
-	res.send('NOT IMPLEMENTED: Order detail GET');
-    // this will require user id and order
-    // Orders, filter by user
-    // expand user
-    // expand cart
-    // expand coupons
-    // expand item group/s
-    // can only see if you are admin or the user in question
+// removes item in question to the user cart
+exports.item_remove_post = function(req, res) {
+    res.send('NOT IMPLEMENTED: Item remove POST');
+    // this is called from the item page as a button
+    // removes an item in question from the user object cart
 };
+
+
+/// ORDER CREATION AND MODIFICATION ROUTES ///
 
 // Display order create form on GET.
 exports.order_create_get = function(req, res) {
@@ -42,7 +37,6 @@ exports.order_create_post = function(req, res) {
     // take the token, submit it to stripe, if it passes, save the order
     // otherwise reload the page
 };
-
 
 // Display item delete form on GET.
 exports.order_delete_get = function(req, res, next) {
@@ -70,4 +64,31 @@ exports.order_update_post = function(req, res) {
     res.send('NOT IMPLEMENTED: Order update POST');
 
     // post for changing the cart
+};
+
+
+/// ORDER VIEWING ROUTES ///
+
+// Display list of all orders.
+exports.order_list = function(req, res) {
+    res.send('NOT IMPLEMENTED: Order list');
+
+    // This will require 
+    // Orders (populate the user field)
+    // user_id from request (filter order list based on current user)
+    // date created
+
+};
+
+// Display detail page for a specific order.
+exports.order_detail = function(req, res) {
+    
+    res.send('NOT IMPLEMENTED: Order detail GET');
+    // this will require user id and order
+    // Orders, filter by user
+    // expand user
+    // expand cart
+    // expand coupons
+    // expand item group/s
+    // can only see if you are admin or the user in question
 };

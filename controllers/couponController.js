@@ -38,37 +38,6 @@ const Coupon = require("../models/coupon"),
 			.escape()
 	];
 
-// Display list of all coupon.
-exports.coupon_list = function(req, res) {
-	Coupon.find({}, "name description discount_percent valid_item_groups")
-		.populate("valid_item_groups")
-		.exec(function(err, coupon_list) {
-			if (err) return next(err);
-
-			res.render("coupon_list", {
-				title: "Coupon List",
-				coupon_list: coupon_list
-			});
-		});
-};
-
-// Display detail page for a specific coupon.
-exports.coupon_detail = function(req, res) {
-	Coupon.findById(req.params.id)
-		.populate("valid_item_groups")
-		.exec(function(err, coupon_detail) {
-			if (err) return next(err);
-			if (coupon_detail === null) {
-				const err = new Error("Coupon not found");
-				err.status = 404;
-				return next(err);
-			}
-			res.render("coupon_detail", {
-				title: "Coupon Detail",
-				coupon_detail: coupon_detail
-			});
-		});
-};
 
 // Display coupon create form on GET.
 exports.coupon_create_get = function(req, res) {
@@ -333,3 +302,36 @@ exports.coupon_update_post = [
 		}
 	}
 ];
+
+
+// Display detail page for a specific coupon.
+exports.coupon_detail = function(req, res) {
+	Coupon.findById(req.params.id)
+		.populate("valid_item_groups")
+		.exec(function(err, coupon_detail) {
+			if (err) return next(err);
+			if (coupon_detail === null) {
+				const err = new Error("Coupon not found");
+				err.status = 404;
+				return next(err);
+			}
+			res.render("coupon_detail", {
+				title: "Coupon Detail",
+				coupon_detail: coupon_detail
+			});
+		});
+};
+
+// Display list of all coupon.
+exports.coupon_list = function(req, res) {
+	Coupon.find({}, "name description discount_percent valid_item_groups")
+		.populate("valid_item_groups")
+		.exec(function(err, coupon_list) {
+			if (err) return next(err);
+
+			res.render("coupon_list", {
+				title: "Coupon List",
+				coupon_list: coupon_list
+			});
+		});
+};

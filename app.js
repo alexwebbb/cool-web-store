@@ -19,6 +19,7 @@ const express = require("express"),
 	index = require("./routes/index"),
 	users = require("./routes/users"),
 	catalog = require("./routes/catalog"),
+	shoppingCart = require("./routes/shoppingCart"),
 	authRoutes = require("./routes/authRoutes"),
 	// Instantiate express
 	app = express();
@@ -62,6 +63,7 @@ require("./routes/authRoutes")(app);
 app.use("/", index);
 app.use("/", users);
 app.use("/store", catalog);
+app.use("/store", shoppingCart);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -44,44 +44,6 @@ exports.index = function(req, res, next) {
 	res.send("NOT IMPLEMENTED: Site Home Page");
 };
 
-// Display list of all items.
-exports.item_list = function(req, res, next) {
-	Item.find({}, "name description price_history")
-		.populate("item_groups")
-		.exec(function(err, item_list) {
-			if (err) return next(err);
-
-			res.render("item_list", {
-				title: "Item List",
-				item_list: item_list
-			});
-		});
-};
-
-// Display detail page for a specific item.
-exports.item_detail = function(req, res, next) {
-	Item.findById(req.params.id).exec(function(err, item) {
-		if (err) return next(err);
-		if (item === null) {
-			const err = new Error("Item not found");
-			err.status = 404;
-			return next(err);
-		}
-		if (req.user) {
-			User.findById(req.user._id).exec(function(err, user) {
-				user.current_view = req.params.id;
-				user.save().then(function(res) {
-					console.log("saved probably");
-				});
-			});
-		}
-
-		res.render("item_detail", {
-			title: "Item Detail",
-			item: item
-		});
-	});
-};
 
 // Display item create form on GET.
 exports.item_create_get = function(req, res, next) {
@@ -355,3 +317,42 @@ exports.item_update_post = [
 		}
 	}
 ];
+
+// Display detail page for a specific item.
+exports.item_detail = function(req, res, next) {
+	Item.findById(req.params.id).exec(function(err, item) {
+		if (err) return next(err);
+		if (item === null) {
+			const err = new Error("Item not found");
+			err.status = 404;
+			return next(err);
+		}
+		if (req.user) {
+			User.findById(req.user._id).exec(function(err, user) {
+				user.current_view = req.params.id;
+				user.save().then(function(res) {
+					console.log("saved probably");
+				});
+			});
+		}
+
+		res.render("item_detail", {
+			title: "Item Detail",
+			item: item
+		});
+	});
+};
+
+// Display list of all items.
+exports.item_list = function(req, res, next) {
+	Item.find({}, "name description price_history")
+		.populate("item_groups")
+		.exec(function(err, item_list) {
+			if (err) return next(err);
+
+			res.render("item_list", {
+				title: "Item List",
+				item_list: item_list
+			});
+		});
+};

@@ -43,7 +43,7 @@ block main
               )
             label(for=group._id) #{group.name}
     button.btn.btn-primary(type='submit') Submit
-
+    button.btn.btn-primary(type='submit', formaction='/add') Add to Cart
 block alert
   if errors 
     ul

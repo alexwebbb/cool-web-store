@@ -29,49 +29,6 @@ const Item_group = require("../models/item_group"),
 			.escape()
 	];
 
-// Display list of all item_groups.
-exports.group_list = function(req, res) {
-	Item_group.find({}, "name description").exec(function(err, group_list) {
-		if (err) return next(err);
-
-		res.render("group_list", {
-			title: "Group List",
-			group_list: group_list
-		});
-	});
-};
-
-// Display detail page for a specific item_group.
-exports.group_detail = function(req, res, next) {
-	async.parallel(
-		{
-			item_group: function(callback) {
-				Item_group.findById(req.params.id).exec(callback);
-			},
-
-			group_items: function(callback) {
-				Item.find({ item_groups: req.params.id }).exec(callback);
-			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
-			if (results.item_group == null) {
-				// No results.
-				var err = new Error("item_group not found");
-				err.status = 404;
-				return next(err);
-			}
-			// Successful, so render
-			res.render("group_detail", {
-				title: "Item Group Detail",
-				item_group: results.item_group,
-				group_items: results.group_items
-			});
-		}
-	);
-};
 
 // Display item_group create form on GET.
 exports.group_create_get = function(req, res) {
@@ -290,3 +247,48 @@ exports.group_update_post = [
 	}
 
 ];
+
+// Display detail page for a specific item_group.
+exports.group_detail = function(req, res, next) {
+	async.parallel(
+		{
+			item_group: function(callback) {
+				Item_group.findById(req.params.id).exec(callback);
+			},
+
+			group_items: function(callback) {
+				Item.find({ item_groups: req.params.id }).exec(callback);
+			}
+		},
+		function(err, results) {
+			if (err) {
+				return next(err);
+			}
+			if (results.item_group == null) {
+				// No results.
+				var err = new Error("item_group not found");
+				err.status = 404;
+				return next(err);
+			}
+			// Successful, so render
+			res.render("group_detail", {
+				title: "Item Group Detail",
+				item_group: results.item_group,
+				group_items: results.group_items
+			});
+		}
+	);
+};
+
+
+// Display list of all item_groups.
+exports.group_list = function(req, res) {
+	Item_group.find({}, "name description").exec(function(err, group_list) {
+		if (err) return next(err);
+
+		res.render("group_list", {
+			title: "Group List",
+			group_list: group_list
+		});
+	});
+};
