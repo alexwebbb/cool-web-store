@@ -11,9 +11,6 @@ const express = require("express"),
 // POST request for creating item.
 router.post("/item/:id/add", order_controller.item_add_post);
 
-// POST request to remove an item from the shopping cart
-router.post("/item/:id/remove", order_controller.item_remove_post);
-
 
 /// ORDER CREATION AND MODIFICATION ROUTES ///
 

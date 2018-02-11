@@ -29,13 +29,6 @@ exports.item_add_post = function(req, res) {
     // adds an item to the user object cart
 };
 
-// removes item in question to the user cart
-exports.item_remove_post = function(req, res) {
-    res.send("NOT IMPLEMENTED: Item remove POST");
-    // this is called from the item page as a button
-    // removes an item in question from the user object cart
-};
-
 /// ORDER CREATION AND MODIFICATION ROUTES ///
 
 // Display order create form on GET.
@@ -83,14 +76,29 @@ exports.order_update_get = function(req, res) {
                     user_cart: user.current_cart
                 });
             });
-    } 
+    }
 
     // changing the contents of the cart. doesn't modify orders, just the cart
 };
 
 // Handle order update on POST.
 exports.order_update_post = function(req, res) {
-    res.send(req.body);
+    // res.send(req.body);
+    if (req.user) {
+
+        let user = req.user;
+        user.current_cart = user.current_cart.filter(x =>
+            !req.body.shopping_cart.includes(x.item)
+        );
+
+        User.findByIdAndUpdate(user._id, user, {}, function(err, _user) {
+            if (err) {
+                return next(err);
+            }
+            // Successful - redirect to book detail page.
+            res.redirect("/store/cart");
+        });
+    }
 
     // post for changing the cart
 };
