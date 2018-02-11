@@ -121,10 +121,10 @@ exports.item_delete_get = function(req, res, next) {
 				Item.findById(req.params.id).exec(callback);
 			},
 			orders: function(callback) {
-				Order.findOne({ "cart.item_id": req.params.id }).exec(callback);
+				Order.findOne({ "cart.item": req.params.id }).exec(callback);
 			},
 			sessions: function(callback) {
-				Session.findOne({ "views.item_id": req.params.id }).exec(
+				Session.findOne({ "views.item": req.params.id }).exec(
 					callback
 				);
 			}
@@ -154,10 +154,10 @@ exports.item_delete_post = function(req, res, next) {
 				Item.findById(req.body.id).exec(callback);
 			},
 			orders: function(callback) {
-				Order.findOne({ "cart.item_id": req.body.id }).exec(callback);
+				Order.findOne({ "cart.item": req.body.id }).exec(callback);
 			},
 			sessions: function(callback) {
-				Session.findOne({ "views.item_id": req.body.id }).exec(
+				Session.findOne({ "views.item": req.body.id }).exec(
 					callback
 				);
 			}

@@ -3,10 +3,10 @@
 const mongoose = require("mongoose"),
 	Schema = mongoose.Schema,
 	SessionSchema = new Schema({
-		user_id: { type: Schema.Types.ObjectId, ref: "User", required: true },
+		user: { type: Schema.Types.ObjectId, ref: "User", required: true },
 		views: [
 			{
-				item_id: {
+				item: {
 					type: Schema.Types.ObjectId,
 					ref: "Item",
 					required: true

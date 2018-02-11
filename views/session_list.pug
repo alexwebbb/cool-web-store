@@ -1,0 +1,13 @@
+extends layout
+
+block main
+  h1= title
+
+  ul
+  each session in session_list
+    li
+      a(href=session.url) #{session.name}
+      |   - $#{session.price}.00
+
+  else
+    li There are no sessions.

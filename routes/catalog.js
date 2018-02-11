@@ -5,7 +5,8 @@ const express = require("express"),
 	// Require controller modules.
 	item_controller = require("../controllers/itemController"),
 	item_group_controller = require("../controllers/itemGroupController"),
-	coupon_controller = require("../controllers/couponController");
+	coupon_controller = require("../controllers/couponController"),
+	session_controller = require("../controllers/sessionController");
 
 /// item ROUTES ///
 
@@ -64,7 +65,7 @@ router.get("/groups", item_group_controller.group_list);
 
 /// COUPON ROUTES ///
 
-// GET request for creating a group. NOTE This must come before route that displays group (uses id).
+// GET request for creating a coupon. NOTE This must come before route that displays group (uses id).
 router.get("/coupon/create", coupon_controller.coupon_create_get);
 
 //POST request for creating coupon.
@@ -87,5 +88,14 @@ router.get("/coupon/:id", coupon_controller.coupon_detail);
 
 // GET request for list of all coupon.
 router.get("/coupons", coupon_controller.coupon_list);
+
+
+/// SESSION ROUTES ///
+
+// GET request for one session.
+router.get("/session/:id", session_controller.session_detail);
+
+// GET request for list of all session.
+router.get("/sessions", session_controller.session_list);
 
 module.exports = router;

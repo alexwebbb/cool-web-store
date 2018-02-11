@@ -106,7 +106,7 @@ UserSchema.virtual("current_view")
 					console.log("timeout");
 					// timeout, save session and start new one
 					const session = new Session({
-						user_id: this._id,
+						user: this._id,
 						views: this.current_session
 					});
 
