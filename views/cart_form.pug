@@ -5,20 +5,19 @@ block main
 
   form(method='POST' action='')
     ul
-    each item in user_cart
+    each element in user_cart
       li
-        a(href=item.url) #{item.name}
-        |   - $#{item.price}.00
-
+        label(for=element.item._id)
+          a(href=element.item.url) #{element.item.name}
+          |   - $#{element.item.price}
+        |  
         input.checkbox-input(
               type='checkbox'
               name='shopping_cart'
-              id=item._id
-              value=item._id
+              id=element.item._id
+              value=element.item._id
               checked=false
               )
-            label(for=item._id) #{item.name}
-  
     else
       li There are no items.
-    button.btn.btn-primary(type='submit') Submit
+    button.btn.btn-primary(type='submit') Update

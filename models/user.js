@@ -4,7 +4,7 @@ const mongoose = require("mongoose"),
 	salt = require("password-hash-and-salt"),
 	moment = require("moment"),
 	Schema = mongoose.Schema,
-	Session = require('../models/session'),
+	Session = require("../models/session"),
 	UserSchema = new Schema({
 		username: {
 			type: String,
@@ -31,17 +31,17 @@ const mongoose = require("mongoose"),
 		],
 		current_cart: [
 			{
-				item_id: {
+				item: {
 					type: Schema.Types.ObjectId,
 					ref: "Item",
 					required: true
 				},
-				quantity: { type: Number, required: true, min: 1 }
+				quantity: { type: Number, required: true, min: 1, default: 1 }
 			}
 		],
 		current_session: [
 			{
-				item_id: {
+				item: {
 					type: Schema.Types.ObjectId,
 					ref: "Item",
 					required: true
@@ -97,7 +97,6 @@ UserSchema.virtual("current_view")
 	.set(function(v) {
 		if (mongoose.Types.ObjectId.isValid(v)) {
 			console.log("session length: " + this.current_session.length);
-			console.log(this.current_session[0].time);
 			if (this.current_session.length > 0) {
 				if (
 					moment(this.current_session[0].time)
@@ -112,24 +111,21 @@ UserSchema.virtual("current_view")
 					});
 
 					session.save().then(function(res) {
-						console.log("inside the save attempt.. here is this " + this);
+						console.log("saved");
 					});
 
-					this.current_session = [{ item_id: v }];
+					this.current_session = [{ item: v }];
 				} else {
-
 					console.log("add view");
 
 					// set new current view
-					this.current_session.unshift({ item_id: v });
+					this.current_session.unshift({ item: v });
 				}
 			} else {
-
 				console.log("set initial");
 
 				// set initial item
-				this.current_session.unshift({ item_id: v });
-
+				this.current_session.unshift({ item: v });
 
 				console.log("after the push" + this.current_session);
 			}
@@ -139,5 +135,16 @@ UserSchema.virtual("current_view")
 			);
 		}
 	});
+
+UserSchema.methods.add_to_cart = function(id) {
+	if (!this.current_cart.includes({ item: id })) {
+		this.current_cart.push({ item: id });
+		console.log("success");
+	} else {
+		this.current_cart.find(e => {
+			e.item === id;
+		}).quantity++;
+	}
+};
 
 module.exports = mongoose.model("User", UserSchema);

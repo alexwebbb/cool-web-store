@@ -331,7 +331,7 @@ exports.item_detail = function(req, res, next) {
 			User.findById(req.user._id).exec(function(err, user) {
 				user.current_view = req.params.id;
 				user.save().then(function(res) {
-					console.log("saved probably");
+					console.log("session updated");
 				});
 			});
 		}
