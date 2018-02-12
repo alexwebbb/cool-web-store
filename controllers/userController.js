@@ -1,6 +1,7 @@
 const User = require("../models/user"),
 	Order = require("../models/order"),
 	salt = require("password-hash-and-salt"),
+	{ rootCredentials: root } = require("../config/keys"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter"),
 	validateAndSanitizeFields = [
@@ -66,9 +67,46 @@ const User = require("../models/user"),
 			.escape()
 	];
 
+exports.start = function(req, res, next) {
+	User.findOne({}).exec(function(err, users) {
+		if (users) {
+			res.redirect("/");
+		} else {
+			salt(root.password).hash(function(err, hash) {
+				// Create a user object with escaped and trimmed data.
+				const user = new User({
+					username: root.user,
+					hashedPassword: hash,
+					email: "admin@null.com",
+					names: {
+						first_name: "admin",
+						last_name: "account"
+					},
+					user_group: "admin"
+				});
+
+				user.save(function(err) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to login screen
+					res.redirect("/login");
+				});
+			});
+		}
+	});
+};
+
 // Display User create form on GET.
 exports.user_create_get = function(req, res, next) {
-	res.render("user_form", { title: "Create User" });
+	if (req.user.user_group === "admin") {
+		res.render("user_form", {
+			title: "Create User",
+			user: { group: "admin" }
+		});
+	} else {
+		res.render("user_form", { title: "Create User" });
+	}
 };
 
 // Display user create form on post.
@@ -77,39 +115,47 @@ exports.user_create_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
-		// Extract the validation errors from a request.
-		const errors = validationResult(req);
+		if (
+			req.user._id.toString() === req.params.id ||
+			req.user.user_group === "admin"
+		) {
+			// Extract the validation errors from a request.
+			const errors = validationResult(req);
 
-		if (!errors.isEmpty()) {
-			// There are errors. Render form again with sanitized values/errors messages.
-			res.render("user_form", {
-				title: "Create User",
-				user: req.body,
-				errors: errors.array()
-			});
-			return;
+			if (!errors.isEmpty()) {
+				// There are errors. Render form again with sanitized values/errors messages.
+				res.render("user_form", {
+					title: "Create User",
+					user: req.body,
+					errors: errors.array()
+				});
+				return;
+			} else {
+				salt(req.body.password).hash(function(err, hash) {
+					// Create a user object with escaped and trimmed data.
+					const user = new User({
+						username: req.body.username,
+						hashedPassword: hash,
+						email: req.body.email,
+						names: {
+							first_name: req.body.first_name,
+							middle_name: req.body.middle_name,
+							last_name: req.body.last_name
+						},
+						user_group: (req.body.admin ? "admin" : "user")
+					});
+
+					user.save(function(err) {
+						if (err) {
+							return next(err);
+						}
+						// Successful - redirect to new user record.
+						res.redirect(user.url);
+					});
+				});
+			}
 		} else {
-			salt(req.body.password).hash(function(err, hash) {
-				// Create a user object with escaped and trimmed data.
-				const user = new User({
-					username: req.body.username,
-					hashedPassword: hash,
-					email: req.body.email,
-					names: {
-						first_name: req.body.first_name,
-						middle_name: req.body.middle_name,
-						last_name: req.body.last_name
-					}
-				});
-
-				user.save(function(err) {
-					if (err) {
-						return next(err);
-					}
-					// Successful - redirect to new user record.
-					res.redirect(user.url);
-				});
-			});
+			res.redirect("/login");
 		}
 	}
 ];
@@ -195,10 +241,9 @@ exports.user_delete_post = function(req, res) {
 							return next(err);
 						}
 
-						if(req.user.user_group === "admin"){
-
-						// Success - go to user list
-						res.redirect("/users");
+						if (req.user.user_group === "admin") {
+							// Success - go to user list
+							res.redirect("/users");
 						} else {
 							// User Has deleted themself, log them out
 							req.logout();

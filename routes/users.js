@@ -5,6 +5,9 @@ const express = require("express"),
 	user_controller = require("../controllers/userController"),
 	{ ensureLoggedIn } = require("connect-ensure-login");
 
+// Special route for creating root user. Only works when database is empty, requires query string
+router.get("/start/", user_controller.start);
+
 // GET request for creating a user. NOTE This must come before routes that display user (uses id).
 router.get("/user/create", user_controller.user_create_get);
 

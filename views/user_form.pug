@@ -53,6 +53,17 @@ block main
         required='true' 
         value=(undefined===user ? '' : user.last_name)
         )
+      if (user.group==="admin")
+        div(style='display: inline; padding-right:10px;')
+            input.checkbox-input(
+              type='checkbox'
+              name='admin'
+              id='admin'
+              value="admin"
+              checked=false
+              )
+            |   
+            label(for="admin") Admin
     button.btn.btn-primary(type='submit') Submit
 
 block alert

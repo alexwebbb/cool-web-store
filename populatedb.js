@@ -33,7 +33,6 @@ function couponCreate(name, description, discount, groups, cb) {
     if (err) {
       cb(err, null);
     } else {
-      console.log("New Coupon: " + coupon);
       coupons.push(coupon);
       cb(null, coupon);
     }
