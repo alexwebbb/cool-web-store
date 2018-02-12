@@ -1,5 +1,9 @@
 "use strict";
 
+const stripeTokenHandler = function(token) {
+  console.log(token);
+}
+
 // Create a Stripe client
 const stripe = Stripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
 

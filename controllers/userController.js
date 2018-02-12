@@ -116,110 +116,193 @@ exports.user_create_post = [
 
 // Handle user delete on POST.
 exports.user_delete_get = function(req, res) {
-	async.parallel(
-		{
-			user: function(callback) {
-				User.findById(req.params.id).exec(callback);
+	if (
+		req.user._id.toString() === req.params.id ||
+		req.user.user_group === "admin"
+	) {
+		async.parallel(
+			{
+				user: function(callback) {
+					User.findById(req.params.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.findOne({ user: req.params.id }).exec(callback);
+				},
+				sessions: function(callback) {
+					Session.findOne({ user: req.params.id }).exec(callback);
+				}
 			},
-			orders: function(callback) {
-				Order.findOne({ user: req.params.id }).exec(callback);
-			},
-			sessions: function(callback) {
-				Session.findOne({ user: req.params.id }).exec(callback);
+			function(err, results) {
+				if (err) return next(err);
+				if (results.user === null) {
+					const err = new Error("Item not found");
+					err.status = 404;
+					return next(err);
+				}
+				res.render("user_delete", {
+					title: "User Delete",
+					sessions: results.sessions,
+					orders: results.orders,
+					user: results.user
+				});
 			}
-		},
-		function(err, results) {
-			if (err) return next(err);
-			if (results.user === null) {
-				const err = new Error("Item not found");
-				err.status = 404;
-				return next(err);
-			}
-			res.render("user_delete", {
-				title: "User Delete",
-				sessions: results.sessions,
-				orders: results.orders,
-				user: results.user
-			});
-		}
-	);
+		);
+	} else {
+		res.redirect("/login");
+	}
 };
 
 // Handle user delete on POST.
 exports.user_delete_post = function(req, res) {
-	async.parallel(
-		{
-			user: function(callback) {
-				User.findById(req.params.id).exec(callback);
+	if (
+		req.user._id.toString() === req.params.id ||
+		req.user.user_group === "admin"
+	) {
+		async.parallel(
+			{
+				user: function(callback) {
+					User.findById(req.params.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.findOne({ user: req.params.id }).exec(callback);
+				},
+				sessions: function(callback) {
+					Session.findOne({ user: req.params.id }).exec(callback);
+				}
 			},
-			orders: function(callback) {
-				Order.findOne({ user: req.params.id }).exec(callback);
-			},
-			sessions: function(callback) {
-				Session.findOne({ user: req.params.id }).exec(callback);
+			function(err, results) {
+				if (err) {
+					return next(err);
+				}
+				// Success
+				if (results.orders || results.sessions) {
+					// in order to prevent corrupting orders or sessions, items in use are protected
+					res.render("error", {
+						message: "Delete User Error - User in use",
+						error: {
+							status: `There are ${
+								results.sessions ? "sessions" : ""
+							} ${
+								results.orders ? "and orders" : ""
+							}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
+						}
+					});
+					return;
+				} else {
+					// User is unused. It may be deleted
+					User.findByIdAndRemove(req.body.id, function(err) {
+						if (err) {
+							return next(err);
+						}
+
+						if(req.user.user_group === "admin"){
+
+						// Success - go to user list
+						res.redirect("/users");
+						} else {
+							// User Has deleted themself, log them out
+							req.logout();
+							res.redirect("/");
+						}
+					});
+				}
 			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
-			// Success
-			if (results.orders || results.sessions) {
-				// in order to prevent corrupting orders or sessions, items in use are protected
-				res.render("error", {
-					message: "Delete User Error - User in use",
-					error: {
-						status: `There are ${
-							results.sessions ? "sessions" : ""
-						} ${
-							results.orders ? "and orders" : ""
-						}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
-					}
-				});
-				return;
-			} else {
-				// User is unused. It may be deleted
-				User.findByIdAndRemove(req.body.id, function(err) {
-					if (err) {
-						return next(err);
-					}
-					// Success - go to item list
-					res.redirect("/users");
-				});
-			}
-		}
-	);
+		);
+	} else {
+		res.redirect("/login");
+	}
 };
 
 // Display user update form on GET.
 exports.user_update_get = function(req, res) {
-	User.findById(req.params.id).exec(function(err, user) {
-		if (err) {
-			return next(err);
-		}
-		if (user == null) {
-			// No results.
-			const err = new Error("item not found");
-			err.status = 404;
-			return next(err);
-		}
-		// Success.
-		res.render("user_form", {
-			title: "Update user",
-			user: user
+	if (
+		req.user._id.toString() === req.params.id ||
+		req.user.user_group === "admin"
+	) {
+		User.findById(req.params.id).exec(function(err, user) {
+			if (err) {
+				return next(err);
+			}
+			if (user == null) {
+				// No results.
+				const err = new Error("item not found");
+				err.status = 404;
+				return next(err);
+			}
+			// Success.
+			res.render("user_form", {
+				title: "Update user",
+				user: user
+			});
 		});
-	});
+	} else {
+		res.redirect("/login");
+	}
 };
 
 // Handle user update on POST.
-exports.user_update_post = function(req, res) {
-	res.send("NOT IMPLEMENTED: user update POST");
-};
+exports.user_update_post = [
+	...validateAndSanitizeFields,
+	(req, res, next) => {
+		if (
+			req.user._id.toString() === req.params.id ||
+			req.user.user_group === "admin"
+		) {
+			const errors = validationResult(req),
+				user = new User({
+					username: req.body.username,
+					hashedPassword: hash,
+					email: req.body.email,
+					names: {
+						first_name: req.body.first_name,
+						middle_name: req.body.middle_name,
+						last_name: req.body.last_name
+					}
+				});
+
+			if (!errors.isEmpty()) {
+				// There are errors. Render form again with sanitized values/errors messages.
+
+				// retrieve existing data since form data was invalid
+				User.findById(req.params.id).exec(function(err, user) {
+					if (err) {
+						return next(err);
+					}
+
+					res.render("user_form", {
+						title: "Update Item",
+						user: user,
+						errors: errors.array()
+					});
+				});
+
+				return;
+			} else {
+				// Data from form is valid. Update the record.
+				User.findByIdAndUpdate(req.params.id, user, {}, function(
+					err,
+					_user
+				) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to book detail page.
+					res.redirect(_user.url);
+				});
+			}
+		} else {
+			res.redirect("/login");
+		}
+	}
+];
 
 // Display detail page for a specific user.
 exports.user_detail = function(req, res) {
-	User.findById(req.params.id)
-		.exec(function(err, user_detail) {
+	if (
+		req.user._id.toString() === req.params.id ||
+		req.user.user_group === "admin"
+	) {
+		User.findById(req.params.id).exec(function(err, user_detail) {
 			if (err) return next(err);
 			if (user_detail == null) {
 				// No results.
@@ -233,18 +316,25 @@ exports.user_detail = function(req, res) {
 				user_detail: user_detail
 			});
 		});
+	} else {
+		res.redirect("/login");
+	}
 };
 
 // Display list of all users.
 exports.user_list = function(req, res) {
-	User.find().exec(function(err, user_list) {
-		if (err) {
-			return next(err);
-		}
-		//Successful, so render
-		res.render("user_list", {
-			title: "User List",
-			user_list: user_list
+	if (req.user.user_group === "admin") {
+		User.find().exec(function(err, user_list) {
+			if (err) {
+				return next(err);
+			}
+			//Successful, so render
+			res.render("user_list", {
+				title: "User List",
+				user_list: user_list
+			});
 		});
-	});
+	} else {
+		res.redirect("/login");
+	}
 };
