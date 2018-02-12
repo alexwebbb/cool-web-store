@@ -67,6 +67,7 @@ const User = require("../models/user"),
 			.escape()
 	];
 
+// special function to run to create the root user
 exports.start = function(req, res, next) {
 	User.findOne({}).exec(function(err, users) {
 		if (users) {

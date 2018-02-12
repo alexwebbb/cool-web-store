@@ -15,16 +15,10 @@ router.post("/item/:id/add", order_controller.item_add_post);
 /// ORDER CREATION AND MODIFICATION ROUTES ///
 
 // GET request for creating a order.
-router.get("/cart/checkout", ensureLoggedIn(), order_controller.order_create_get);
+router.get("/checkout", ensureLoggedIn(), order_controller.order_create_get);
 
 // POST request for creating order.
-router.post("/cart/checkout", ensureLoggedIn(), order_controller.order_create_post);
-
-// GET request to clear cart.
-router.get("/cart/empty", ensureLoggedIn(), order_controller.order_delete_get);
-
-// POST request to clear cart.
-router.post("/cart/empty", ensureLoggedIn(), order_controller.order_delete_post);
+router.post("/charge", ensureLoggedIn(), order_controller.order_create_post);
 
 // GET request to update order.
 router.get("/cart", ensureLoggedIn(), order_controller.order_update_get);

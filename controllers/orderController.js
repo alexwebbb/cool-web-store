@@ -14,13 +14,12 @@ exports.item_add_post = function(req, res) {
             return next(err);
         }
         // User object is en
-            User.findById(req.user._id).exec(function(err, user) {
-                user.add_to_cart(item._id);
-                user.save().then(function(res) {
-                    console.log("item added to cart");
-                });
+        User.findById(req.user._id).exec(function(err, user) {
+            user.add_to_cart(item._id);
+            user.save().then(function(res) {
+                console.log("item added to cart");
             });
-
+        });
 
         res.redirect(item.url);
     });
@@ -34,9 +33,9 @@ exports.item_add_post = function(req, res) {
 // Display order create form on GET.
 exports.order_create_get = function(req, res) {
     res.render("checkout_form", {
-                    title: "Checkout",
-                    user_cart: user.current_cart
-                });
+        title: "Checkout",
+        user_cart: req.user.current_cart
+    });
 
     // this is the shopping cart
     // this checks the user object and then returns the list of items
@@ -46,25 +45,25 @@ exports.order_create_get = function(req, res) {
 
 // Handle order create on POST.
 exports.order_create_post = function(req, res) {
-    res.send("NOT IMPLEMENTED: Order create POST");
+    res.redirect("/");
 
+    // order = new Order({
+    //     name: req.body.item_name,
+    //     description: req.body.description,
+    //     price: req.body.price,
+    //     item_groups: req.body.item_groups
+    // });
+
+    // order.save(function(err) {
+    //     if (err) {
+    //         return next(err);
+    //     }
+    //     // Successful - redirect to new item record.
+    //     res.redirect(order.url);
+    // });
     // this accepts the incoming post request which will create our order
     // take the token, submit it to stripe, if it passes, save the order
     // otherwise reload the page
-};
-
-// Display item delete form on GET.
-exports.order_delete_get = function(req, res, next) {
-    res.send("NOT IMPLEMENTED: Order delete GET");
-
-    // this is for emptying the cart
-};
-
-// Handle order delete on POST.
-exports.order_delete_post = function(req, res) {
-    res.send("NOT IMPLEMENTED: Order delete POST");
-
-    // empty the user cart
 };
 
 // Display order update form on GET. maps to /cart
@@ -88,10 +87,9 @@ exports.order_update_get = function(req, res) {
 exports.order_update_post = function(req, res) {
     // res.send(req.body);
     if (req.user) {
-
         let user = req.user;
-        user.current_cart = user.current_cart.filter(x =>
-            !req.body.shopping_cart.includes(x.item)
+        user.current_cart = user.current_cart.filter(
+            x => !req.body.shopping_cart.includes(x.item)
         );
 
         User.findByIdAndUpdate(user._id, user, {}, function(err, _user) {

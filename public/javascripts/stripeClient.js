@@ -1,8 +1,11 @@
 "use strict";
 
 const stripeTokenHandler = function(token) {
-  console.log(token);
-}
+  $.post("charge", token).done(function(data) {
+    console.log(data);
+    $( "html" ).html( data );
+  });
+};
 
 // Create a Stripe client
 const stripe = Stripe("pk_test_6pRNASCoBOKtIshFeQd4XMUh");
