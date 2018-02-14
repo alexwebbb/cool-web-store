@@ -1,12 +1,13 @@
 extends layout
 
 block main
-  form#payment-form(action='/charge', method='post')
-    .form-row
-      label(for='card-element')
-        | Credit or debit card
-      #card-element
-        // a Stripe Element will be inserted here.
-      // Used to display Element errors
-      #card-errors(role='alert')
-    button Submit Payment
+  form(action="/store/charge", method="post")
+      article
+        label Amount: $5.00
+      script(
+        src="//checkout.stripe.com/v2/checkout.js",
+        class="stripe-button",
+        data-key=keyPublishable,
+        data-locale="auto",
+        data-description="Sample Charge",
+        data-amount="500")

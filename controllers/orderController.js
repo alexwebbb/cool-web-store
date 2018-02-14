@@ -1,6 +1,9 @@
 const Order = require("../models/order"),
     Item = require("../models/item"),
-    User = require("../models/user");
+    User = require("../models/user"),
+    keys = require("../config/keys"),
+    // Initialize stripe
+    stripe = require("stripe")(keys.stripeSecret);
 
 /// SHOPPING CART MODIFICATION ROUTES ///
 
@@ -34,7 +37,8 @@ exports.item_add_post = function(req, res) {
 exports.order_create_get = function(req, res) {
     res.render("checkout_form", {
         title: "Checkout",
-        user_cart: req.user.current_cart
+        user_cart: req.user.current_cart,
+        keyPublishable: keys.stripePublishable
     });
 
     // this is the shopping cart
@@ -45,7 +49,25 @@ exports.order_create_get = function(req, res) {
 
 // Handle order create on POST.
 exports.order_create_post = function(req, res) {
-    res.redirect("/");
+
+    let amount = 500;
+
+    stripe.customers
+        .create({
+            email: req.body.stripeEmail,
+            source: req.body.stripeToken
+        })
+        .then(customer =>
+            stripe.charges.create({
+                amount,
+                description: "Sample Charge",
+                currency: "usd",
+                customer: customer.id
+            })
+        )
+        .then(charge => res.render("charge_result.pug"));
+
+
 
     // order = new Order({
     //     name: req.body.item_name,
@@ -64,6 +86,7 @@ exports.order_create_post = function(req, res) {
     // this accepts the incoming post request which will create our order
     // take the token, submit it to stripe, if it passes, save the order
     // otherwise reload the page
+    
 };
 
 // Display order update form on GET. maps to /cart
