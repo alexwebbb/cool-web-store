@@ -1,6 +1,14 @@
 extends layout
 
 block main
+  h1= title
+
+  ul
+  each element in user_cart
+    li
+      a(href=element.item.url) #{element.item.name}
+  else
+    li There are no items.
   form(action="/store/charge", method="post")
       article
         label Amount: $5.00

@@ -2,6 +2,7 @@ const Order = require("../models/order"),
     Item = require("../models/item"),
     User = require("../models/user"),
     keys = require("../config/keys"),
+    async = require("async"),
     // Initialize stripe
     stripe = require("stripe")(keys.stripeSecret);
 
@@ -35,11 +36,31 @@ exports.item_add_post = function(req, res) {
 
 // Display order create form on GET.
 exports.order_create_get = function(req, res) {
-    res.render("checkout_form", {
-        title: "Checkout",
-        user_cart: req.user.current_cart,
-        keyPublishable: keys.stripePublishable
-    });
+    async.parallel(
+        {
+            user: function(callback) {
+                User.findById(req.user._id)
+                    .populate("current_cart.item")
+                    .exec(callback);
+            }
+        },
+        function(err, results) {
+            if (err) return next(err);
+            if (results.item === null) {
+                const err = new Error("Item not found");
+                err.status = 404;
+                return next(err);
+            }
+
+            console.log(results.user.current_cart[0].item.name);
+
+            res.render("checkout_form", {
+                title: "Checkout",
+                user_cart: results.user.current_cart,
+                keyPublishable: keys.stripePublishable
+            });
+        }
+    );
 
     // this is the shopping cart
     // this checks the user object and then returns the list of items
@@ -49,8 +70,9 @@ exports.order_create_get = function(req, res) {
 
 // Handle order create on POST.
 exports.order_create_post = function(req, res) {
-
     let amount = 500;
+
+    console.log(stripe.customers);
 
     stripe.customers
         .create({
@@ -66,8 +88,6 @@ exports.order_create_post = function(req, res) {
             })
         )
         .then(charge => res.render("charge_result.pug"));
-
-
 
     // order = new Order({
     //     name: req.body.item_name,
@@ -86,7 +106,6 @@ exports.order_create_post = function(req, res) {
     // this accepts the incoming post request which will create our order
     // take the token, submit it to stripe, if it passes, save the order
     // otherwise reload the page
-    
 };
 
 // Display order update form on GET. maps to /cart
