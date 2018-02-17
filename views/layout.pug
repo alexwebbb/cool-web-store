@@ -4,6 +4,7 @@ html(lang='en')
     meta(charset='UTF-8')
     title= title
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ', crossorigin='anonymous')
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css')
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     .container
@@ -12,15 +13,15 @@ html(lang='en')
       aside.row(role='alert', aria-live='assertive') Alert
         block alert
       .row.content-row-style
-        aside#js-aside-pre.col-md-1(role='complementary', aria-live='polite')
+        aside#js-aside-pre.css-aside-pre.col-md-1(role='complementary', aria-live='polite')
           block aside-pre
-        main#js-main.main-style.col-md-12(role='main', aria-live='polite')
+        main#js-main.css-main.col-md-12(role='main', aria-live='polite')
           block main
         aside#js-aside-post(role='complementary', aria-live='polite')
           block aside-post
       footer.row.footer-style(role='contentinfo') Footer
-  script(src="http://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  script(src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
+        integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
         crossorigin="anonymous")
   script(src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js', integrity='sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb', crossorigin='anonymous')
   script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js', integrity='sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn', crossorigin='anonymous')

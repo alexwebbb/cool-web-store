@@ -27,7 +27,7 @@ const mongoose = require("mongoose"),
 			required: true
 		},
 		availability: { type: Number, required: true, min: -1, default: 0 },
-		active: { type: Boolean, required: true, default: false },
+		active: { type: Boolean, required: true, default: true },
 		item_groups: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }]
 	});
 

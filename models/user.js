@@ -96,38 +96,28 @@ UserSchema.virtual("current_view")
 	})
 	.set(function(v) {
 		if (mongoose.Types.ObjectId.isValid(v)) {
-			console.log("session length: " + this.current_session.length);
 			if (this.current_session.length > 0) {
 				if (
 					moment(this.current_session[0].time)
 						.add(15, "minutes")
 						.isBefore(Date.now())
 				) {
-					console.log("timeout");
 					// timeout, save session and start new one
 					const session = new Session({
 						user: this._id,
 						views: this.current_session
 					});
 
-					session.save().then(function(res) {
-						console.log("saved");
-					});
+					session.save();
 
 					this.current_session = [{ item: v }];
 				} else {
-					console.log("add view");
-
 					// set new current view
 					this.current_session.unshift({ item: v });
 				}
 			} else {
-				console.log("set initial");
-
 				// set initial item
 				this.current_session.unshift({ item: v });
-
-				console.log("after the push" + this.current_session);
 			}
 		} else {
 			return new Error(
@@ -137,12 +127,15 @@ UserSchema.virtual("current_view")
 	});
 
 UserSchema.methods.add_to_cart = function(id) {
-	if (!this.current_cart.includes({ item: id })) {
+	console.log(
+		this.current_cart.some(e => e.item.equals(id))
+	);
+	if (!this.current_cart.some(e => e.item.equals(id))) {
 		this.current_cart.push({ item: id });
-		console.log("success");
 	} else {
-		this.current_cart.find(e => {
-			e.item === id;
+		let result = this.current_cart.find(e => {
+			console.log("now its working: " + e.item.equals(id));
+			return e.item.equals(id);
 		}).quantity++;
 	}
 };

@@ -39,23 +39,28 @@ exports.order_create_get = function(req, res) {
     async.parallel(
         {
             user: function(callback) {
-                User.findById(req.user._id)
+                User.findById(req.user._id, "current_cart")
                     .populate("current_cart.item")
                     .exec(callback);
             }
         },
         function(err, results) {
             if (err) return next(err);
-            if (results.item === null) {
-                const err = new Error("Item not found");
+            if (results.user === null) {
+                const err = new Error("User not found");
                 err.status = 404;
                 return next(err);
             }
+
+            const total = results.user.current_cart.reduce((a, c) => {
+                return a + c.quantity * c.item.price;
+            });
 
             console.log(results.user.current_cart[0].item.name);
 
             res.render("checkout_form", {
                 title: "Checkout",
+                cart_total: total,
                 user_cart: results.user.current_cart,
                 keyPublishable: keys.stripePublishable
             });
@@ -114,7 +119,6 @@ exports.order_update_get = function(req, res) {
         User.findById(req.user._id)
             .populate("current_cart.item")
             .exec(function(err, user) {
-                console.log(user.current_cart);
                 res.render("cart_form", {
                     title: "Cart",
                     user_cart: user.current_cart
@@ -129,10 +133,19 @@ exports.order_update_get = function(req, res) {
 exports.order_update_post = function(req, res) {
     // res.send(req.body);
     if (req.user) {
-        let user = req.user;
-        user.current_cart = user.current_cart.filter(
-            x => !req.body.shopping_cart.includes(x.item)
-        );
+        let user = req.user,
+            cart = req.user.current_cart;
+
+        cart = cart.map((e, i) => {
+            if (req.body.quantity[i] > 0) {
+                return req.body.quantity[i];
+            }
+        });
+
+        if (req.body.cart) {
+            cart = cart.filter(x => !req.body.cart.includes(x.item));
+            user.current_cart = cart;
+        }
 
         User.findByIdAndUpdate(user._id, user, {}, function(err, _user) {
             if (err) {
