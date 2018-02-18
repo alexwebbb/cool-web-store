@@ -11,11 +11,12 @@ block main
     li There are no items.
   form(action="/store/charge", method="post")
       article
-        label Amount: $5.00
+        label Amount: $#{cart_total}
       script(
         src="//checkout.stripe.com/v2/checkout.js",
         class="stripe-button",
         data-key=keyPublishable,
         data-locale="auto",
         data-description="Sample Charge",
-        data-amount="500")
+        data-amount="500"
+        )

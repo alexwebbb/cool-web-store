@@ -122,11 +122,6 @@ exports.item_delete_get = function(req, res, next) {
 			},
 			orders: function(callback) {
 				Order.findOne({ "cart.item": req.params.id }).exec(callback);
-			},
-			sessions: function(callback) {
-				Session.findOne({ "views.item": req.params.id }).exec(
-					callback
-				);
 			}
 		},
 		function(err, results) {
@@ -138,7 +133,6 @@ exports.item_delete_get = function(req, res, next) {
 			}
 			res.render("item_delete", {
 				title: "Item Delete",
-				sessions: results.sessions,
 				orders: results.orders,
 				item: results.item
 			});
@@ -155,11 +149,6 @@ exports.item_delete_post = function(req, res, next) {
 			},
 			orders: function(callback) {
 				Order.findOne({ "cart.item": req.body.id }).exec(callback);
-			},
-			sessions: function(callback) {
-				Session.findOne({ "views.item": req.body.id }).exec(
-					callback
-				);
 			}
 		},
 		function(err, results) {
@@ -167,7 +156,7 @@ exports.item_delete_post = function(req, res, next) {
 				return next(err);
 			}
 			// Success
-			if (results.orders || results.sessions) {
+			if (results.orders) {
 				// in order to prevent corrupting orders or sessions, items in use are protected
 				res.render("error", {
 					message: "Delete Item Error - Item in use",

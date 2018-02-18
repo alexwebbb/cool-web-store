@@ -54,7 +54,7 @@ exports.order_create_get = function(req, res) {
 
             const total = results.user.current_cart.reduce((a, c) => {
                 return a + c.quantity * c.item.price;
-            });
+            }, 0);
 
             console.log(results.user.current_cart[0].item.name);
 
@@ -119,8 +119,13 @@ exports.order_update_get = function(req, res) {
         User.findById(req.user._id)
             .populate("current_cart.item")
             .exec(function(err, user) {
+                const total = user.current_cart.reduce((a, c) => {
+                    return a + c.quantity * c.item.price;
+                }, 0);
+
                 res.render("cart_form", {
                     title: "Cart",
+                    cart_total: total,
                     user_cart: user.current_cart
                 });
             });
@@ -136,16 +141,18 @@ exports.order_update_post = function(req, res) {
         let user = req.user,
             cart = req.user.current_cart;
 
-        cart = cart.map((e, i) => {
-            if (req.body.quantity[i] > 0) {
-                return req.body.quantity[i];
+        cart.forEach((e, i) => {
+            const q = parseInt(req.body.quantity[i]);
+            if (q > 0) {
+                e.quantity = q;
             }
         });
 
         if (req.body.cart) {
             cart = cart.filter(x => !req.body.cart.includes(x.item));
-            user.current_cart = cart;
         }
+
+        user.current_cart = cart;
 
         User.findByIdAndUpdate(user._id, user, {}, function(err, _user) {
             if (err) {

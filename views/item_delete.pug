@@ -4,9 +4,9 @@ block main
   h1 #{title}: #{item.name}
   p= item.description
   
-  if orders || sessions
+  if orders
   
-    p #[strong There are #{results.sessions ? "sessions" : ""} #{results.orders ? "and orders" : ""}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.]
+    p #[strong There are #{results.orders ? "orders" : ""}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.]
 
   else
     p Do you really want to delete this item?
