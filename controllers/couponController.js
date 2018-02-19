@@ -184,7 +184,7 @@ exports.coupon_update_get = function(req, res, next) {
 		{
 			coupon: function(callback) {
 				Coupon.findById(req.params.id)
-					.populate("item_groups")
+					.populate("valid_item_groups")
 					.exec(callback);
 			},
 			groups: function(callback) {
@@ -210,12 +210,12 @@ exports.coupon_update_get = function(req, res, next) {
 			) {
 				for (
 					let coupon_g_iter = 0;
-					coupon_g_iter < results.coupon.item_groups.length;
+					coupon_g_iter < results.coupon.valid_item_groups.length;
 					coupon_g_iter++
 				) {
 					if (
 						results.groups[all_g_iter]._id.toString() ==
-						results.coupon.item_groups[coupon_g_iter]._id.toString()
+						results.coupon.valid_item_groups[coupon_g_iter]._id.toString()
 					) {
 						results.groups[all_g_iter].checked = "true";
 					}
@@ -243,7 +243,7 @@ exports.coupon_update_post = [
 				description: req.body.description,
 				discount_percent: req.body.discount_percent,
 				expiration_date: req.body.expiration_date,
-				item_groups: req.body.item_groups,
+				valid_item_groups: req.body.item_groups,
 				_id: req.params.id
 			});
 
@@ -324,7 +324,7 @@ exports.coupon_detail = function(req, res) {
 
 // Display list of all coupon.
 exports.coupon_list = function(req, res) {
-	Coupon.find({}, "name description discount_percent valid_item_groups")
+	Coupon.find({}, "name description discount_percent valid_item_groups valid_range")
 		.populate("valid_item_groups")
 		.exec(function(err, coupon_list) {
 			if (err) return next(err);

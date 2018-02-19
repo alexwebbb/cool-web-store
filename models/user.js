@@ -13,12 +13,11 @@ const mongoose = require("mongoose"),
 			max: 24,
 			lowercase: true
 		},
-		// password: { type: String, required: true, min: 7, max: 256 },
 		hashedPassword: { type: String, required: true },
 		email: { type: String, required: true, max: 320 },
 		names: {
 			first_name: { type: String, required: true, max: 24 },
-			middle_name: { type: String, max: 24 },
+			middle_name: { type: String, max: 24, default: "" },
 			last_name: { type: String, required: true, max: 24 }
 		},
 		addresses: [

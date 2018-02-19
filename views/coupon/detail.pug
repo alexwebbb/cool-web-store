@@ -9,10 +9,10 @@ block main
     p #{coupon_detail.description}
     p Discount: #{coupon_detail.discount_percent}%
     p Valid from #{coupon_detail.begin_date_formatted} 
-    if  coupon_detail.end_date_formatted
-      | til #{coupon_detail.end_date_formatted}
+    if  coupon_detail.expiration_date
+      | til #{coupon_detail.expiration_date}
     section
-      h1 Valid Groups
+      h2 Valid Groups
       ul
         each group in coupon_detail.valid_item_groups
           li 

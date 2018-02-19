@@ -30,7 +30,7 @@ block main
         value=(undefined===coupon ? '' : coupon.discount_percent)
         )
     div.form-group
-      label(for='expiration_date') Date of birth:
+      label(for='expiration_date') Expiration Date:
       input#expiration_date.form-control(
         type='date'
         name='expiration_date'
@@ -49,6 +49,7 @@ block main
               )
             label(for=group._id) #{group.name}
     button.btn.btn-primary(type='submit') Submit
+    p #{item_groups}
 
 block alert
   if errors 

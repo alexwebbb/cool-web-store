@@ -30,15 +30,8 @@ CouponSchema.virtual("begin_date_formatted").get(function() {
 	return moment(this.valid_range.begin).format("MMMM Do, YYYY");
 });
 
-CouponSchema.virtual("end_date_formatted").get(function() {
-	if (this.valid_range.end) {
-		return moment(this.valid_range.end).format("MMMM Do, YYYY");
-	} else {
-		return null;
-	}
-});
-
 CouponSchema.virtual("expiration_date").get(function() {
+	console.log(this.valid_range);
 	if (this.valid_range.end) {
 		return moment(this.valid_range.end).format("MMMM Do, YYYY");
 	} else {

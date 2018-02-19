@@ -52,4 +52,18 @@ ItemSchema.virtual("url").get(function() {
 	return "/store/item/" + this._id;
 });
 
+ItemSchema.virtual("formatted_groups").get(function() {
+	console.log(this);
+	if (this.item_groups.length > 1) {
+		const last = this.item_groups.pop();
+		return (
+			this.item_groups.map(e => e.name).join(", ") + " and " + last.name
+		);
+	} else if(this.item_groups.length === 1) {
+		return this.item_groups[0].name;
+	} else {
+		return "";
+	}
+});
+
 module.exports = mongoose.model("Item", ItemSchema);

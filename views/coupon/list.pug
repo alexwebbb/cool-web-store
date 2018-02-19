@@ -3,11 +3,27 @@ extends ../layout
 block main
   h1= title
 
-  ul
-  each coupon in coupon_list
-    li
-      a(href=coupon.url) #{coupon.name}
-      |   - Discount: #{coupon.discount_percent}%
-
-  else
-    li There are no items.
+  .container
+    table#cart.table.table-hover.table-sm
+      thead
+        tr
+          th(style='width:58%') Coupon
+          th(style='width:14%; text-indent:10px') Discount
+          th.text-center(style='width:28%') Expiration Date
+      tbody
+      form(method='POST' action='')
+        each coupon in coupon_list
+          tr
+            td(data-th='Product')
+              a.link-unstyled(href=coupon.url)
+                .row
+                  .col-md-2.hidden-xs-down
+                    img.img-fluid(src='http://placehold.it/100x100', alt='...')
+                  .col-md-10
+                    h4.nomargin #{coupon.name}
+                    p
+                      | #{coupon.description}
+            td.text-center(data-th='Discount') #{coupon.discount_percent}% off
+            td.text-center(data-th='Expiration') #{coupon.expiration_date} 
+        else
+          li There are no coupons.

@@ -5,7 +5,7 @@ html(lang='en')
     title= title
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ', crossorigin='anonymous')
     link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css')
-    //- link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
   body
     .container
       
@@ -17,7 +17,7 @@ html(lang='en')
           aria-expanded='false', 
           aria-label='Toggle navigation')
           span.navbar-toggler-icon
-        a.navbar-brand(href='/') Cool Store
+        a.navbar-brand(href='/') Item Store
         #navbarSupportedContent.collapse.navbar-collapse
           ul.navbar-nav.mr-auto
             li.nav-item.active
@@ -36,6 +36,11 @@ html(lang='en')
             else if current_user
               li.nav-item
                 a.nav-link(href=current_user.url) User
+              li.nav-item
+                a.nav-link(href='/logout') Logout
+            else 
+              li.nav-item
+                a.nav-link(href='/login') Login
           ul.form-inline.my-2.my-lg-0
             a.btn.btn-primary.nav-link(href='/store/cart')
               span.sr-only The
@@ -61,3 +66,4 @@ html(lang='en')
   script(src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js', integrity='sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb', crossorigin='anonymous')
   script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js', integrity='sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn', crossorigin='anonymous')
   script(src='//checkout.stripe.com/v2/checkout.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js')

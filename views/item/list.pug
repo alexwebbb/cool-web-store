@@ -3,11 +3,29 @@ extends ../layout
 block main
   h1= title
 
-  ul
-  each item in item_list
-    li
-      a(href=item.url) #{item.name}
-      |   - $#{item.price}.00
-
-  else
-    li There are no items.
+  .container
+    table#cart.table.table-hover.table-sm
+      thead
+        tr
+          th(style='width:50%') Product
+          th(style='width:10%') Price
+          th(style='width:8%; text-indent:10px') No. Left
+          th.text-center(style='width:32%') Groups
+      tbody
+      form(method='POST' action='')
+        each item in item_list
+          tr
+            td(data-th='Product')
+              a.link-unstyled(href=item.url)
+                .row
+                  .col-md-2.hidden-xs-down
+                    img.img-fluid(src='http://placehold.it/100x100', alt='...')
+                  .col-md-10
+                    h4.nomargin #{item.name}
+                    p
+                      | #{item.description}
+            td(data-th='Price') $#{item.price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+            td.text-center(data-th='Quantity') #{item.availability}
+            td.text-center(data-th='Groups') #{item.formatted_groups} 
+        else
+          li There are no items.

@@ -349,7 +349,7 @@ exports.item_detail = function(req, res, next) {
 
 // Display list of all items.
 exports.item_list = function(req, res, next) {
-	Item.find({}, "name description price_history")
+	Item.find({}, "name description price_history availability")
 		.populate("item_groups")
 		.exec(function(err, item_list) {
 			if (err) return next(err);

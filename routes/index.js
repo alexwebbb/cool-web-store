@@ -5,7 +5,7 @@ const express = require("express"),
 
 /* GET home page. */
 router.get("/", function(req, res, next) {
-	res.render("index", { title: "Cool Store" });
+	res.render("index", { title: "Item Store" });
 });
 
 module.exports = router;

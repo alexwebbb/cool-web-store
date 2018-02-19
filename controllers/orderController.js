@@ -56,8 +56,6 @@ exports.order_create_get = function(req, res) {
                 return a + c.quantity * c.item.price;
             }, 0);
 
-            console.log(results.user.current_cart[0].item.name);
-
             res.render("order/checkout_form", {
                 title: "Checkout",
                 cart_total: total,
@@ -119,7 +117,6 @@ exports.order_update_get = function(req, res) {
         User.findById(req.user._id)
             .populate("current_cart.item")
             .exec(function(err, user) {
-                console.log(user.current_cart);
                 if (user.current_cart.find(x => x.item === null)) {
                     user.current_cart = user.current_cart.filter(x => x.item !== null);
                     User.findByIdAndUpdate(user._id, user, {}, function(
