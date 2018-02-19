@@ -44,7 +44,6 @@ exports.index = function(req, res, next) {
 	res.send("NOT IMPLEMENTED: Site Home Page");
 };
 
-
 // Display item create form on GET.
 exports.item_create_get = function(req, res, next) {
 	// retrieve all item groups for use in the form
@@ -157,7 +156,7 @@ exports.item_delete_post = function(req, res, next) {
 			}
 			// Success
 			if (results.orders) {
-				// in order to prevent corrupting orders or sessions, items in use are protected
+				// in order to prevent corrupting orders, items in use are protected
 				res.render("error", {
 					message: "Delete Item Error - Item in use",
 					error: {
@@ -170,6 +169,20 @@ exports.item_delete_post = function(req, res, next) {
 				});
 				return;
 			} else {
+				async.parallel(
+					{
+						item: function(callback) {
+							Item.findByIdAndRemove(req.body.id).exec(callback);
+						},
+						orders: function(callback) {
+							Order.findOne({ "cart.item": req.body.id }).exec(
+								callback
+							);
+						}
+					},
+					function(err, results) {}
+				);
+
 				// Item is unused. It may be deleted
 				Item.findByIdAndRemove(req.body.id, function(err) {
 					if (err) {
