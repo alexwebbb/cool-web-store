@@ -47,7 +47,7 @@ exports.coupon_create_get = function(req, res) {
 			return next(err);
 		}
 		//Successful, so render
-		res.render("coupon_form", {
+		res.render("coupon/form", {
 			title: "Create Coupon",
 			item_groups: item_group_list
 		});
@@ -88,7 +88,7 @@ exports.coupon_create_post = [
 					}
 				}
 
-				res.render("coupon_form", {
+				res.render("coupon/form", {
 					title: "Create Coupon",
 					item_groups: item_group_list,
 					coupon: req.body,
@@ -128,7 +128,7 @@ exports.coupon_delete_get = function(req, res, next) {
 				err.status = 404;
 				return next(err);
 			}
-			res.render("coupon_delete", {
+			res.render("coupon/delete", {
 				title: "Coupon Delete",
 				orders: results.orders,
 				coupon: results.coupon
@@ -221,7 +221,7 @@ exports.coupon_update_get = function(req, res, next) {
 					}
 				}
 			}
-			res.render("coupon_form", {
+			res.render("coupon/form", {
 				title: "Update coupon",
 				item_groups: results.groups,
 				coupon: results.coupon
@@ -277,7 +277,7 @@ exports.coupon_update_post = [
 						}
 					}
 
-					res.render("coupon_form", {
+					res.render("coupon/form", {
 						title: "Update Coupon",
 						item_groups: results.groups,
 						coupon: results.coupon,
@@ -315,7 +315,7 @@ exports.coupon_detail = function(req, res) {
 				err.status = 404;
 				return next(err);
 			}
-			res.render("coupon_detail", {
+			res.render("coupon/detail", {
 				title: "Coupon Detail",
 				coupon_detail: coupon_detail
 			});
@@ -329,7 +329,7 @@ exports.coupon_list = function(req, res) {
 		.exec(function(err, coupon_list) {
 			if (err) return next(err);
 
-			res.render("coupon_list", {
+			res.render("coupon/list", {
 				title: "Coupon List",
 				coupon_list: coupon_list
 			});

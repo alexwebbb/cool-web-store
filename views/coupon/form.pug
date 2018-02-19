@@ -1,17 +1,17 @@
-extends layout
+extends ../layout
 
 block main
   h1=title
 
   form(method='POST' action='')
     div.form-group
-      label('item_name') Item Name:
-      input#item_name.form-control(
+      label('coupon_name') Coupon Name:
+      input#coupon_name.form-control(
         type='text' 
-        placeholder='item name (select a name)' 
-        name='item_name'
+        placeholder='coupon name (select a name)' 
+        name='coupon_name'
         required='true' 
-        value=(undefined===item ? '' : item.name) 
+        value=(undefined===coupon ? '' : coupon.name) 
         )
       label(for='description') Description:
       input#description.form-control(
@@ -19,16 +19,22 @@ block main
         placeholder='description (7 to 256 characters)' 
         name='description' 
         required='true' 
-        value=(undefined===item ? '' : item.description)
+        value=(undefined===coupon ? '' : coupon.description)
         )
-      label(for='price') Price:
-      input#price.form-control(
+      label(for='discount_percent') Price:
+      input#discount_percent.form-control(
         type='text' 
-        placeholder='price (put your price)' 
-        name='price' 
+        placeholder='discount percent (put your discount_percent)' 
+        name='discount_percent' 
         required='true' 
-        value=(undefined===item ? '' : item.price)
+        value=(undefined===coupon ? '' : coupon.discount_percent)
         )
+    div.form-group
+      label(for='expiration_date') Date of birth:
+      input#expiration_date.form-control(
+        type='date'
+        name='expiration_date'
+        value=(undefined===coupon ? '' : coupon.expiration_date) )
     div.form-group
       label Group:
       div
@@ -43,7 +49,7 @@ block main
               )
             label(for=group._id) #{group.name}
     button.btn.btn-primary(type='submit') Submit
-    button.btn.btn-primary(type='submit', formaction='/add') Add to Cart
+
 block alert
   if errors 
     ul

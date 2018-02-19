@@ -59,6 +59,12 @@ app.use(passport.session());
 
 require("./routes/authRoutes")(app);
 
+// always make the user object available in the pug templates
+app.use((req, res, next) => {
+    res.locals.current_user = req.user;
+    next();
+});
+
 // Declare routes as middleware
 app.use("/", index);
 app.use("/", users);

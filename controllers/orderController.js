@@ -58,7 +58,7 @@ exports.order_create_get = function(req, res) {
 
             console.log(results.user.current_cart[0].item.name);
 
-            res.render("checkout_form", {
+            res.render("order/checkout_form", {
                 title: "Checkout",
                 cart_total: total,
                 user_cart: results.user.current_cart,
@@ -134,7 +134,7 @@ exports.order_update_get = function(req, res) {
                             return a + c.quantity * c.item.price;
                         }, 0);
 
-                        res.render("cart_form", {
+                        res.render("order/cart_form", {
                             title: "Cart",
                             cart_total: total,
                             user_cart: user.current_cart
@@ -145,7 +145,7 @@ exports.order_update_get = function(req, res) {
                         return a + c.quantity * c.item.price;
                     }, 0);
 
-                    res.render("cart_form", {
+                    res.render("order/cart_form", {
                         title: "Cart",
                         cart_total: total,
                         user_cart: user.current_cart

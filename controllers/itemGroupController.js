@@ -32,7 +32,7 @@ const Item_group = require("../models/item_group"),
 
 // Display item_group create form on GET.
 exports.group_create_get = function(req, res) {
-	res.render("group_form", { title: "Create Group" });
+	res.render("group/form", { title: "Create Group" });
 };
 
 // Handle group create on POST.
@@ -51,7 +51,7 @@ exports.group_create_post = [
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render the form again with sanitized values/error messages.
-			res.render("group_form", {
+			res.render("group/form", {
 				title: "Create Group",
 				group: group,
 				errors: errors.array()
@@ -113,7 +113,7 @@ exports.group_delete_get = function(req, res) {
 				err.status = 404;
 				return next(err);
 			}
-			res.render("group_delete", {
+			res.render("group/delete", {
 				title: "Group Delete",
 				orders: results.orders,
 				coupons: results.coupons,
@@ -152,7 +152,7 @@ exports.group_delete_post = function(req, res) {
 			// Success
 			if (results.orders || results.coupons || results.items) {
 				// in order to prevent corrupting orders, groups in use are protected
-				res.render("error", {
+				res.render("../error", {
 					message: "Delete Group Error - Group in use",
 					error: {
 						status: `There are ${
@@ -193,7 +193,7 @@ exports.group_update_get = function(req, res) {
 			}
 			// Success.
 			
-			res.render("group_form", {
+			res.render("group/form", {
 				title: "Update group",
 				group: group
 			});
@@ -223,7 +223,7 @@ exports.group_update_post = [
 						return next(err);
 					}
 
-					res.render("group_form", {
+					res.render("group/form", {
 						title: "Create Group",
 						group: group,
 						errors: errors.array()
@@ -271,7 +271,7 @@ exports.group_detail = function(req, res, next) {
 				return next(err);
 			}
 			// Successful, so render
-			res.render("group_detail", {
+			res.render("group/detail", {
 				title: "Item Group Detail",
 				item_group: results.item_group,
 				group_items: results.group_items
@@ -286,7 +286,7 @@ exports.group_list = function(req, res) {
 	Item_group.find({}, "name description").exec(function(err, group_list) {
 		if (err) return next(err);
 
-		res.render("group_list", {
+		res.render("group/list", {
 			title: "Group List",
 			group_list: group_list
 		});

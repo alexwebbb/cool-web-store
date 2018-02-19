@@ -5,39 +5,47 @@ html(lang='en')
     title= title
     link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css', integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ', crossorigin='anonymous')
     link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    //- link(rel='stylesheet', href='/stylesheets/style.css')
   body
-    nav.navbar.navbar-expand-lg.navbar-light.bg-light
-      a.navbar-brand(href='#') Navbar
-      button.navbar-toggler(type='button', data-toggle='collapse', 
-      data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
-        span.navbar-toggler-icon
-      #navbarSupportedContent.collapse.navbar-collapse
-        ul.navbar-nav.mr-auto
-          li.nav-item.active
-            a.nav-link(href='#')
-              | Home 
-              span.sr-only (current)
-          li.nav-item
-            a.nav-link(href='#') Link
-          li.nav-item.dropdown
-            a#navbarDropdown.nav-link.dropdown-toggle(href='#', role='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-              | Dropdown
-            .dropdown-menu(aria-labelledby='navbarDropdown')
-              a.dropdown-item(href='#') Action
-              a.dropdown-item(href='#') Another action
-              .dropdown-divider
-              a.dropdown-item(href='#') Something else here
-          li.nav-item
-            a.nav-link.disabled(href='#') Disabled
-        form.form-inline.my-2.my-lg-0
-          input.form-control.mr-sm-2(type='search', placeholder='Search', aria-label='Search')
-          button.btn.btn-outline-success.my-2.my-sm-0(type='submit') Search
-
     .container
-      header.row.header-style(role='banner', aria-live='polite')
-        nav(role='navigation') Nav
-      aside.row(role='alert', aria-live='assertive') Alert
+      
+      nav.navbar.navbar-toggleable-md.navbar-light.bg-faded
+        button.navbar-toggler.navbar-toggler-right(type='button', 
+          data-toggle='collapse', 
+          data-target='#navbarSupportedContent', 
+          aria-controls='navbarSupportedContent', 
+          aria-expanded='false', 
+          aria-label='Toggle navigation')
+          span.navbar-toggler-icon
+        a.navbar-brand(href='/') Cool Store
+        #navbarSupportedContent.collapse.navbar-collapse
+          ul.navbar-nav.mr-auto
+            li.nav-item.active
+              a.nav-link(href='/store/items')
+                | Items 
+                span.sr-only (current)
+            li.nav-item
+              a.nav-link(href='/store/groups') Groups
+            li.nav-item
+              a.nav-link(href='/store/coupons') Coupons
+            if current_user && current_user.user_group === "admin"
+              li.nav-item
+                a.nav-link(href='/users') Users
+              li.nav-item
+                a.nav-link(href='/store/sessions') Sessions
+            else if current_user
+              li.nav-item
+                a.nav-link(href=current_user.url) User
+          ul.form-inline.my-2.my-lg-0
+            a.btn.btn-primary.nav-link(href='/store/cart')
+              span.sr-only The
+              | Cart 
+              if current_user
+                span.sr-only has
+                span.badge.badge-info #{current_user.current_cart.length}
+                span.sr-only items.
+
+      aside.row(role='alert', aria-live='assertive')
         block alert
       .row.content-row-style
         aside#js-aside-pre.css-aside-pre.col-md-1(role='complementary', aria-live='polite')
@@ -46,7 +54,7 @@ html(lang='en')
           block main
         aside#js-aside-post(role='complementary', aria-live='polite')
           block aside-post
-      footer.row.footer-style(role='contentinfo') Footer
+      footer.row.footer-style(role='contentinfo')
   script(src="https://code.jquery.com/jquery-3.1.1.slim.min.js"
         integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
         crossorigin="anonymous")

@@ -52,7 +52,7 @@ exports.item_create_get = function(req, res, next) {
 			return next(err);
 		}
 		//Successful, so render
-		res.render("item_form", {
+		res.render("item/form", {
 			title: "Create Item",
 			item_groups: item_group_list
 		});
@@ -90,7 +90,7 @@ exports.item_create_post = [
 					}
 				}
 
-				res.render("item_form", {
+				res.render("item/form", {
 					title: "Create Item",
 					item_groups: item_group_list,
 					item: req.body,
@@ -130,7 +130,7 @@ exports.item_delete_get = function(req, res, next) {
 				err.status = 404;
 				return next(err);
 			}
-			res.render("item_delete", {
+			res.render("item/delete", {
 				title: "Item Delete",
 				orders: results.orders,
 				item: results.item
@@ -240,7 +240,7 @@ exports.item_update_get = function(req, res, next) {
 					}
 				}
 			}
-			res.render("item_form", {
+			res.render("item/form", {
 				title: "Update item",
 				item_groups: results.groups,
 				item: results.item
@@ -294,7 +294,7 @@ exports.item_update_post = [
 						}
 					}
 
-					res.render("item_form", {
+					res.render("item/form", {
 						title: "Update Item",
 						item_groups: results.groups,
 						item: results.item,
@@ -322,27 +322,29 @@ exports.item_update_post = [
 
 // Display detail page for a specific item.
 exports.item_detail = function(req, res, next) {
-	Item.findById(req.params.id).exec(function(err, item) {
-		if (err) return next(err);
-		if (item === null) {
-			const err = new Error("Item not found");
-			err.status = 404;
-			return next(err);
-		}
-		if (req.user) {
-			User.findById(req.user._id).exec(function(err, user) {
-				user.current_view = req.params.id;
-				user.save().then(function(res) {
-					console.log("session updated");
+	Item.findById(req.params.id)
+		.populate("item_groups")
+		.exec(function(err, item) {
+			if (err) return next(err);
+			if (item === null) {
+				const err = new Error("Item not found");
+				err.status = 404;
+				return next(err);
+			}
+			if (req.user) {
+				User.findById(req.user._id).exec(function(err, user) {
+					user.current_view = req.params.id;
+					user.save().then(function(res) {
+						console.log("session updated");
+					});
 				});
-			});
-		}
+			}
 
-		res.render("item_detail", {
-			title: "Item Detail",
-			item: item
+			res.render("item/detail", {
+				title: "Item Detail",
+				item: item
+			});
 		});
-	});
 };
 
 // Display list of all items.
@@ -352,7 +354,7 @@ exports.item_list = function(req, res, next) {
 		.exec(function(err, item_list) {
 			if (err) return next(err);
 
-			res.render("item_list", {
+			res.render("item/list", {
 				title: "Item List",
 				item_list: item_list
 			});

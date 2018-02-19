@@ -101,12 +101,12 @@ exports.start = function(req, res, next) {
 // Display User create form on GET.
 exports.user_create_get = function(req, res, next) {
 	if (req.user.user_group === "admin") {
-		res.render("user_form", {
+		res.render("user/form", {
 			title: "Create User",
 			user: { group: "admin" }
 		});
 	} else {
-		res.render("user_form", { title: "Create User" });
+		res.render("user/form", { title: "Create User" });
 	}
 };
 
@@ -125,7 +125,7 @@ exports.user_create_post = [
 
 			if (!errors.isEmpty()) {
 				// There are errors. Render form again with sanitized values/errors messages.
-				res.render("user_form", {
+				res.render("user/form", {
 					title: "Create User",
 					user: req.body,
 					errors: errors.array()
@@ -186,7 +186,7 @@ exports.user_delete_get = function(req, res) {
 					err.status = 404;
 					return next(err);
 				}
-				res.render("user_delete", {
+				res.render("user/delete", {
 					title: "User Delete",
 					sessions: results.sessions,
 					orders: results.orders,
@@ -276,7 +276,7 @@ exports.user_update_get = function(req, res) {
 				return next(err);
 			}
 			// Success.
-			res.render("user_form", {
+			res.render("user/form", {
 				title: "Update user",
 				user: user
 			});
@@ -315,7 +315,7 @@ exports.user_update_post = [
 						return next(err);
 					}
 
-					res.render("user_form", {
+					res.render("user/form", {
 						title: "Update Item",
 						user: user,
 						errors: errors.array()
@@ -357,7 +357,7 @@ exports.user_detail = function(req, res) {
 				return next(err);
 			}
 			// Successful, so render
-			res.render("user_detail", {
+			res.render("user/detail", {
 				title: "User Detail",
 				user_detail: user_detail
 			});
@@ -375,7 +375,7 @@ exports.user_list = function(req, res) {
 				return next(err);
 			}
 			//Successful, so render
-			res.render("user_list", {
+			res.render("user/list", {
 				title: "User List",
 				user_list: user_list
 			});

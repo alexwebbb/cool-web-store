@@ -1,4 +1,4 @@
-extends layout
+extends ../layout
 
 block main
   h1= title
@@ -21,6 +21,6 @@ block main
           li There are no valid groups.
   hr
   p
-    a(href=item.url+'/delete') Delete Coupon
+    a(href=coupon_detail.url+'/delete') Delete Coupon
   p
-    a(href=item.url+'/update') Update Coupon
+    a(href=coupon_detail.url+'/update') Update Coupon
