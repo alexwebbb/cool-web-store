@@ -86,43 +86,62 @@ exports.order_create_post = function(req, res) {
             const total = user.current_cart.reduce((a, c) => {
                     return a + c.quantity * c.item.price;
                 }, 0),
-                totalTimes100 = total * 100;
+                totalTimes100 = total * 100,
+                order = new Order({
+                    user: req.user._id,
+                    cart: user.current_cart
+                });
 
-            order = new Order({
-                user: req.user._id,
-                cart: user.current_cart
-            });
-
-            stripe.customers
-                .create({
-                    email: req.body.stripeEmail,
-                    source: req.body.stripeToken
-                })
-                .then(customer => {
-                    stripe.charges.create({
-                        totalTimes100,
-                        description: "Sample Charge",
-                        currency: "usd",
-                        customer: customer.id
-                    });
-                })
-                .then(charge => {
-                    order.save(function(err) {
-                        if (err) {
-                            console.log(err);
-                            return next(err);
-                        }
+            async.series(
+                [
+                    function(callback) {
+                        // submit charge to stripe servers
+                        stripe.customers
+                            .create({
+                                email: req.body.stripeEmail,
+                                source: req.body.stripeToken
+                            })
+                            .then(customer => {
+                                stripe.charges.create({
+                                    totalTimes100,
+                                    description: "Sample Charge",
+                                    currency: "usd",
+                                    customer: customer.id
+                                });
+                            })
+                            .then(charge => {
+                                callback(null, charge);
+                            });
+                    },
+                    function(callback) {
+                        // create an order from the cart
+                        order.save(function(err) {
+                            if (err) {
+                                return next(err);
+                            }
+                            callback(null);
+                        });
+                    },
+                    function(callback) {
+                        // remove the cart from the user object
                         user.current_cart = [];
                         user.save().then(function(res) {
                             console.log("cart cleared");
+                            callback(null);
                         });
-                        // Successful - redirect to new item record.
-                        res.render("order/charge_result", {
-                            title: "Payment Complete",
-                            total: total
-                        });
+                    }
+                ],
+                // optional callback
+                function(err, results) {
+                    console.log(results);
+                    // Successful - redirect to confirmation screen.
+                    res.render("order/charge_result", {
+                        title: "Payment Complete",
+                        total: total,
+                        charge: results
                     });
-                });
+                }
+            );
         });
 
     // this accepts the incoming post request which will create our order
