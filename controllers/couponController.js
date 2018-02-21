@@ -25,6 +25,12 @@ const Coupon = require("../models/coupon"),
 			.withMessage("discount percent field is empty")
 			.isFloat({ min: 0, max: 100 })
 			.withMessage("discount percent is out of range"),
+		body("img_100")
+			.optional({ checkFalsy: true })
+			.isURL()
+			.withMessage(
+				"A reference to an image needs to be a url. A CDN would be ideal!"
+			),
 
 		// Sanitize fields.
 		sanitizeBody("coupon_name")
@@ -35,9 +41,9 @@ const Coupon = require("../models/coupon"),
 			.escape(),
 		sanitizeBody("discount_percent")
 			.trim()
-			.escape()
+			.escape(),
+		sanitizeBody("img_100").trim()
 	];
-
 
 // Display coupon create form on GET.
 exports.coupon_create_get = function(req, res) {
@@ -67,6 +73,7 @@ exports.coupon_create_post = [
 				description: req.body.description,
 				discount_percent: req.body.discount_percent,
 				expiration_date: req.body.expiration_date,
+				img_100: req.body.img_100,
 				item_groups: req.body.item_groups
 			});
 
@@ -215,7 +222,9 @@ exports.coupon_update_get = function(req, res, next) {
 				) {
 					if (
 						results.groups[all_g_iter]._id.toString() ==
-						results.coupon.valid_item_groups[coupon_g_iter]._id.toString()
+						results.coupon.valid_item_groups[
+							coupon_g_iter
+						]._id.toString()
 					) {
 						results.groups[all_g_iter].checked = "true";
 					}
@@ -243,6 +252,7 @@ exports.coupon_update_post = [
 				description: req.body.description,
 				discount_percent: req.body.discount_percent,
 				expiration_date: req.body.expiration_date,
+				img_100: req.body.img_100,
 				valid_item_groups: req.body.item_groups,
 				_id: req.params.id
 			});
@@ -303,7 +313,6 @@ exports.coupon_update_post = [
 	}
 ];
 
-
 // Display detail page for a specific coupon.
 exports.coupon_detail = function(req, res) {
 	Coupon.findById(req.params.id)
@@ -324,7 +333,7 @@ exports.coupon_detail = function(req, res) {
 
 // Display list of all coupon.
 exports.coupon_list = function(req, res) {
-	Coupon.find({}, "name description discount_percent valid_item_groups valid_range")
+	Coupon.find({}, "name description discount_percent valid_range")
 		.populate("valid_item_groups")
 		.exec(function(err, coupon_list) {
 			if (err) return next(err);

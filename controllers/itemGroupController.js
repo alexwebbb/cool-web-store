@@ -20,15 +20,21 @@ const Item_group = require("../models/item_group"),
 			.withMessage("description is too long.")
 			.isAscii()
 			.withMessage("description has non-standard characters."),
+		body("img_100")
+			.optional({ checkFalsy: true })
+			.isURL()
+			.withMessage(
+				"A reference to an image needs to be a url. A CDN would be ideal!"
+			),
 		// Sanitize fields.
 		sanitizeBody("group_name")
 			.trim()
 			.escape(),
 		sanitizeBody("description")
 			.trim()
-			.escape()
+			.escape(),
+		sanitizeBody("img_100").trim()
 	];
-
 
 // Display item_group create form on GET.
 exports.group_create_get = function(req, res) {
@@ -45,9 +51,10 @@ exports.group_create_post = [
 		const errors = validationResult(req),
 			// Create a group object with escaped and trimmed data.
 			group = new Item_group({
-			name: req.body.group_name,
-			description: req.body.description
-		});
+				name: req.body.group_name,
+				description: req.body.description,
+				img_100: req.body.img_100
+			});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render the form again with sanitized values/error messages.
@@ -128,17 +135,6 @@ exports.group_delete_get = function(req, res) {
 exports.group_delete_post = function(req, res) {
 	async.parallel(
 		{
-			group: function(callback) {
-				Item_group.findById(req.params.id).exec(callback);
-			},
-			items: function(callback) {
-				Item.findOne({ item_groups: req.params.id }).exec(callback);
-			},
-			coupons: function(callback) {
-				Coupon.findOne({ valid_item_groups: req.params.id }).exec(
-					callback
-				);
-			},
 			orders: function(callback) {
 				Order.findOne({ item_groups_present: req.params.id }).exec(
 					callback
@@ -150,18 +146,12 @@ exports.group_delete_post = function(req, res) {
 				return next(err);
 			}
 			// Success
-			if (results.orders || results.coupons || results.items) {
+			if (results.orders) {
 				// in order to prevent corrupting orders, groups in use are protected
 				res.render("../error", {
 					message: "Delete Group Error - Group in use",
 					error: {
-						status: `There are ${
-							results.sessions ? "items, " : ""
-						} ${
-							results.sessions ? "coupons, " : ""
-						} ${
-							results.orders ? "and orders" : ""
-						}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
+						status: `There are ${results.orders} with existing records of this group. Thus, the group cannot be deleted. If you need to remove the group from the store, please change the 'active' property to false.`
 					}
 				});
 				return;
@@ -182,23 +172,22 @@ exports.group_delete_post = function(req, res) {
 // Display item_group update form on GET.
 exports.group_update_get = function(req, res) {
 	Item_group.findById(req.params.id).exec(function(err, group) {
-			if (err) {
-				return next(err);
-			}
-			if (group == null) {
-				// No results.
-				const err = new Error("item not found");
-				err.status = 404;
-				return next(err);
-			}
-			// Success.
-			
-			res.render("group/form", {
-				title: "Update group",
-				group: group
-			});
+		if (err) {
+			return next(err);
 		}
-	);
+		if (group == null) {
+			// No results.
+			const err = new Error("item not found");
+			err.status = 404;
+			return next(err);
+		}
+		// Success.
+
+		res.render("group/form", {
+			title: "Update group",
+			group: group
+		});
+	});
 };
 
 // Handle item_group update on POST.
@@ -210,24 +199,26 @@ exports.group_update_post = [
 		const errors = validationResult(req),
 			// Create a group object with escaped and trimmed data.
 			group = new Item_group({
-			name: req.body.group_name,
-			description: req.body.description
-		});
+				name: req.body.group_name,
+				description: req.body.description,
+				img_100: req.body.img_100,
+				_id: req.params.id
+			});
 
 		if (!errors.isEmpty()) {
 			// There are errors. Render form again with sanitized values/errors messages.
 
 			// retrieve existing data since form data was invalid
 			Item_group.findById(req.params.id).exec(function(err, group) {
-					if (err) {
-						return next(err);
-					}
+				if (err) {
+					return next(err);
+				}
 
-					res.render("group/form", {
-						title: "Create Group",
-						group: group,
-						errors: errors.array()
-					});
+				res.render("group/form", {
+					title: "Create Group",
+					group: group,
+					errors: errors.array()
+				});
 			});
 
 			return;
@@ -245,7 +236,6 @@ exports.group_update_post = [
 			});
 		}
 	}
-
 ];
 
 // Display detail page for a specific item_group.
@@ -279,7 +269,6 @@ exports.group_detail = function(req, res, next) {
 		}
 	);
 };
-
 
 // Display list of all item_groups.
 exports.group_list = function(req, res) {

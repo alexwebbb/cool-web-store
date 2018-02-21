@@ -73,24 +73,26 @@ exports.order_create_get = function(req, res) {
 
 // Handle order create on POST.
 exports.order_create_post = function(req, res) {
-    let amount = 500;
+    console.log("hello");
+    res.send(req.body);
+    // let amount = 500;
 
-    console.log(stripe.customers);
+    // console.log(stripe.customers);
 
-    stripe.customers
-        .create({
-            email: req.body.stripeEmail,
-            source: req.body.stripeToken
-        })
-        .then(customer =>
-            stripe.charges.create({
-                amount,
-                description: "Sample Charge",
-                currency: "usd",
-                customer: customer.id
-            })
-        )
-        .then(charge => res.render("charge_result.pug"));
+    // stripe.customers
+    //     .create({
+    //         email: req.body.stripeEmail,
+    //         source: req.body.stripeToken
+    //     })
+    //     .then(customer =>
+    //         stripe.charges.create({
+    //             amount,
+    //             description: "Sample Charge",
+    //             currency: "usd",
+    //             customer: customer.id
+    //         })
+    //     )
+    //     .then(charge => res.render("charge_result.pug"));
 
     // order = new Order({
     //     name: req.body.item_name,

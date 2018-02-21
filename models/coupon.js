@@ -31,7 +31,6 @@ CouponSchema.virtual("begin_date_formatted").get(function() {
 });
 
 CouponSchema.virtual("expiration_date").get(function() {
-	console.log(this.valid_range);
 	if (this.valid_range.end) {
 		return moment(this.valid_range.end).format("MMMM Do, YYYY");
 	} else {

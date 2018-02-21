@@ -28,7 +28,9 @@ const mongoose = require("mongoose"),
 		},
 		availability: { type: Number, required: true, min: -1, default: 0 },
 		active: { type: Boolean, required: true, default: true },
-		item_groups: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }]
+		item_groups: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }],
+		img_100: String,
+		img_700_400: String
 	});
 
 ItemSchema.virtual("price")
@@ -53,17 +55,22 @@ ItemSchema.virtual("url").get(function() {
 });
 
 ItemSchema.virtual("formatted_groups").get(function() {
-	console.log(this);
 	if (this.item_groups.length > 1) {
 		const last = this.item_groups.pop();
 		return (
 			this.item_groups.map(e => e.name).join(", ") + " and " + last.name
 		);
-	} else if(this.item_groups.length === 1) {
+	} else if (this.item_groups.length === 1) {
 		return this.item_groups[0].name;
 	} else {
 		return "";
 	}
+});
+
+ItemSchema.virtual("formatted_price").get(function() {
+	return this.price_history[0].price
+		.toFixed(2)
+		.replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
 });
 
 module.exports = mongoose.model("Item", ItemSchema);

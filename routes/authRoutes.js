@@ -12,13 +12,13 @@ module.exports = app => {
 		"/login",
 		passport.authenticate("local", { failureRedirect: "/login" }),
 		function(req, res) {
-			res.redirect("/");
+			res.redirect("/store");
 		}
 	);
 
 	app.get("/logout", function(req, res) {
 		req.logout();
-		res.redirect("/");
+		res.redirect("/store");
 	});
 
 	app.get(

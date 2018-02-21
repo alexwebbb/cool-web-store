@@ -17,7 +17,7 @@ html(lang='en')
           aria-expanded='false', 
           aria-label='Toggle navigation')
           span.navbar-toggler-icon
-        a.navbar-brand(href='/') Item Store
+        a.navbar-brand(href='/store') Item Store
         #navbarSupportedContent.collapse.navbar-collapse
           ul.navbar-nav.mr-auto
             li.nav-item.active
@@ -26,13 +26,17 @@ html(lang='en')
                 span.sr-only (current)
             li.nav-item
               a.nav-link(href='/store/groups') Groups
-            li.nav-item
-              a.nav-link(href='/store/coupons') Coupons
             if current_user && current_user.user_group === "admin"
+              li.nav-item
+                span.badge.badge-warning Admin
+              li.nav-item
+                a.nav-link(href='/store/coupons') Coupons
               li.nav-item
                 a.nav-link(href='/users') Users
               li.nav-item
                 a.nav-link(href='/store/sessions') Sessions
+              li.nav-item
+                a.nav-link(href='/logout') Logout
             else if current_user
               li.nav-item
                 a.nav-link(href=current_user.url) User

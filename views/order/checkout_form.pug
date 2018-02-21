@@ -1,22 +1,49 @@
 extends ../layout
 
 block main
-  h1= title
-
-  ul
-  each element in user_cart
-    li
-      a(href=element.item.url) #{element.item.name}
-  else
-    li There are no items.
-  form(action="/store/charge", method="post")
-      article
-        label Amount: $#{cart_total}
-      script(
-        src="//checkout.stripe.com/v2/checkout.js",
-        class="stripe-button",
-        data-key=keyPublishable,
-        data-locale="auto",
-        data-description="Sample Charge",
-        data-amount="500"
-        )
+  .container
+    table#cart.table.table-hover.table-sm
+      thead
+        tr
+          th(style='width:50%') Product
+          th(style='width:12%') Price
+          th(style='width:11%') Quantity
+          th.text-center(style='width:27%') Subtotal
+      tbody
+      form(method='POST' action='')
+        each element in user_cart
+          tr
+            td(data-th='Product')
+              .row
+                .col-md-2.hidden-xs-down
+                  img.img-fluid(src='http://placehold.it/100x100', alt='...')
+                .col-md-10
+                  h4.nomargin #{element.item.name}
+                  p
+                    | #{element.item.description}
+            td(data-th='Price') $#{element.item.formatted_price}
+            td.text-center(data-th='Quantity') #{element.quantity}
+            td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+        tfoot
+          tr.hidden-xs-up
+            td.text-center
+              strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+          tr
+            td
+              a.btn.btn-warning(href='/store/cart')
+                i.fa.fa-angle-left
+                |  Edit Cart
+            td.hidden-xs-down(colspan='2')
+            td.hidden-xs-down.text-center
+              strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+            td
+  form(action="/charge", method="post")
+    script(
+      src="//checkout.stripe.com/v2/checkout.js",
+      class="stripe-button",
+      data-key=keyPublishable,
+      data-locale="auto",
+      data-description="Sample Charge",
+      data-amount=cart_total * 100
+      )              
+              

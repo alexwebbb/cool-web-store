@@ -7,6 +7,13 @@ block main
     div.form-group
       label(for='name') Group:
       input#name.form-control(type='text', placeholder='Fantasy, Poetry etc.' name='name' value=(undefined===group ? '' : group.name))
+      label(for='img_100') Square Image (100 by 100 pixels):
+      input#price.form-control(
+        type='text' 
+        placeholder='Small square image url (100 by 100 pixels)' 
+        name='img_100'  
+        value=(undefined===item ? '' : item.img_100)
+        )
     button.btn.btn-primary(type='submit') Submit
 
 block alert

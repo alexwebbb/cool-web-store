@@ -27,6 +27,18 @@ const Item = require("../models/item"),
 			.withMessage("price is too long.")
 			.isCurrency()
 			.withMessage("price has non-numeric characters."),
+		body("img_100")
+			.optional({ checkFalsy: true })
+			.isURL()
+			.withMessage(
+				"A reference to an image needs to be a url. A CDN would be ideal!"
+			),
+		body("img_700_400")
+			.optional({ checkFalsy: true })
+			.isURL()
+			.withMessage(
+				"A reference to an image needs to be a url. A CDN would be ideal!"
+			),
 
 		// Sanitize fields.
 		sanitizeBody("item_name")
@@ -37,11 +49,36 @@ const Item = require("../models/item"),
 			.escape(),
 		sanitizeBody("price")
 			.trim()
-			.escape()
+			.escape(),
+		sanitizeBody("img_100").trim(),
+		sanitizeBody("img_700_400").trim()
 	];
 
 exports.index = function(req, res, next) {
-	res.send("NOT IMPLEMENTED: Site Home Page");
+	async.parallel(
+		{
+			item_list: function(callback) {
+				Item.find(
+					{},
+					"name description price_history availability img_700_400"
+				)
+					.populate("item_groups")
+					.exec(callback);
+			},
+			item_groups: function(callback) {
+				Item_group.find(callback);
+			}
+		},
+		function(err, results) {
+			if (err) return next(err);
+
+			res.render("item/index", {
+				title: "Item Store",
+				item_groups: results.item_groups,
+				item_list: results.item_list
+			});
+		}
+	);
 };
 
 // Display item create form on GET.
@@ -64,6 +101,7 @@ exports.item_create_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
+		console.log(req.body);
 		// Extract the validation errors from a request.
 		const errors = validationResult(req),
 			// Create an item object with escaped and trimmed data.
@@ -71,6 +109,8 @@ exports.item_create_post = [
 				name: req.body.item_name,
 				description: req.body.description,
 				price: req.body.price,
+				img_100: req.body.img_100,
+				img_700_400: req.body.img_700_400,
 				item_groups: req.body.item_groups
 			});
 
@@ -254,6 +294,7 @@ exports.item_update_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
+		console.log(req.body);
 		// Extract the validation errors from a request.
 		const errors = validationResult(req),
 			// Create an item object with escaped and trimmed data.
@@ -261,6 +302,8 @@ exports.item_update_post = [
 				name: req.body.item_name,
 				description: req.body.description,
 				price: req.body.price,
+				img_100: req.body.img_100,
+				img_700_400: req.body.img_700_400,
 				item_groups: req.body.item_groups,
 				_id: req.params.id
 			});
