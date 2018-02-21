@@ -6,7 +6,7 @@ const mongoose = require("mongoose"),
 		user: { type: Schema.Types.ObjectId, ref: "User", required: true },
 		cart: [
 			{
-				item_id: {
+				item: {
 					type: Schema.Types.ObjectId,
 					ref: "Item",
 					required: true
@@ -17,10 +17,10 @@ const mongoose = require("mongoose"),
 		coupons_present: [{ type: Schema.Types.ObjectId, ref: "Coupon" }],
 		item_groups_present: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }],
 		shipping_address: {
-			street_address: { type: String, required: true },
-			city: { type: String, required: true },
-			state: { type: String, required: true },
-			zip_code: { type: Number, required: true }
+			street_address: { type: String },
+			city: { type: String },
+			state: { type: String },
+			zip_code: { type: Number }
 		},
 		status: {
 			type: String,

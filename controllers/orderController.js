@@ -73,41 +73,58 @@ exports.order_create_get = function(req, res) {
 
 // Handle order create on POST.
 exports.order_create_post = function(req, res) {
-    console.log("hello");
-    res.send(req.body);
-    // let amount = 500;
+    User.findById(req.user._id, "current_cart")
+        .populate("current_cart.item")
+        .exec(function(err, user) {
+            if (err) return next(err);
+            if (user === null) {
+                const err = new Error("User not found");
+                err.status = 404;
+                return next(err);
+            }
 
-    // console.log(stripe.customers);
+            const total = user.current_cart.reduce((a, c) => {
+                    return a + c.quantity * c.item.price;
+                }, 0),
+                totalTimes100 = total * 100;
 
-    // stripe.customers
-    //     .create({
-    //         email: req.body.stripeEmail,
-    //         source: req.body.stripeToken
-    //     })
-    //     .then(customer =>
-    //         stripe.charges.create({
-    //             amount,
-    //             description: "Sample Charge",
-    //             currency: "usd",
-    //             customer: customer.id
-    //         })
-    //     )
-    //     .then(charge => res.render("charge_result.pug"));
+            order = new Order({
+                user: req.user._id,
+                cart: user.current_cart
+            });
 
-    // order = new Order({
-    //     name: req.body.item_name,
-    //     description: req.body.description,
-    //     price: req.body.price,
-    //     item_groups: req.body.item_groups
-    // });
+            stripe.customers
+                .create({
+                    email: req.body.stripeEmail,
+                    source: req.body.stripeToken
+                })
+                .then(customer => {
+                    stripe.charges.create({
+                        totalTimes100,
+                        description: "Sample Charge",
+                        currency: "usd",
+                        customer: customer.id
+                    });
+                })
+                .then(charge => {
+                    order.save(function(err) {
+                        if (err) {
+                            console.log(err);
+                            return next(err);
+                        }
+                        user.current_cart = [];
+                        user.save().then(function(res) {
+                            console.log("cart cleared");
+                        });
+                        // Successful - redirect to new item record.
+                        res.render("order/charge_result", {
+                            title: "Payment Complete",
+                            total: total
+                        });
+                    });
+                });
+        });
 
-    // order.save(function(err) {
-    //     if (err) {
-    //         return next(err);
-    //     }
-    //     // Successful - redirect to new item record.
-    //     res.redirect(order.url);
-    // });
     // this accepts the incoming post request which will create our order
     // take the token, submit it to stripe, if it passes, save the order
     // otherwise reload the page
@@ -120,7 +137,9 @@ exports.order_update_get = function(req, res) {
             .populate("current_cart.item")
             .exec(function(err, user) {
                 if (user.current_cart.find(x => x.item === null)) {
-                    user.current_cart = user.current_cart.filter(x => x.item !== null);
+                    user.current_cart = user.current_cart.filter(
+                        x => x.item !== null
+                    );
                     User.findByIdAndUpdate(user._id, user, {}, function(
                         err,
                         _user
