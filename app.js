@@ -9,7 +9,7 @@ const express = require("express"),
 	cookieParser = require("cookie-parser"),
 	bodyParser = require("body-parser"),
 	// security middleware
-	helmet = require('helmet'),
+	helmet = require("helmet"),
 	// passport
 	cookieSession = require("cookie-session"),
 	passport = require("passport"),
@@ -37,8 +37,6 @@ db.on("error", console.error.bind(console, "MongoDB Connection error:"));
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
-// uncomment after placing your favicon in /public
-// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,10 +47,12 @@ app.use(express.static(path.join(__dirname, "public")));
 
 require("./services/passport");
 
-app.use(cookieSession({
-	maxAge: 30 * 24 * 60 * 60 * 1000,
-	keys: [keys.cookieKey]
-}));
+app.use(
+	cookieSession({
+		maxAge: 30 * 24 * 60 * 60 * 1000,
+		keys: [keys.cookieKey]
+	})
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -61,8 +61,8 @@ require("./routes/authRoutes")(app);
 
 // always make the user object available in the pug templates
 app.use((req, res, next) => {
-    res.locals.current_user = req.user;
-    next();
+	res.locals.current_user = req.user;
+	next();
 });
 
 // Declare routes as middleware

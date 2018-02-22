@@ -32,8 +32,8 @@ router.post("/cart", ensureLoggedIn(), order_controller.order_update_post);
 // GET request for one order.
 router.get("/order/:id", ensureLoggedIn(), order_controller.order_detail);
 
-// GET request for list of all of a single user's orders. a route available only to admin, as it will check if you are admin
-router.get("/orders/:id", ensureLoggedIn(), order_controller.order_list);
+// // GET request for list of all of a single user's orders. a route available only to admin, as it will check if you are admin
+// router.get("/orders/:id", ensureLoggedIn(), order_controller.order_list);
 
 // GET request for list of all user orders.
 router.get("/orders", ensureLoggedIn(), order_controller.order_list);

@@ -117,7 +117,7 @@ exports.user_create_post = [
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		if (
-			req.user._id.toString() === req.params.id ||
+			req.user._id.equals(req.params.id) ||
 			req.user.user_group === "admin"
 		) {
 			// Extract the validation errors from a request.
@@ -164,7 +164,7 @@ exports.user_create_post = [
 // Handle user delete on POST.
 exports.user_delete_get = function(req, res) {
 	if (
-		req.user._id.toString() === req.params.id ||
+		req.user._id.equals(req.params.id) ||
 		req.user.user_group === "admin"
 	) {
 		async.parallel(
@@ -202,7 +202,7 @@ exports.user_delete_get = function(req, res) {
 // Handle user delete on POST.
 exports.user_delete_post = function(req, res) {
 	if (
-		req.user._id.toString() === req.params.id ||
+		req.user._id.equals(req.params.id) ||
 		req.user.user_group === "admin"
 	) {
 		async.parallel(
@@ -262,7 +262,7 @@ exports.user_delete_post = function(req, res) {
 // Display user update form on GET.
 exports.user_update_get = function(req, res) {
 	if (
-		req.user._id.toString() === req.params.id ||
+		req.user._id.equals(req.params.id) ||
 		req.user.user_group === "admin"
 	) {
 		User.findById(req.params.id).exec(function(err, user) {
@@ -291,7 +291,7 @@ exports.user_update_post = [
 	...validateAndSanitizeFields,
 	(req, res, next) => {
 		if (
-			req.user._id.toString() === req.params.id ||
+			req.user._id.equals(req.params.id) ||
 			req.user.user_group === "admin"
 		) {
 			const errors = validationResult(req),
@@ -345,7 +345,7 @@ exports.user_update_post = [
 // Display detail page for a specific user.
 exports.user_detail = function(req, res) {
 	if (
-		req.user._id.toString() === req.params.id ||
+		req.user._id.equals(req.params.id) ||
 		req.user.user_group === "admin"
 	) {
 		User.findById(req.params.id).exec(function(err, user_detail) {
