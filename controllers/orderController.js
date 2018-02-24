@@ -231,52 +231,40 @@ exports.order_update_post = function(req, res) {
 
 // Display detail page for a specific order.
 exports.order_detail = function(req, res) {
-    Order.findById(req.params.id)
-        .populate("user")
-        .populate("cart.item")
-        .exec(function(err, order) {
-            if (err) return next(err);
-            if (order === null) {
-                const err = new Error("Order not found");
-                err.status = 404;
-                return next(err);
-            }
-            
-            if (
-                order.user.equals(req.user.id) ||
-                req.user.user_group === "admin"
-            ) {
+    if (req.user.id.equals(req.params.id) || req.user.user_group === "admin") {
+        Order.findById(req.params.id)
+            .populate("user")
+            .populate("cart.item")
+            .exec(function(err, order) {
+                if (err) return next(err);
+                if (order === null) {
+                    const err = new Error("Order not found");
+                    err.status = 404;
+                    return next(err);
+                }
+
                 res.render("order/detail", {
                     title: "Order Detail",
                     user_cart: order.cart,
                     cart_total: order.total,
                     user: order.user
                 });
-            }
-        });
-    // this will require user id and order
-    // Orders, filter by user
-    // expand user
-    // expand cart
-    // expand coupons
-    // expand item group/s
-    // can only see if you are admin or the user in question
+            });
+    }
 };
 
 // Display list of all orders.
 exports.order_list = function(req, res) {
-    Order.find({}, "user total created_at")
-        .populate("user")
-        .exec(function(err, order_list) {
-            if (err) return next(err);
+    if (req.user.user_group === "admin") {
+        Order.find({}, "user total created_at")
+            .populate("user")
+            .exec(function(err, order_list) {
+                if (err) return next(err);
 
-            res.render("order/list", {
-                title: "Order List",
-                order_list: order_list
+                res.render("order/list", {
+                    title: "Order List",
+                    order_list: order_list
+                });
             });
-        });
-    // This will require
-    // Orders (populate the user field)
-    // user_id from request (filter order list based on current user)
-    // date created
+    }
 };
