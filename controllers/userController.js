@@ -101,14 +101,10 @@ exports.start = function(req, res, next) {
 
 // Display User create form on GET.
 exports.user_create_get = function(req, res, next) {
-	if (req.user && req.user.user_group === "admin") {
-		res.render("user/form", {
-			title: "Create User",
-			user: { group: "admin" }
-		});
-	} else {
-		res.render("user/form", { title: "Create User" });
-	}
+	res.render("user/form", {
+		title: "Create User",
+		user: { group: "admin" }
+	});
 };
 
 // Display user create form on post.
@@ -219,7 +215,9 @@ exports.user_delete_post = function(req, res) {
 					res.render("error", {
 						message: "Delete User Error - User in use",
 						error: {
-							status: `There are ${results.orders} orders with existing records of this user. Thus, the user cannot be deleted. If you need to remove the user from the store, please change the 'active' property to false.`
+							status: `There are ${
+								results.orders
+							} orders with existing records of this user. Thus, the user cannot be deleted. If you need to remove the user from the store, please change the 'active' property to false.`
 						}
 					});
 					return;
