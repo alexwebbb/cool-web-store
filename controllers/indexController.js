@@ -5,7 +5,6 @@ const Item = require("../models/item"),
 	Session = require("../models/session"),
 	async = require("async");
 
-
 exports.index = function(req, res, next) {
 	res.redirect("/store");
 };
