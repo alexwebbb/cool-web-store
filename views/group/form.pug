@@ -5,8 +5,12 @@ block main
 
   form(method='POST' action='')
     div.form-group
-      label(for='name') Group:
-      input#name.form-control(type='text', placeholder='Fantasy, Poetry etc.' name='name' value=(undefined===group ? '' : group.name))
+      label(for='grou_name') Group:
+      input#name.form-control(
+        type='text', 
+        placeholder='Fantasy, Poetry etc.' 
+        name='group_name' 
+        value=(undefined===group ? '' : group.name))
       label(for='img_100') Square Image (100 by 100 pixels):
       input#price.form-control(
         type='text' 

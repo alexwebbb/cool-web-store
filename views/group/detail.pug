@@ -5,17 +5,27 @@ block main
   .row
     .col-lg-9
       h1.my-4 #{item_group.name}
+        if current_user && current_user.user_group==="admin"
+          br
+          a.btn.btn-success.mt-2.mr-2(href=item_group.url + '/update')
+            | Edit 
+            i.fa.fa-pencil
+          a.btn.btn-danger.mt-2(href=item_group.url + '/update')
+            | Delete 
+            i.fa.fa-trash-o
       .row
         each item in group_items
           .col-lg-4.col-md-6.mb-4
             .card.h-100
               a(href=item.url)
-                img.card-img-top.img-fluid(src='http://placehold.it/700x400', alt='')
+                img.card-img-top.img-fluid(src='https://placehold.it/700x400', alt='')
               .card-body
                 h4.card-title
                   a(href=item.url) #{item.name}
                 h5 $#{item.formatted_price}
                 p.card-text #{item.description}
               .card-footer
+
+  
               
         

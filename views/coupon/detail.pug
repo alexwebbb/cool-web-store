@@ -20,7 +20,10 @@ block main
         else
           li There are no valid groups.
   hr
-  p
-    a(href=coupon_detail.url+'/delete') Delete Coupon
-  p
-    a(href=coupon_detail.url+'/update') Update Coupon
+  if current_user && current_user.user_group==="admin"
+    a.btn.btn-success.mt-2.mr-2(href=coupon_detail.url + '/update')
+      | Edit 
+      i.fa.fa-pencil
+    a.btn.btn-danger.mt-2(href=coupon_detail.url + '/delete')
+      | Delete 
+      i.fa.fa-trash-o

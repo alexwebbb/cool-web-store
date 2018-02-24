@@ -2,17 +2,19 @@ extends ../layout
 
 block main
   h1= title
-
-  p #[strong Name:]
-    p #{item.name}
+    if current_user && current_user.user_group==="admin"
+      br
+      a.btn.btn-success.mt-2.mr-2(href=item.url + '/update')
+        | Edit 
+        i.fa.fa-pencil
+      a.btn.btn-danger.mt-2(href=item.url + '/update')
+        | Delete 
+        i.fa.fa-trash-o
+  h2 #[strong Name: #{item.name}]
+  p #{item.description}
   hr
-  p
-    a(href=item.url+'/delete') Delete Item
-  p
-    a(href=item.url+'/update') Update Item
-
   section
-    h1 Valid Groups
+    h3 Groups
     ul
       each group in item.item_groups
         li 

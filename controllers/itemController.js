@@ -83,17 +83,21 @@ exports.index = function(req, res, next) {
 
 // Display item create form on GET.
 exports.item_create_get = function(req, res, next) {
-	// retrieve all item groups for use in the form
-	Item_group.find().exec(function(err, item_group_list) {
-		if (err) {
-			return next(err);
-		}
-		//Successful, so render
-		res.render("item/form", {
-			title: "Create Item",
-			item_groups: item_group_list
+	if (req.user.user_group === "admin") {
+		// retrieve all item groups for use in the form
+		Item_group.find().exec(function(err, item_group_list) {
+			if (err) {
+				return next(err);
+			}
+			//Successful, so render
+			res.render("item/form", {
+				title: "Create Item",
+				item_groups: item_group_list
+			});
 		});
-	});
+	} else {
+		res.redirect("/store/items");
+	}
 };
 
 // Display item create form on post.
@@ -101,192 +105,215 @@ exports.item_create_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
-		console.log(req.body);
-		// Extract the validation errors from a request.
-		const errors = validationResult(req),
-			// Create an item object with escaped and trimmed data.
-			item = new Item({
-				name: req.body.item_name,
-				description: req.body.description,
-				price: req.body.price,
-				img_100: req.body.img_100,
-				img_700_400: req.body.img_700_400,
-				item_groups: req.body.item_groups
-			});
-
-		if (!errors.isEmpty()) {
-			// There are errors. Render form again with sanitized values/errors messages.
-
-			// retrieve all item groups for use in the form
-			Item_group.find().exec(function(err, item_group_list) {
-				if (err) {
-					return next(err);
-				}
-
-				// Mark our selected item groups as checked.
-				for (let i = 0; i < item_group_list.length; i++) {
-					if (item.item_groups.indexOf(item_group_list[i]._id) > -1) {
-						item_group_list[i].checked = "true";
-					}
-				}
-
-				res.render("item/form", {
-					title: "Create Item",
-					item_groups: item_group_list,
-					item: req.body,
-					errors: errors.array()
+		if (req.user.user_group === "admin") {
+			console.log(req.body);
+			// Extract the validation errors from a request.
+			const errors = validationResult(req),
+				// Create an item object with escaped and trimmed data.
+				item = new Item({
+					name: req.body.item_name,
+					description: req.body.description,
+					price: req.body.price,
+					img_100: req.body.img_100,
+					img_700_400: req.body.img_700_400,
+					item_groups: req.body.item_groups
 				});
-			});
 
-			return;
+			if (!errors.isEmpty()) {
+				// There are errors. Render form again with sanitized values/errors messages.
+
+				// retrieve all item groups for use in the form
+				Item_group.find().exec(function(err, item_group_list) {
+					if (err) {
+						return next(err);
+					}
+
+					// Mark our selected item groups as checked.
+					for (let i = 0; i < item_group_list.length; i++) {
+						if (
+							item.item_groups.indexOf(item_group_list[i]._id) >
+							-1
+						) {
+							item_group_list[i].checked = "true";
+						}
+					}
+
+					res.render("item/form", {
+						title: "Create Item",
+						item_groups: item_group_list,
+						item: req.body,
+						errors: errors.array()
+					});
+				});
+
+				return;
+			} else {
+				// Data from form is valid. Save the record
+				item.save(function(err) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to new item record.
+					res.redirect(item.url);
+				});
+			}
 		} else {
-			// Data from form is valid. Save the record
-			item.save(function(err) {
-				if (err) {
-					return next(err);
-				}
-				// Successful - redirect to new item record.
-				res.redirect(item.url);
-			});
+			res.redirect("/store/items");
 		}
 	}
 ];
 
 // Display item delete form on GET.
 exports.item_delete_get = function(req, res, next) {
-	async.parallel(
-		{
-			item: function(callback) {
-				Item.findById(req.params.id).exec(callback);
+	if (req.user.user_group === "admin") {
+		async.parallel(
+			{
+				item: function(callback) {
+					Item.findById(req.params.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.findOne({ "cart.item": req.params.id }).exec(
+						callback
+					);
+				}
 			},
-			orders: function(callback) {
-				Order.findOne({ "cart.item": req.params.id }).exec(callback);
+			function(err, results) {
+				if (err) return next(err);
+				if (results.item === null) {
+					const err = new Error("Item not found");
+					err.status = 404;
+					return next(err);
+				}
+				res.render("item/delete", {
+					title: "Item Delete",
+					orders: results.orders,
+					item: results.item
+				});
 			}
-		},
-		function(err, results) {
-			if (err) return next(err);
-			if (results.item === null) {
-				const err = new Error("Item not found");
-				err.status = 404;
-				return next(err);
-			}
-			res.render("item/delete", {
-				title: "Item Delete",
-				orders: results.orders,
-				item: results.item
-			});
-		}
-	);
+		);
+	} else {
+		res.redirect("/store/items");
+	}
 };
 
 // Handle item delete on POST.
 exports.item_delete_post = function(req, res, next) {
-	async.parallel(
-		{
-			item: function(callback) {
-				Item.findById(req.body.id).exec(callback);
+	if (req.user.user_group === "admin") {
+		async.parallel(
+			{
+				item: function(callback) {
+					Item.findById(req.body.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.findOne({ "cart.item": req.body.id }).exec(callback);
+				}
 			},
-			orders: function(callback) {
-				Order.findOne({ "cart.item": req.body.id }).exec(callback);
-			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
-			// Success
-			if (results.orders) {
-				// in order to prevent corrupting orders, items in use are protected
-				res.render("error", {
-					message: "Delete Item Error - Item in use",
-					error: {
-						status: `There are ${
-							results.sessions ? "sessions" : ""
-						} ${
-							results.orders ? "and orders" : ""
-						}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
-					}
-				});
-				return;
-			} else {
-				async.parallel(
-					{
-						item: function(callback) {
-							Item.findByIdAndRemove(req.body.id).exec(callback);
-						},
-						orders: function(callback) {
-							Order.findOne({ "cart.item": req.body.id }).exec(
-								callback
-							);
+			function(err, results) {
+				if (err) {
+					return next(err);
+				}
+				// Success
+				if (results.orders) {
+					// in order to prevent corrupting orders, items in use are protected
+					res.render("error", {
+						message: "Delete Item Error - Item in use",
+						error: {
+							status: `There are ${
+								results.sessions ? "sessions" : ""
+							} ${
+								results.orders ? "and orders" : ""
+							}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
 						}
-					},
-					function(err, results) {}
-				);
+					});
+					return;
+				} else {
+					async.parallel(
+						{
+							item: function(callback) {
+								Item.findByIdAndRemove(req.body.id).exec(
+									callback
+								);
+							},
+							orders: function(callback) {
+								Order.findOne({
+									"cart.item": req.body.id
+								}).exec(callback);
+							}
+						},
+						function(err, results) {}
+					);
 
-				// Item is unused. It may be deleted
-				Item.findByIdAndRemove(req.body.id, function(err) {
-					if (err) {
-						return next(err);
-					}
-					// Success - go to item list
-					res.redirect("/store/items");
-				});
+					// Item is unused. It may be deleted
+					Item.findByIdAndRemove(req.body.id, function(err) {
+						if (err) {
+							return next(err);
+						}
+						// Success - go to item list
+						res.redirect("/store/items");
+					});
+				}
 			}
-		}
-	);
+		);
+	} else {
+		res.redirect("/store/items");
+	}
 };
 
 // Display item update form on GET.
 exports.item_update_get = function(req, res, next) {
-	// Get items and groups for form.
-	async.parallel(
-		{
-			item: function(callback) {
-				Item.findById(req.params.id)
-					.populate("item_groups")
-					.exec(callback);
+	if (req.user.user_group === "admin") {
+		// Get items and groups for form.
+		async.parallel(
+			{
+				item: function(callback) {
+					Item.findById(req.params.id)
+						.populate("item_groups")
+						.exec(callback);
+				},
+				groups: function(callback) {
+					Item_group.find(callback);
+				}
 			},
-			groups: function(callback) {
-				Item_group.find(callback);
-			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
-			if (results.item == null) {
-				// No results.
-				const err = new Error("item not found");
-				err.status = 404;
-				return next(err);
-			}
-			// Success.
-			// Mark our selected groups as checked.
-			for (
-				let all_g_iter = 0;
-				all_g_iter < results.groups.length;
-				all_g_iter++
-			) {
+			function(err, results) {
+				if (err) {
+					return next(err);
+				}
+				if (results.item == null) {
+					// No results.
+					const err = new Error("item not found");
+					err.status = 404;
+					return next(err);
+				}
+				// Success.
+				// Mark our selected groups as checked.
 				for (
-					let item_g_iter = 0;
-					item_g_iter < results.item.item_groups.length;
-					item_g_iter++
+					let all_g_iter = 0;
+					all_g_iter < results.groups.length;
+					all_g_iter++
 				) {
-					if (
-						results.groups[all_g_iter]._id.toString() ==
-						results.item.item_groups[item_g_iter]._id.toString()
+					for (
+						let item_g_iter = 0;
+						item_g_iter < results.item.item_groups.length;
+						item_g_iter++
 					) {
-						results.groups[all_g_iter].checked = "true";
+						if (
+							results.groups[all_g_iter]._id.toString() ==
+							results.item.item_groups[item_g_iter]._id.toString()
+						) {
+							results.groups[all_g_iter].checked = "true";
+						}
 					}
 				}
+				res.render("item/form", {
+					title: "Update item",
+					item_groups: results.groups,
+					item: results.item
+				});
 			}
-			res.render("item/form", {
-				title: "Update item",
-				item_groups: results.groups,
-				item: results.item
-			});
-		}
-	);
+		);
+	} else {
+		res.redirect("/store/items");
+	}
 };
 
 // Handle item update on POST.
@@ -294,71 +321,77 @@ exports.item_update_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
-		console.log(req.body);
-		// Extract the validation errors from a request.
-		const errors = validationResult(req),
-			// Create an item object with escaped and trimmed data.
-			item = new Item({
-				name: req.body.item_name,
-				description: req.body.description,
-				price: req.body.price,
-				img_100: req.body.img_100,
-				img_700_400: req.body.img_700_400,
-				item_groups: req.body.item_groups,
-				_id: req.params.id
-			});
+		if (req.user.user_group === "admin") {
+			console.log(req.body);
+			// Extract the validation errors from a request.
+			const errors = validationResult(req),
+				// Create an item object with escaped and trimmed data.
+				item = new Item({
+					name: req.body.item_name,
+					description: req.body.description,
+					price: req.body.price,
+					img_100: req.body.img_100,
+					img_700_400: req.body.img_700_400,
+					item_groups: req.body.item_groups,
+					_id: req.params.id
+				});
 
-		if (!errors.isEmpty()) {
-			// There are errors. Render form again with sanitized values/errors messages.
+			if (!errors.isEmpty()) {
+				// There are errors. Render form again with sanitized values/errors messages.
 
-			// retrieve existing data since form data was invalid
-			async.parallel(
-				{
-					item: function(callback) {
-						Item.findById(req.params.id)
-							.populate("item_groups")
-							.exec(callback);
+				// retrieve existing data since form data was invalid
+				async.parallel(
+					{
+						item: function(callback) {
+							Item.findById(req.params.id)
+								.populate("item_groups")
+								.exec(callback);
+						},
+						groups: function(callback) {
+							Item_group.find(callback);
+						}
 					},
-					groups: function(callback) {
-						Item_group.find(callback);
+					function(err, results) {
+						if (err) {
+							return next(err);
+						}
+
+						// Mark our selected item groups as checked.
+						for (let i = 0; i < results.groups.length; i++) {
+							if (
+								item.item_groups.indexOf(
+									results.groups[i]._id
+								) > -1
+							) {
+								results.groups[i].checked = "true";
+							}
+						}
+
+						res.render("item/form", {
+							title: "Update Item",
+							item_groups: results.groups,
+							item: results.item,
+							errors: errors.array()
+						});
 					}
-				},
-				function(err, results) {
+				);
+
+				return;
+			} else {
+				// Data from form is valid. Update the record.
+				Item.findByIdAndUpdate(req.params.id, item, {}, function(
+					err,
+					_item
+				) {
 					if (err) {
 						return next(err);
 					}
-
-					// Mark our selected item groups as checked.
-					for (let i = 0; i < results.groups.length; i++) {
-						if (
-							item.item_groups.indexOf(results.groups[i]._id) > -1
-						) {
-							results.groups[i].checked = "true";
-						}
-					}
-
-					res.render("item/form", {
-						title: "Update Item",
-						item_groups: results.groups,
-						item: results.item,
-						errors: errors.array()
-					});
-				}
-			);
-
-			return;
+					// Successful - redirect to book detail page.
+					res.redirect(_item.url);
+				});
+			}
 		} else {
-			// Data from form is valid. Update the record.
-			Item.findByIdAndUpdate(req.params.id, item, {}, function(
-				err,
-				_item
-			) {
-				if (err) {
-					return next(err);
-				}
-				// Successful - redirect to book detail page.
-				res.redirect(_item.url);
-			});
+			res.redirect("/store/items");
 		}
 	}
 ];

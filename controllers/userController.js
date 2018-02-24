@@ -1,6 +1,7 @@
 const User = require("../models/user"),
 	Order = require("../models/order"),
 	salt = require("password-hash-and-salt"),
+	async = require("async"),
 	{ rootCredentials: root } = require("../config/keys"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter"),
@@ -143,7 +144,7 @@ exports.user_create_post = [
 							middle_name: req.body.middle_name,
 							last_name: req.body.last_name
 						},
-						user_group: (req.body.admin ? "admin" : "user")
+						user_group: req.body.admin ? "admin" : "user"
 					});
 
 					user.save(function(err) {
@@ -163,10 +164,7 @@ exports.user_create_post = [
 
 // Handle user delete on POST.
 exports.user_delete_get = function(req, res) {
-	if (
-		req.user._id.equals(req.params.id) ||
-		req.user.user_group === "admin"
-	) {
+	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
 		async.parallel(
 			{
 				user: function(callback) {
@@ -201,10 +199,7 @@ exports.user_delete_get = function(req, res) {
 
 // Handle user delete on POST.
 exports.user_delete_post = function(req, res) {
-	if (
-		req.user._id.equals(req.params.id) ||
-		req.user.user_group === "admin"
-	) {
+	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
 		async.parallel(
 			{
 				user: function(callback) {
@@ -212,9 +207,6 @@ exports.user_delete_post = function(req, res) {
 				},
 				orders: function(callback) {
 					Order.findOne({ user: req.params.id }).exec(callback);
-				},
-				sessions: function(callback) {
-					Session.findOne({ user: req.params.id }).exec(callback);
 				}
 			},
 			function(err, results) {
@@ -222,16 +214,12 @@ exports.user_delete_post = function(req, res) {
 					return next(err);
 				}
 				// Success
-				if (results.orders || results.sessions) {
+				if (results.orders) {
 					// in order to prevent corrupting orders or sessions, items in use are protected
 					res.render("error", {
 						message: "Delete User Error - User in use",
 						error: {
-							status: `There are ${
-								results.sessions ? "sessions" : ""
-							} ${
-								results.orders ? "and orders" : ""
-							}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
+							status: `There are ${results.orders} orders with existing records of this user. Thus, the user cannot be deleted. If you need to remove the user from the store, please change the 'active' property to false.`
 						}
 					});
 					return;
@@ -261,10 +249,7 @@ exports.user_delete_post = function(req, res) {
 
 // Display user update form on GET.
 exports.user_update_get = function(req, res) {
-	if (
-		req.user._id.equals(req.params.id) ||
-		req.user.user_group === "admin"
-	) {
+	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
 		User.findById(req.params.id).exec(function(err, user) {
 			if (err) {
 				return next(err);
@@ -344,24 +329,35 @@ exports.user_update_post = [
 
 // Display detail page for a specific user.
 exports.user_detail = function(req, res) {
-	if (
-		req.user._id.equals(req.params.id) ||
-		req.user.user_group === "admin"
-	) {
-		User.findById(req.params.id).exec(function(err, user_detail) {
-			if (err) return next(err);
-			if (user_detail == null) {
-				// No results.
-				const err = new Error("user not found");
-				err.status = 404;
-				return next(err);
+	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
+		async.parallel(
+			{
+				user: function(callback) {
+					User.findById(req.params.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.find(
+						{ user: req.params.id },
+						"total created_at"
+					).exec(callback);
+				}
+			},
+			function(err, results) {
+				if (err) return next(err);
+				if (results.user == null) {
+					// No results.
+					const err = new Error("user not found");
+					err.status = 404;
+					return next(err);
+				}
+				// Successful, so render
+				res.render("user/detail", {
+					title: "User Detail",
+					user_detail: results.user,
+					order_list: results.orders
+				});
 			}
-			// Successful, so render
-			res.render("user/detail", {
-				title: "User Detail",
-				user_detail: user_detail
-			});
-		});
+		);
 	} else {
 		res.redirect("/login");
 	}

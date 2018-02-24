@@ -47,17 +47,21 @@ const Coupon = require("../models/coupon"),
 
 // Display coupon create form on GET.
 exports.coupon_create_get = function(req, res) {
-	// retrieve all coupon groups for use in the form
-	Item_group.find().exec(function(err, item_group_list) {
-		if (err) {
-			return next(err);
-		}
-		//Successful, so render
-		res.render("coupon/form", {
-			title: "Create Coupon",
-			item_groups: item_group_list
+	if (req.user.user_group === "admin") {
+		// retrieve all coupon groups for use in the form
+		Item_group.find().exec(function(err, item_group_list) {
+			if (err) {
+				return next(err);
+			}
+			//Successful, so render
+			res.render("coupon/form", {
+				title: "Create Coupon",
+				item_groups: item_group_list
+			});
 		});
-	});
+	} else {
+		res.redirect("/store/coupons");
+	}
 };
 
 // Handle coupon create on POST.
@@ -65,178 +69,199 @@ exports.coupon_create_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
-		// Extract the validation errors from a request.
-		const errors = validationResult(req),
-			// Create an coupon object with escaped and trimmed data.
-			coupon = new Coupon({
-				name: req.body.coupon_name,
-				description: req.body.description,
-				discount_percent: req.body.discount_percent,
-				expiration_date: req.body.expiration_date,
-				img_100: req.body.img_100,
-				item_groups: req.body.item_groups
-			});
-
-		if (!errors.isEmpty()) {
-			// There are errors. Render form again with sanitized values/errors messages.
-
-			// retrieve all coupon groups for use in the form
-			Item_group.find().exec(function(err, item_group_list) {
-				if (err) {
-					return next(err);
-				}
-
-				// Mark our selected coupon groups as checked.
-				for (let i = 0; i < item_group_list.length; i++) {
-					if (
-						coupon.item_groups.indexOf(item_group_list[i]._id) > -1
-					) {
-						item_group_list[i].checked = "true";
-					}
-				}
-
-				res.render("coupon/form", {
-					title: "Create Coupon",
-					item_groups: item_group_list,
-					coupon: req.body,
-					errors: errors.array()
+		if (req.user.user_group === "admin") {
+			// Extract the validation errors from a request.
+			const errors = validationResult(req),
+				// Create an coupon object with escaped and trimmed data.
+				coupon = new Coupon({
+					name: req.body.coupon_name,
+					description: req.body.description,
+					discount_percent: req.body.discount_percent,
+					expiration_date: req.body.expiration_date,
+					img_100: req.body.img_100,
+					valid_item_groups: req.body.item_groups
 				});
-			});
 
-			return;
+			if (!errors.isEmpty()) {
+				// There are errors. Render form again with sanitized values/errors messages.
+
+				// retrieve all coupon groups for use in the form
+				Item_group.find().exec(function(err, item_group_list) {
+					if (err) {
+						return next(err);
+					}
+
+					// Mark our selected coupon groups as checked.
+					for (let i = 0; i < item_group_list.length; i++) {
+						if (
+							coupon.item_groups.indexOf(item_group_list[i]._id) >
+							-1
+						) {
+							item_group_list[i].checked = "true";
+						}
+					}
+
+					res.render("coupon/form", {
+						title: "Create Coupon",
+						item_groups: item_group_list,
+						coupon: req.body,
+						errors: errors.array()
+					});
+				});
+
+				return;
+			} else {
+				// Data from form is valid. Save the record
+				coupon.save(function(err) {
+					if (err) {
+						return next(err);
+					}
+					// Successful - redirect to new coupon record.
+					res.redirect(coupon.url);
+				});
+			}
 		} else {
-			// Data from form is valid. Save the record
-			coupon.save(function(err) {
-				if (err) {
-					return next(err);
-				}
-				// Successful - redirect to new coupon record.
-				res.redirect(coupon.url);
-			});
+			res.redirect("/store/coupons");
 		}
 	}
 ];
 
 // Display coupon delete form on GET.
 exports.coupon_delete_get = function(req, res, next) {
-	async.parallel(
-		{
-			coupon: function(callback) {
-				Coupon.findById(req.params.id).exec(callback);
+	if (req.user.user_group === "admin") {
+		async.parallel(
+			{
+				coupon: function(callback) {
+					Coupon.findById(req.params.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.findOne({ coupons_present: req.body.id }).exec(
+						callback
+					);
+				}
 			},
-			orders: function(callback) {
-				Order.findOne({ coupons_present: req.body.id }).exec(callback);
+			function(err, results) {
+				if (err) return next(err);
+				if (results.coupon === null) {
+					const err = new Error("Coupon not found");
+					err.status = 404;
+					return next(err);
+				}
+				res.render("coupon/delete", {
+					title: "Coupon Delete",
+					orders: results.orders,
+					coupon: results.coupon
+				});
 			}
-		},
-		function(err, results) {
-			if (err) return next(err);
-			if (results.coupon === null) {
-				const err = new Error("Coupon not found");
-				err.status = 404;
-				return next(err);
-			}
-			res.render("coupon/delete", {
-				title: "Coupon Delete",
-				orders: results.orders,
-				coupon: results.coupon
-			});
-		}
-	);
+		);
+	} else {
+		res.redirect("/store/coupons");
+	}
 };
 
 // Handle coupon delete on POST.
 exports.coupon_delete_post = function(req, res, next) {
-	async.parallel(
-		{
-			coupon: function(callback) {
-				Coupon.findById(req.body.id).exec(callback);
+	if (req.user.user_group === "admin") {
+		async.parallel(
+			{
+				coupon: function(callback) {
+					Coupon.findById(req.body.id).exec(callback);
+				},
+				orders: function(callback) {
+					Order.findOne({ coupons_present: req.body.id }).exec(
+						callback
+					);
+				}
 			},
-			orders: function(callback) {
-				Order.findOne({ coupons_present: req.body.id }).exec(callback);
-			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
+			function(err, results) {
+				if (err) {
+					return next(err);
+				}
 
-			// Success
-			if (results.orders || results.sessions) {
-				// in order to prevent corrupting orders or sessions, coupons in use are protected
-				res.render("error", {
-					message: "Delete Coupon Error - Coupon in use",
-					error: {
-						status: `There are orders with existing records of this coupon. Thus, the coupon cannot be deleted. If you need to remove the coupon from the store, please change the 'active' property to false.`
-					}
-				});
-				return;
-			} else {
-				// Coupon is unused. It may be deleted
-				Coupon.findByIdAndRemove(req.body.id, function(err) {
-					if (err) {
-						return next(err);
-					}
-					// Success - go to coupon list
-					res.redirect("/store/coupons");
-				});
+				// Success
+				if (results.orders || results.sessions) {
+					// in order to prevent corrupting orders or sessions, coupons in use are protected
+					res.render("error", {
+						message: "Delete Coupon Error - Coupon in use",
+						error: {
+							status: `There are orders with existing records of this coupon. Thus, the coupon cannot be deleted. If you need to remove the coupon from the store, please change the 'active' property to false.`
+						}
+					});
+					return;
+				} else {
+					// Coupon is unused. It may be deleted
+					Coupon.findByIdAndRemove(req.body.id, function(err) {
+						if (err) {
+							return next(err);
+						}
+						// Success - go to coupon list
+						res.redirect("/store/coupons");
+					});
+				}
 			}
-		}
-	);
+		);
+	} else {
+		res.redirect("/store/coupons");
+	}
 };
 
 // Display coupon update form on GET.
 exports.coupon_update_get = function(req, res, next) {
-	// Get coupons and groups for form.
-	async.parallel(
-		{
-			coupon: function(callback) {
-				Coupon.findById(req.params.id)
-					.populate("valid_item_groups")
-					.exec(callback);
+	if (req.user.user_group === "admin") {
+		// Get coupons and groups for form.
+		async.parallel(
+			{
+				coupon: function(callback) {
+					Coupon.findById(req.params.id)
+						.populate("valid_item_groups")
+						.exec(callback);
+				},
+				groups: function(callback) {
+					Item_group.find(callback);
+				}
 			},
-			groups: function(callback) {
-				Item_group.find(callback);
-			}
-		},
-		function(err, results) {
-			if (err) {
-				return next(err);
-			}
-			if (results.coupon == null) {
-				// No results.
-				const err = new Error("coupon not found");
-				err.status = 404;
-				return next(err);
-			}
-			// Success.
-			// Mark our selected groups as checked.
-			for (
-				let all_g_iter = 0;
-				all_g_iter < results.groups.length;
-				all_g_iter++
-			) {
+			function(err, results) {
+				if (err) {
+					return next(err);
+				}
+				if (results.coupon == null) {
+					// No results.
+					const err = new Error("coupon not found");
+					err.status = 404;
+					return next(err);
+				}
+				// Success.
+				// Mark our selected groups as checked.
 				for (
-					let coupon_g_iter = 0;
-					coupon_g_iter < results.coupon.valid_item_groups.length;
-					coupon_g_iter++
+					let all_g_iter = 0;
+					all_g_iter < results.groups.length;
+					all_g_iter++
 				) {
-					if (
-						results.groups[all_g_iter]._id.toString() ==
-						results.coupon.valid_item_groups[
-							coupon_g_iter
-						]._id.toString()
+					for (
+						let coupon_g_iter = 0;
+						coupon_g_iter < results.coupon.valid_item_groups.length;
+						coupon_g_iter++
 					) {
-						results.groups[all_g_iter].checked = "true";
+						if (
+							results.groups[all_g_iter]._id.toString() ==
+							results.coupon.valid_item_groups[
+								coupon_g_iter
+							]._id.toString()
+						) {
+							results.groups[all_g_iter].checked = "true";
+						}
 					}
 				}
+				res.render("coupon/form", {
+					title: "Update coupon",
+					item_groups: results.groups,
+					coupon: results.coupon
+				});
 			}
-			res.render("coupon/form", {
-				title: "Update coupon",
-				item_groups: results.groups,
-				coupon: results.coupon
-			});
-		}
-	);
+		);
+	} else {
+		res.redirect("/store/coupons");
+	}
 };
 
 // Handle coupon update on POST.
@@ -244,71 +269,76 @@ exports.coupon_update_post = [
 	...validateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
-		// Extract the validation errors from a request.
-		const errors = validationResult(req),
-			// Create an coupon object with escaped and trimmed data.
-			coupon = new Coupon({
-				name: req.body.coupon_name,
-				description: req.body.description,
-				discount_percent: req.body.discount_percent,
-				expiration_date: req.body.expiration_date,
-				img_100: req.body.img_100,
-				valid_item_groups: req.body.item_groups,
-				_id: req.params.id
-			});
+		if (req.user.user_group === "admin") {
+			// Extract the validation errors from a request.
+			const errors = validationResult(req),
+				// Create an coupon object with escaped and trimmed data.
+				coupon = new Coupon({
+					name: req.body.coupon_name,
+					description: req.body.description,
+					discount_percent: req.body.discount_percent,
+					expiration_date: req.body.expiration_date,
+					img_100: req.body.img_100,
+					valid_item_groups: req.body.item_groups,
+					_id: req.params.id
+				});
 
-		if (!errors.isEmpty()) {
-			// There are errors. Render form again with sanitized values/errors messages.
+			if (!errors.isEmpty()) {
+				// There are errors. Render form again with sanitized values/errors messages.
 
-			// retrieve existing data since form data was invalid
-			async.parallel(
-				{
-					coupon: function(callback) {
-						Coupon.findById(req.params.id)
-							.populate("item_groups")
-							.exec(callback);
+				// retrieve existing data since form data was invalid
+				async.parallel(
+					{
+						coupon: function(callback) {
+							Coupon.findById(req.params.id)
+								.populate("item_groups")
+								.exec(callback);
+						},
+						groups: function(callback) {
+							Item_group.find(callback);
+						}
 					},
-					groups: function(callback) {
-						Item_group.find(callback);
+					function(err, results) {
+						if (err) {
+							return next(err);
+						}
+
+						// Mark our selected coupon groups as checked.
+						for (let i = 0; i < results.groups.length; i++) {
+							if (
+								coupon.item_groups.indexOf(
+									results.groups[i]._id
+								) > -1
+							) {
+								results.groups[i].checked = "true";
+							}
+						}
+
+						res.render("coupon/form", {
+							title: "Update Coupon",
+							item_groups: results.groups,
+							coupon: results.coupon,
+							errors: errors.array()
+						});
 					}
-				},
-				function(err, results) {
+				);
+
+				return;
+			} else {
+				// Data from form is valid. Update the record.
+				Coupon.findByIdAndUpdate(req.params.id, coupon, {}, function(
+					err,
+					_coupon
+				) {
 					if (err) {
 						return next(err);
 					}
-
-					// Mark our selected coupon groups as checked.
-					for (let i = 0; i < results.groups.length; i++) {
-						if (
-							coupon.item_groups.indexOf(results.groups[i]._id) >
-							-1
-						) {
-							results.groups[i].checked = "true";
-						}
-					}
-
-					res.render("coupon/form", {
-						title: "Update Coupon",
-						item_groups: results.groups,
-						coupon: results.coupon,
-						errors: errors.array()
-					});
-				}
-			);
-
-			return;
+					// Successful - redirect to book detail page.
+					res.redirect(_coupon.url);
+				});
+			}
 		} else {
-			// Data from form is valid. Update the record.
-			Coupon.findByIdAndUpdate(req.params.id, coupon, {}, function(
-				err,
-				_coupon
-			) {
-				if (err) {
-					return next(err);
-				}
-				// Successful - redirect to book detail page.
-				res.redirect(_coupon.url);
-			});
+			res.redirect("/store/coupons");
 		}
 	}
 ];

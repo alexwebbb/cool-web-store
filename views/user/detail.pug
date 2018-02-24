@@ -7,12 +7,23 @@ block main
   div(style='margin-left:20px;margin-top:20px')
 
     h4 Orders
-    if order_list
-      ul
-      each order in order_list
-        li 
-          a(href=order.url) #{order.title}
-          p #{book.summary}
-
-    else
-      p This user has no orders.
+    table#cart.table.table-hover.table-sm
+      thead
+        tr
+          th(style='width:15%') Total
+          th(style='width:13%; text-indent:10px') Date
+      tbody
+      form(method='POST' action='')
+        each order in order_list
+          tr
+            td(data-th='Price') $#{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+            td.text-center(data-th='Date') #{order.created_at}
+        else
+          tr There are no items.
+  if current_user && current_user.user_group==="admin"
+    a.btn.btn-success.mt-2.mr-2(href=user_detail.url + '/update')
+      | Edit 
+      i.fa.fa-pencil
+    a.btn.btn-danger.mt-2(href=user_detail.url + '/delete')
+      | Delete 
+      i.fa.fa-trash-o
