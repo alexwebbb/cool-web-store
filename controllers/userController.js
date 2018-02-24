@@ -100,7 +100,7 @@ exports.start = function(req, res, next) {
 
 // Display User create form on GET.
 exports.user_create_get = function(req, res, next) {
-	if (req.user.user_group === "admin") {
+	if (req.user && req.user.user_group === "admin") {
 		res.render("user/form", {
 			title: "Create User",
 			user: { group: "admin" }

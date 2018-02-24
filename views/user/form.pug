@@ -53,7 +53,7 @@ block main
         required='true' 
         value=(undefined===user ? '' : user.last_name)
         )
-      if (user.group==="admin")
+      if current_user && current_user.user_group==="admin"
         div(style='display: inline; padding-right:10px;')
             input.checkbox-input(
               type='checkbox'

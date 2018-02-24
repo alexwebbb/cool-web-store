@@ -9,7 +9,7 @@ block main
         tr
           th(style='width:50%') Product
           th(style='width:10%') Price
-          th(style='width:8%; text-indent:10px') No. Left
+          //- th(style='width:8%; text-indent:10px') No. Left
           th.text-center(style='width:32%') Groups
       tbody
       form(method='POST' action='')
@@ -19,13 +19,17 @@ block main
               a.link-unstyled(href=item.url)
                 .row
                   .col-md-2.hidden-xs-down
-                    img.img-fluid(src='http://placehold.it/100x100', alt='...')
+                    img.img-fluid(src='https://placehold.it/100x100', alt='...')
                   .col-md-10
                     h4.nomargin #{item.name}
                     p
                       | #{item.description}
             td(data-th='Price') $#{item.price.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
-            td.text-center(data-th='Quantity') #{item.availability}
+            //- td.text-center(data-th='Quantity') #{item.availability}
             td.text-center(data-th='Groups') #{item.formatted_groups} 
         else
           li There are no items.
+    if current_user && current_user.user_group==="admin"
+      a.btn.btn-success.btn-block(href='/store/item/create')
+        | Add New 
+        i.fa.fa-plus-square

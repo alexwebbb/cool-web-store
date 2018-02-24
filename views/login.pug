@@ -8,5 +8,11 @@ block main
       input.form-control(type='text', name='username', placeholder='Username', required, autofocus)
       label.sr-only(for='password') Password
       input#inputPassword.form-control(type='password', name='password', placeholder='Password', required)
+      p Username: Admin 
+        br
+        | Password: password 
+      p Non-Admin: foobar1
+        br
+        | Password: password
       br
       input.btn.btn-lg.btn-primary.btn-block(type='submit', value='Sign In')

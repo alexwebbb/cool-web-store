@@ -18,7 +18,7 @@ block main
               a.link-unstyled(href=group.url)
                 .row
                   .col-md-2.hidden-xs-down
-                    img.img-fluid(src='http://placehold.it/100x100', alt='...')
+                    img.img-fluid(src='https://placehold.it/100x100', alt='...')
                   .col-md-10
                     h4.nomargin #{group.name}
                     p
@@ -27,3 +27,7 @@ block main
             //- td.text-center(data-th='Coupons') #{group.formatted_groups} 
         else
           li There are no groups.
+    if current_user && current_user.user_group==="admin"
+      a.btn.btn-success.btn-block(href='/store/group/create')
+        | Add New 
+        i.fa.fa-plus-square
