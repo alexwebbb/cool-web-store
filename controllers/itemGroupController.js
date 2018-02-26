@@ -298,7 +298,7 @@ exports.group_detail = function(req, res, next) {
 
 // Display list of all item_groups.
 exports.group_list = function(req, res) {
-	Item_group.find({}, "name description").exec(function(err, group_list) {
+	Item_group.find({}, "name description img_100").exec(function(err, group_list) {
 		if (err) return next(err);
 
 		res.render("group/list", {
