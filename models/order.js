@@ -8,9 +8,15 @@ const mongoose = require("mongoose"),
 			cart: [
 				{
 					item: {
-						type: Schema.Types.ObjectId,
-						ref: "Item",
-						required: true
+						name: { type: String, required: true },
+						description: String,
+						price: Number,
+						item_groups: [
+							{ type: Schema.Types.ObjectId, ref: "ItemGroup" }
+						],
+						img_100: String,
+						img_700_400: String,
+						id: { type: String, required: true }
 					},
 					quantity: { type: Number, required: true, min: 1 }
 				}
@@ -34,12 +40,12 @@ const mongoose = require("mongoose"),
 			}
 		},
 		{
-			timestamps: { createdAt: "created_at"}
+			timestamps: { createdAt: "created_at" }
 		}
 	);
 
-	OrderSchema.virtual("url").get(function() {
-		return "/store/order/" + this._id;
-	});
+OrderSchema.virtual("url").get(function() {
+	return "/store/order/" + this._id;
+});
 
 module.exports = mongoose.model("Order", OrderSchema);

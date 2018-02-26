@@ -10,7 +10,7 @@ const Item_group = require("../models/item_group"),
 		body("group_name")
 			.exists()
 			.withMessage("group name must be specified.")
-			.isLength({ min: 6, max: 24 })
+			.isLength({ min: 3, max: 24 })
 			.withMessage("group name must be between 6 and 24 characters.")
 			.isAscii()
 			.withMessage("group name has non-standard characters."),

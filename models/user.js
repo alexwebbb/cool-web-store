@@ -48,10 +48,6 @@ const mongoose = require("mongoose"),
 				time: { type: Date, required: true, default: Date.now() }
 			}
 		],
-		orders: [{ type: Schema.Types.ObjectId, ref: "Order", required: true }],
-		sessions: [
-			{ type: Schema.Types.ObjectId, ref: "Session", required: true }
-		],
 		user_group: {
 			type: String,
 			required: true,

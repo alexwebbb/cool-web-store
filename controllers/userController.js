@@ -165,12 +165,6 @@ exports.user_delete_get = function(req, res) {
 			{
 				user: function(callback) {
 					User.findById(req.params.id).exec(callback);
-				},
-				orders: function(callback) {
-					Order.findOne({ user: req.params.id }).exec(callback);
-				},
-				sessions: function(callback) {
-					Session.findOne({ user: req.params.id }).exec(callback);
 				}
 			},
 			function(err, results) {
@@ -182,8 +176,6 @@ exports.user_delete_get = function(req, res) {
 				}
 				res.render("user/delete", {
 					title: "User Delete",
-					sessions: results.sessions,
-					orders: results.orders,
 					user: results.user
 				});
 			}
@@ -200,9 +192,6 @@ exports.user_delete_post = function(req, res) {
 			{
 				user: function(callback) {
 					User.findById(req.params.id).exec(callback);
-				},
-				orders: function(callback) {
-					Order.findOne({ user: req.params.id }).exec(callback);
 				}
 			},
 			function(err, results) {
@@ -210,34 +199,21 @@ exports.user_delete_post = function(req, res) {
 					return next(err);
 				}
 				// Success
-				if (results.orders) {
-					// in order to prevent corrupting orders or sessions, items in use are protected
-					res.render("error", {
-						message: "Delete User Error - User in use",
-						error: {
-							status: `There are ${
-								results.orders
-							} orders with existing records of this user. Thus, the user cannot be deleted. If you need to remove the user from the store, please change the 'active' property to false.`
-						}
-					});
-					return;
-				} else {
-					// User is unused. It may be deleted
-					User.findByIdAndRemove(req.body.id, function(err) {
-						if (err) {
-							return next(err);
-						}
 
-						if (req.user.user_group === "admin") {
-							// Success - go to user list
-							res.redirect("/users");
-						} else {
-							// User Has deleted themself, log them out
-							req.logout();
-							res.redirect("/");
-						}
-					});
-				}
+				User.findByIdAndRemove(req.body.id, function(err) {
+					if (err) {
+						return next(err);
+					}
+
+					if (req.user.user_group === "admin") {
+						// Success - go to user list
+						res.redirect("/users");
+					} else {
+						// User Has deleted themself, log them out
+						req.logout();
+						res.redirect("/");
+					}
+				});
 			}
 		);
 	} else {

@@ -75,6 +75,7 @@ exports.order_create_get = function(req, res) {
 exports.order_create_post = function(req, res) {
     User.findById(req.user._id, "current_cart")
         .populate("current_cart.item")
+        .populate("current_cart.item.price_history.price")
         .exec(function(err, user) {
             if (err) return next(err);
             if (user === null) {
@@ -87,9 +88,24 @@ exports.order_create_post = function(req, res) {
                     return a + c.quantity * c.item.price;
                 }, 0),
                 totalTimes100 = total * 100,
+                newCart = user.current_cart.map(function(element) {
+                    const item = element.item;
+                    return {
+                        item: {
+                            name: item.name,
+                            description: item.description,
+                            price: item.price,
+                            img_100: item.img_100,
+                            img_700_400: item.img_700_400,
+                            item_groups: item.item_groups,
+                            id: item._id
+                        },
+                        quantity: element.quantity
+                    };
+                }),
                 order = new Order({
                     user: req.user._id,
-                    cart: user.current_cart,
+                    cart: newCart,
                     total: total
                 });
 
@@ -118,6 +134,7 @@ exports.order_create_post = function(req, res) {
                         // create an order from the cart
                         order.save(function(err) {
                             if (err) {
+                                console.log(err);
                                 return next(err);
                             }
                             callback(null);
@@ -134,7 +151,6 @@ exports.order_create_post = function(req, res) {
                 ],
                 // optional callback
                 function(err, results) {
-                    console.log(results);
                     // Successful - redirect to confirmation screen.
                     res.render("order/charge_result", {
                         title: "Payment Complete",
@@ -231,10 +247,9 @@ exports.order_update_post = function(req, res) {
 
 // Display detail page for a specific order.
 exports.order_detail = function(req, res) {
-    if (req.user.id.equals(req.params.id) || req.user.user_group === "admin") {
+    if (req.user.id === req.params.id || req.user.user_group === "admin") {
         Order.findById(req.params.id)
             .populate("user")
-            .populate("cart.item")
             .exec(function(err, order) {
                 if (err) return next(err);
                 if (order === null) {

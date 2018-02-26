@@ -3,16 +3,10 @@ extends ../layout
 block main
   h1 #{title}: #{group.name}
   p= group.description
-  
-  if orders
-  
-    p #[strong There are orders with existing records of this group. Thus, the group cannot be deleted. If you need to remove the group from the store, please change the 'active' property to false.]
 
-  else
-    p Do you really want to delete this group?
-    
-    form(method='POST' action='')
-      div.form-group
-        input#groupid.form-control(type='hidden',name='id', required='true', value=group._id )
-
-      button.btn.btn-primary(type='submit') Delete
+  p Do you really want to delete this group?
+  
+  form(method='POST' action='')
+    div.form-group
+      input#groupid.form-control(type='hidden',name='id', required='true', value=group._id )
+    button.btn.btn-primary(type='submit') Delete

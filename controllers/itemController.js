@@ -11,7 +11,7 @@ const Item = require("../models/item"),
 		body("item_name")
 			.exists()
 			.withMessage("item name must be specified.")
-			.isLength({ min: 6, max: 24 })
+			.isLength({ min: 3, max: 24 })
 			.withMessage("item name must be between 6 and 24 characters.")
 			.isAscii()
 			.withMessage("item name has non-standard characters."),
@@ -425,7 +425,7 @@ exports.item_detail = function(req, res, next) {
 
 // Display list of all items.
 exports.item_list = function(req, res, next) {
-	Item.find({}, "name description price_history availability")
+	Item.find({}, "name description price_history availability img_100")
 		.populate("item_groups")
 		.exec(function(err, item_list) {
 			if (err) return next(err);

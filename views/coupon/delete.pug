@@ -4,15 +4,9 @@ block main
   h1 #{title}: #{coupon.name}
   p= coupon.description
   
-  if orders || sessions
+  p Do you really want to delete this coupon?
   
-    p #[strong There are orders with existing records of this coupon. Thus, the coupon cannot be deleted. If you need to remove the coupon from the store, please change the 'active' property to false.]
-
-  else
-    p Do you really want to delete this coupon?
-    
-    form(method='POST' action='')
-      div.form-group
-        input#couponid.form-control(type='hidden',name='id', required='true', value=coupon._id )
-
-      button.btn.btn-primary(type='submit') Delete
+  form(method='POST' action='')
+    div.form-group
+      input#couponid.form-control(type='hidden',name='id', required='true', value=coupon._id )
+    button.btn.btn-primary(type='submit') Delete
