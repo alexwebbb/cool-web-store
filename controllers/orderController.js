@@ -32,6 +32,30 @@ exports.item_add_post = function(req, res) {
     // adds an item to the user object cart
 };
 
+// // adds item in question to the user cart
+// exports.item_add_post = function(req, res) {
+//     Item.findById(req.params.id).exec(function(err, item) {
+//         if (err) return next(err);
+//         if (item === null) {
+//             const err = new Error("Item not found");
+//             err.status = 404;
+//             return next(err);
+//         }
+//         // User object is en
+//         User.findById(req.user._id).exec(function(err, user) {
+//             user.add_to_cart(item._id);
+//             user.save().then(function(res) {
+//                 console.log("item added to cart");
+//             });
+//         });
+
+//         res.redirect(item.url);
+//     });
+
+//     // this is called from each item page as a button
+//     // adds an item to the user object cart
+// };
+
 /// ORDER CREATION AND MODIFICATION ROUTES ///
 
 // Display order create form on GET.

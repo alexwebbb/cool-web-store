@@ -13,7 +13,22 @@ const User = require("../models/user"),
 			.isLength({ min: 6, max: 24 })
 			.withMessage("Username must be between 6 and 24 characters.")
 			.isAlphanumeric()
-			.withMessage("Username has non-alphanumeric characters."),
+			.withMessage("Username has non-alphanumeric characters.")
+			.custom(function(value, { req }) {
+				// uniqueness validation
+				return new Promise((resolve, reject) => {
+					User.findOne({ username: value.toLowerCase() }).exec(function(
+						err,
+						existing_user
+					) {
+						if (existing_user) {
+							reject("Username is not unique.");
+						} else {
+							resolve(value);
+						}
+					});
+				});
+			}),
 		body("password")
 			.trim()
 			.exists()
@@ -119,7 +134,8 @@ exports.user_create_post = [
 		) {
 			// Extract the validation errors from a request.
 			const errors = validationResult(req);
-
+			errors.array().push({ msg: "testing 123" });
+			console.log(errors.array());
 			if (!errors.isEmpty()) {
 				// There are errors. Render form again with sanitized values/errors messages.
 				res.render("user/form", {

@@ -3,7 +3,8 @@ extends ../layout
 block main
   h1= title
 
-  .container
+
+  form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
         tr
@@ -11,13 +12,12 @@ block main
           //- th(style='width:14%; text-indent:10px') Items
           //- th.text-center(style='width:14%') Coupons
       tbody
-      form(method='POST' action='')
         each group in group_list
           tr
             td(data-th='Product')
               a.link-unstyled(href=group.url)
                 .row
-                  .col-md-2.hidden-xs-down
+                  .col-md-2.d-none.d-sm-block
                     img.img-fluid(src=group.img_100, alt='...')
                   .col-md-10
                     h4.nomargin #{group.name}
@@ -27,7 +27,7 @@ block main
             //- td.text-center(data-th='Coupons') #{group.formatted_groups} 
         else
           li There are no groups.
-    if current_user && current_user.user_group==="admin"
-      a.btn.btn-success.btn-block(href='/store/group/create')
-        | Add New 
-        i.fa.fa-plus-square
+  if current_user && current_user.user_group==="admin"
+    a.btn.btn-success.btn-block(href='/store/group/create')
+      | Add New 
+      i.fa.fa-plus-square

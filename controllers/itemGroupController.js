@@ -13,7 +13,22 @@ const Item_group = require("../models/item_group"),
 			.isLength({ min: 3, max: 24 })
 			.withMessage("group name must be between 6 and 24 characters.")
 			.isAscii()
-			.withMessage("group name has non-standard characters."),
+			.withMessage("group name has non-standard characters.")
+			.custom(function(value, { req }) {
+				// uniqueness validation
+				return new Promise((resolve, reject) => {
+					Item_group.findOne({ name: value }).exec(function(
+						err,
+						existing_group
+					) {
+						if (existing_group) {
+							reject("Group name is not unique.");
+						} else {
+							resolve(value);
+						}
+					});
+				});
+			}),
 		body("description")
 			.optional({ checkFalsy: true })
 			.isLength({ max: 480 })

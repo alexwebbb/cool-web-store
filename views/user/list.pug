@@ -3,7 +3,7 @@ extends ../layout
 block main
   h1= title
 
-  .container
+  form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
         tr
@@ -11,20 +11,19 @@ block main
           th(style='width:10%; text-indent:15px') Group
 
       tbody
-      form(method='POST' action='')
         each user in user_list
           tr
             td(data-th='Product')
               a.link-unstyled(href=user.url)
                 .row
-                  .col-md-2.hidden-xs-down
+                  .col-md-2.d-none.d-sm-block
                     img.img-fluid(src='https://placehold.it/100x100', alt='...')
                   .col-md-10
                     h4.nomargin #{user.name} - #{user.username}
             td.text-center(data-th='Group') #{user.user_group}
         else
           li There are no users.
-    if current_user && current_user.user_group==="admin"
-      a.btn.btn-success.btn-block(href='/user/create')
-        | Add New 
-        i.fa.fa-plus-square
+  if current_user && current_user.user_group==="admin"
+    a.btn.btn-success.btn-block(href='/user/create')
+      | Add New 
+      i.fa.fa-plus-square

@@ -68,6 +68,6 @@ block main
 
 block alert
   if errors 
-    ul
+    ul.alert.alert-danger
       for error in errors
         li!= error.msg

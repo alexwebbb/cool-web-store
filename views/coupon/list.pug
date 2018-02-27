@@ -3,7 +3,7 @@ extends ../layout
 block main
   h1= title
 
-  .container
+  form(method='POST' action='')
     p Coming soon..... coupons!
     table#cart.table.table-hover.table-sm
       thead
@@ -12,23 +12,21 @@ block main
           th(style='width:14%; text-indent:10px') Discount
           th.text-center(style='width:28%') Expiration Date
       tbody
-      form(method='POST' action='')
         each coupon in coupon_list
           tr
             td(data-th='Product')
               a.link-unstyled(href=coupon.url)
                 .row
-                  .col-md-2.hidden-xs-down
-                    img.img-fluid(src='https://placehold.it/100x100', alt='...')
+                  .col-md-2.d-none.d-sm-block
+                    img.img-fluid(src=coupon.img_100, alt='...')
                   .col-md-10
                     h4.nomargin #{coupon.name}
-                    p
-                      | #{coupon.description}
+                    p #{coupon.description}
             td.text-center(data-th='Discount') #{coupon.discount_percent}% off
             td.text-center(data-th='Expiration') #{coupon.expiration_date} 
         else
           li There are no coupons.
-    if current_user && current_user.user_group==="admin"
-      a.btn.btn-success.btn-block(href='/store/coupon/create')
-        | Add New 
-        i.fa.fa-plus-square
+  if current_user && current_user.user_group==="admin"
+    a.btn.btn-success.btn-block(href='/store/coupon/create')
+      | Add New 
+      i.fa.fa-plus-square

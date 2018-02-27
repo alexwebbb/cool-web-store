@@ -29,8 +29,16 @@ const mongoose = require("mongoose"),
 		availability: { type: Number, required: true, min: -1, default: 0 },
 		active: { type: Boolean, required: true, default: true },
 		item_groups: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }],
-		img_100: String,
-		img_700_400: String
+		img_100: {
+			type: String,
+			required: true,
+			default: "https://placehold.it/100x100"
+		},
+		img_700_400: {
+			type: String,
+			required: true,
+			default: "https://placehold.it/700x400"
+		}
 	});
 
 ItemSchema.virtual("price")

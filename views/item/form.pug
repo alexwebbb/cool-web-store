@@ -59,6 +59,6 @@ block main
     button.btn.btn-primary(type='submit') Submit
 block alert
   if errors 
-    ul
+    ul.alert.alert-danger
       for error in errors
         li!= error.msg

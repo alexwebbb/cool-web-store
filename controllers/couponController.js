@@ -9,11 +9,26 @@ const Coupon = require("../models/coupon"),
 		// Validate fields.
 		body("coupon_name")
 			.exists()
-			.withMessage("coupon name must be specified.")
+			.withMessage("Coupon name must be specified.")
 			.isLength({ min: 6, max: 24 })
-			.withMessage("coupon name must be between 6 and 24 characters.")
+			.withMessage("Coupon name must be between 6 and 24 characters.")
 			.isAscii()
-			.withMessage("coupon name has non-standard characters."),
+			.withMessage("Coupon name has non-standard characters.")
+			.custom(function(value, { req }) {
+				// uniqueness validation
+				return new Promise((resolve, reject) => {
+					Coupon.findOne({ name: value }).exec(function(
+						err,
+						existing_coupon
+					) {
+						if (existing_coupon) {
+							reject("Coupon name is not unique.");
+						} else {
+							resolve(value);
+						}
+					});
+				});
+			}),
 		body("description")
 			.optional({ checkFalsy: true })
 			.isLength({ max: 480 })

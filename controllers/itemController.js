@@ -10,11 +10,26 @@ const Item = require("../models/item"),
 		// Validate fields.
 		body("item_name")
 			.exists()
-			.withMessage("item name must be specified.")
+			.withMessage("Item name must be specified.")
 			.isLength({ min: 3, max: 24 })
-			.withMessage("item name must be between 6 and 24 characters.")
+			.withMessage("Item name must be between 6 and 24 characters.")
 			.isAscii()
-			.withMessage("item name has non-standard characters."),
+			.withMessage("Item name has non-standard characters.")
+			.custom(function(value, { req }) {
+				// uniqueness validation
+				return new Promise((resolve, reject) => {
+					Item.findOne({ name: value }).exec(function(
+						err,
+						existing_item
+					) {
+						if (existing_item) {
+							reject("Item name is not unique.");
+						} else {
+							resolve(value);
+						}
+					});
+				});
+			}),
 		body("description")
 			.optional({ checkFalsy: true })
 			.isLength({ max: 480 })

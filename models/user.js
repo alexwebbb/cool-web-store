@@ -53,7 +53,8 @@ const mongoose = require("mongoose"),
 			required: true,
 			enum: ["user", "admin"],
 			default: "user"
-		}
+		},
+		active: { type: Boolean, required: true, default: true }
 	});
 
 UserSchema.virtual("url").get(function() {
@@ -122,9 +123,7 @@ UserSchema.virtual("current_view")
 	});
 
 UserSchema.methods.add_to_cart = function(id) {
-	console.log(
-		this.current_cart.some(e => e.item.equals(id))
-	);
+	console.log(this.current_cart.some(e => e.item.equals(id)));
 	if (!this.current_cart.some(e => e.item.equals(id))) {
 		this.current_cart.push({ item: id });
 	} else {

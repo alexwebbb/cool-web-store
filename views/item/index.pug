@@ -36,10 +36,19 @@ block main
                 img.card-img-top.img-fluid(
                   src=(item.img_700_400 ? item.img_700_400 : 'https://placehold.it/700x400'), 
                   alt='') 
-              .card-body
+              .card-body.px-1
                 h4.card-title
                   a(href=item.url) #{item.name}
                 h5 $#{item.formatted_price}
                 p.card-text #{item.description}
               .card-footer 
+                form(method='POST' action=item.url+'/add')
+                  div.form-group
+                    input#itemid.form-control(
+                      type='hidden'
+                      name='id'
+                      required='true'
+                      value=item._id
+                      )
+                  button.btn.btn-primary.btn-block(type='submit') Add to Cart
         
