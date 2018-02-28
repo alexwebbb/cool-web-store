@@ -229,8 +229,10 @@ exports.order_update_get = function(req, res, next) {
                         if (err) {
                             return next(err);
                         }
-                        callback(null, user);
+                        callback(null, _user);
                     });
+                } else {
+                    callback(null, user);
                 }
             }
         ],
