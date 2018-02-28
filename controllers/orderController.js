@@ -1,6 +1,7 @@
 const Order = require("../models/order"),
     Item = require("../models/item"),
     User = require("../models/user"),
+    Coupon = require("../models/coupon"),
     keys = require("../config/keys"),
     async = require("async"),
     // Initialize stripe
@@ -9,85 +10,101 @@ const Order = require("../models/order"),
 /// SHOPPING CART MODIFICATION ROUTES ///
 
 // adds item in question to the user cart
-exports.item_add_post = function(req, res) {
-    Item.findById(req.params.id).exec(function(err, item) {
-        if (err) return next(err);
-        if (item === null) {
-            const err = new Error("Item not found");
-            err.status = 404;
-            return next(err);
+exports.item_add_post = function(req, res, next) {
+    async.waterfall(
+        [
+            function(callback) {
+                Item.findById(req.params.id).exec(function(err, item) {
+                    if (err) return next(err);
+                    if (item === null) {
+                        const err = new Error("Item not found");
+                        err.status = 404;
+                        return next(err);
+                    }
+                    callback(null, item._id);
+                });
+            },
+            function(id, callback) {
+                User.findById(req.user._id).exec(function(err, user) {
+                    user.add_to_cart(id);
+                    user.save().then(function(res) {
+                        callback(null);
+                    });
+                });
+            }
+        ],
+        function(err) {
+            if (err) return next(err);
+            res.redirect("/store/cart");
         }
-        // User object is en
-        User.findById(req.user._id).exec(function(err, user) {
-            user.add_to_cart(item._id);
-            user.save().then(function(res) {
-                console.log("item added to cart");
-            });
-        });
-
-        res.redirect(item.url);
-    });
+    );
 
     // this is called from each item page as a button
     // adds an item to the user object cart
 };
 
-// // adds item in question to the user cart
-// exports.item_add_post = function(req, res) {
-//     Item.findById(req.params.id).exec(function(err, item) {
-//         if (err) return next(err);
-//         if (item === null) {
-//             const err = new Error("Item not found");
-//             err.status = 404;
-//             return next(err);
-//         }
-//         // User object is en
-//         User.findById(req.user._id).exec(function(err, user) {
-//             user.add_to_cart(item._id);
-//             user.save().then(function(res) {
-//                 console.log("item added to cart");
-//             });
-//         });
+// adds item in question to the user cart
+exports.coupon_add_post = function(req, res, next) {
+    async.waterfall(
+        [
+            function(callback) {
+                Coupon.findOne({ code: req.body.code }).exec(function(
+                    err,
+                    coupon
+                ) {
+                    if (err) return next(err);
+                    if (coupon === null) {
+                        const err = new Error("Coupon not found");
+                        err.status = 404;
+                        return next(err);
+                    }
+                    callback(null, coupon);
+                });
+            },
+            function(coupon, callback) {
+                User.findById(req.user._id).exec(function(err, user) {
+                    user.activate_coupon(coupon._id);
+                    user.save().then(function(res) {
+                        callback(null);
+                    });
+                });
+            }
+        ],
+        function(err) {
+            if (err) return next(err);
+            res.redirect("/store/cart/");
+        }
+    );
 
-//         res.redirect(item.url);
-//     });
-
-//     // this is called from each item page as a button
-//     // adds an item to the user object cart
-// };
+    // this is called from each item page as a button
+    // adds an item to the user object cart
+};
 
 /// ORDER CREATION AND MODIFICATION ROUTES ///
 
 // Display order create form on GET.
-exports.order_create_get = function(req, res) {
-    async.parallel(
-        {
-            user: function(callback) {
-                User.findById(req.user._id, "current_cart")
-                    .populate("current_cart.item")
-                    .exec(callback);
-            }
-        },
-        function(err, results) {
+exports.order_create_get = function(req, res, next) {
+    User.findById(req.user._id, "current_cart")
+        .populate("current_cart.item")
+        .exec(function(err, user) {
             if (err) return next(err);
-            if (results.user === null) {
+            if (user === null) {
                 const err = new Error("User not found");
                 err.status = 404;
                 return next(err);
             }
 
-            const total = results.user.current_cart.reduce((a, c) => {
+            const total = user.current_cart.reduce((a, c) => {
                 return a + c.quantity * c.item.price;
             }, 0);
 
             res.render("order/checkout_form", {
                 title: "Checkout",
                 cart_total: total,
-                user_cart: results.user.current_cart,
+                user_cart: user.current_cart,
                 keyPublishable: keys.stripePublishable
             });
-        }
-    );
+        });
 
     // this is the shopping cart
     // this checks the user object and then returns the list of items
@@ -96,7 +113,7 @@ exports.order_create_get = function(req, res) {
 };
 
 // Handle order create on POST.
-exports.order_create_post = function(req, res) {
+exports.order_create_post = function(req, res, next) {
     User.findById(req.user._id, "current_cart")
         .populate("current_cart.item")
         .populate("current_cart.item.price_history.price")
@@ -173,7 +190,6 @@ exports.order_create_post = function(req, res) {
                         });
                     }
                 ],
-                // optional callback
                 function(err, results) {
                     // Successful - redirect to confirmation screen.
                     res.render("order/charge_result", {
@@ -191,11 +207,17 @@ exports.order_create_post = function(req, res) {
 };
 
 // Display order update form on GET. maps to /cart
-exports.order_update_get = function(req, res) {
-    if (req.user) {
-        User.findById(req.user._id)
-            .populate("current_cart.item")
-            .exec(function(err, user) {
+exports.order_update_get = function(req, res, next) {
+    async.waterfall(
+        [
+            function(callback) {
+                User.findById(req.user._id)
+                    .populate("current_cart.item")
+                    .exec(function(err, user) {
+                        callback(null, user);
+                    });
+            },
+            function(user, callback) {
                 if (user.current_cart.find(x => x.item === null)) {
                     user.current_cart = user.current_cart.filter(
                         x => x.item !== null
@@ -207,70 +229,59 @@ exports.order_update_get = function(req, res) {
                         if (err) {
                             return next(err);
                         }
-
-                        const total = user.current_cart.reduce((a, c) => {
-                            return a + c.quantity * c.item.price;
-                        }, 0);
-
-                        res.render("order/cart_form", {
-                            title: "Cart",
-                            cart_total: total,
-                            user_cart: user.current_cart
-                        });
-                    });
-                } else {
-                    const total = user.current_cart.reduce((a, c) => {
-                        return a + c.quantity * c.item.price;
-                    }, 0);
-
-                    res.render("order/cart_form", {
-                        title: "Cart",
-                        cart_total: total,
-                        user_cart: user.current_cart
+                        callback(null, user);
                     });
                 }
+            }
+        ],
+        function(err, user) {
+            const total = user.current_cart.reduce((a, c) => {
+                return a + c.quantity * c.item.price;
+            }, 0);
+
+            res.render("order/cart_form", {
+                title: "Cart",
+                cart_total: total,
+                user_cart: user.current_cart
             });
-    }
+        }
+    );
 
     // changing the contents of the cart. doesn't modify orders, just the cart
 };
 
 // Handle order update on POST.
-exports.order_update_post = function(req, res) {
-    // res.send(req.body);
-    if (req.user) {
-        let user = req.user,
-            cart = req.user.current_cart;
+exports.order_update_post = function(req, res, next) {
+    let user = req.user,
+        cart = req.user.current_cart;
 
-        cart.forEach((e, i) => {
-            const q = parseInt(req.body.quantity[i]);
-            if (q > 0) {
-                e.quantity = q;
-            }
-        });
-
-        if (req.body.cart) {
-            cart = cart.filter(x => !req.body.cart.includes(x.item));
+    cart.forEach((e, i) => {
+        const q = parseInt(req.body.quantity[i]);
+        if (q > 0) {
+            e.quantity = q;
         }
+    });
 
-        user.current_cart = cart;
-
-        User.findByIdAndUpdate(user._id, user, {}, function(err, _user) {
-            if (err) {
-                return next(err);
-            }
-            // Successful - redirect to book detail page.
-            res.redirect("/store/cart");
-        });
+    if (req.body.cart) {
+        cart = cart.filter(x => !req.body.cart.includes(x.item));
     }
 
+    user.current_cart = cart;
+
+    User.findByIdAndUpdate(user._id, user, {}, function(err, _user) {
+        if (err) {
+            return next(err);
+        }
+        // Successful - redirect to book detail page.
+        res.redirect("/store/cart");
+    });
     // post for changing the cart
 };
 
 /// ORDER VIEWING ROUTES ///
 
 // Display detail page for a specific order.
-exports.order_detail = function(req, res) {
+exports.order_detail = function(req, res, next) {
     if (req.user.id === req.params.id || req.user.user_group === "admin") {
         Order.findById(req.params.id)
             .populate("user")
@@ -293,7 +304,7 @@ exports.order_detail = function(req, res) {
 };
 
 // Display list of all orders.
-exports.order_list = function(req, res) {
+exports.order_list = function(req, res, next) {
     if (req.user.user_group === "admin") {
         Order.find({}, "user total created_at")
             .populate("user")

@@ -214,61 +214,18 @@ exports.item_delete_get = function(req, res, next) {
 // Handle item delete on POST.
 exports.item_delete_post = function(req, res, next) {
 	if (req.user.user_group === "admin") {
-		async.parallel(
-			{
-				item: function(callback) {
-					Item.findById(req.body.id).exec(callback);
-				},
-				orders: function(callback) {
-					Order.findOne({ "cart.item": req.body.id }).exec(callback);
-				}
-			},
-			function(err, results) {
-				if (err) {
-					return next(err);
-				}
-				// Success
-				if (results.orders) {
-					// in order to prevent corrupting orders, items in use are protected
-					res.render("error", {
-						message: "Delete Item Error - Item in use",
-						error: {
-							status: `There are ${
-								results.sessions ? "sessions" : ""
-							} ${
-								results.orders ? "and orders" : ""
-							}  with existing records of this item. Thus, the item cannot be deleted. If you need to remove the item from the store, please change the 'active' property to false.`
-						}
-					});
-					return;
-				} else {
-					async.parallel(
-						{
-							item: function(callback) {
-								Item.findByIdAndRemove(req.body.id).exec(
-									callback
-								);
-							},
-							orders: function(callback) {
-								Order.findOne({
-									"cart.item": req.body.id
-								}).exec(callback);
-							}
-						},
-						function(err, results) {}
-					);
+		if (err) {
+			return next(err);
+		}
 
-					// Item is unused. It may be deleted
-					Item.findByIdAndRemove(req.body.id, function(err) {
-						if (err) {
-							return next(err);
-						}
-						// Success - go to item list
-						res.redirect("/store/items");
-					});
-				}
+		// Item is unused. It may be deleted
+		Item.findByIdAndRemove(req.body.id, function(err) {
+			if (err) {
+				return next(err);
 			}
-		);
+			// Success - go to item list
+			res.redirect("/store/items");
+		});
 	} else {
 		res.redirect("/store/items");
 	}

@@ -9,7 +9,9 @@ const express = require("express"),
 /// SHOPPING CART MODIFICATION ROUTES ///
 
 // POST request for creating item.
-router.post("/item/:id/add", order_controller.item_add_post);
+router.post("/item/:id/add", ensureLoggedIn(), order_controller.item_add_post);
+
+router.post("/coupon/add", ensureLoggedIn(), order_controller.coupon_add_post);
 
 
 /// ORDER CREATION AND MODIFICATION ROUTES ///

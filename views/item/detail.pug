@@ -22,13 +22,13 @@ block main
       else
         li There are no valid groups.
   hr
-  p 
-    form(method='POST' action=item.url+'/add')
-      div.form-group
-        input#itemid.form-control(
-          type='hidden'
-          name='id'
-          required='true'
-          value=item._id
-          )
-      button.btn.btn-primary(type='submit') Add to Cart
+
+  form(method='POST' action=item.url+'/add')
+    div.form-group
+      input#itemid.form-control(
+        type='hidden'
+        name='id'
+        required='true'
+        value=item._id
+        )
+    button.btn.btn-primary(type='submit') Add to Cart

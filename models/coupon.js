@@ -19,7 +19,8 @@ const mongoose = require("mongoose"),
 				}
 			],
 			required: true
-		}
+		},
+		code: { type: String, required: true, min: 4, max: 12 }
 	});
 
 CouponSchema.virtual("url").get(function() {
@@ -30,14 +31,16 @@ CouponSchema.virtual("begin_date_formatted").get(function() {
 	return moment(this.valid_range.begin).format("MMMM Do, YYYY");
 });
 
-CouponSchema.virtual("expiration_date").get(function() {
-	if (this.valid_range.end) {
-		return moment(this.valid_range.end).format("MMMM Do, YYYY");
-	} else {
-		return null;
-	}
-}).set(function(value) {
-	this.valid_range.end = value;
-});
+CouponSchema.virtual("expiration_date")
+	.get(function() {
+		if (this.valid_range.end) {
+			return moment(this.valid_range.end).format("MMMM Do, YYYY");
+		} else {
+			return null;
+		}
+	})
+	.set(function(value) {
+		this.valid_range.end = value;
+	});
 
 module.exports = mongoose.model("Coupon", CouponSchema);

@@ -1,7 +1,15 @@
 extends ../layout
 
 block main
-  
+  form(method='POST' action='/store/coupon/add')
+      div.form-group
+        input#itemid.form-control(
+          type='text'
+          name='code'
+          required='true'
+          value=''
+          )
+      button.btn.btn-primary(type='submit') Add Coupon
   form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
@@ -32,7 +40,7 @@ block main
                   min='1'
                   )
               td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
-              td.actions(data-th='')
+              td.actions(data-th='Cart')
                 .form-check.text-center
                   input.form-check-input(
                     type='checkbox'

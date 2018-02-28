@@ -38,6 +38,20 @@ const mongoose = require("mongoose"),
 				quantity: { type: Number, required: true, min: 1, default: 1 }
 			}
 		],
+		active_coupons: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Coupon",
+				required: true
+			}
+		],
+		used_coupons: [
+			{
+				type: Schema.Types.ObjectId,
+				ref: "Coupon",
+				required: true
+			}
+		],
 		current_session: [
 			{
 				item: {
@@ -123,14 +137,18 @@ UserSchema.virtual("current_view")
 	});
 
 UserSchema.methods.add_to_cart = function(id) {
-	console.log(this.current_cart.some(e => e.item.equals(id)));
 	if (!this.current_cart.some(e => e.item.equals(id))) {
 		this.current_cart.push({ item: id });
 	} else {
-		let result = this.current_cart.find(e => {
-			console.log("now its working: " + e.item.equals(id));
+		this.current_cart.find(e => {
 			return e.item.equals(id);
 		}).quantity++;
+	}
+};
+
+UserSchema.methods.activate_coupon = function(id) {
+	if (!this.active_coupons.some(e => e.equals(id))) {
+		this.active_coupons.push(id);
 	}
 };
 

@@ -61,7 +61,7 @@ const Coupon = require("../models/coupon"),
 	];
 
 // Display coupon create form on GET.
-exports.coupon_create_get = function(req, res) {
+exports.coupon_create_get = function(req, res, next) {
 	if (req.user.user_group === "admin") {
 		// retrieve all coupon groups for use in the form
 		Item_group.find().exec(function(err, item_group_list) {
@@ -177,44 +177,13 @@ exports.coupon_delete_get = function(req, res, next) {
 // Handle coupon delete on POST.
 exports.coupon_delete_post = function(req, res, next) {
 	if (req.user.user_group === "admin") {
-		async.parallel(
-			{
-				coupon: function(callback) {
-					Coupon.findById(req.body.id).exec(callback);
-				},
-				orders: function(callback) {
-					Order.findOne({ coupons_present: req.body.id }).exec(
-						callback
-					);
-				}
-			},
-			function(err, results) {
-				if (err) {
-					return next(err);
-				}
-
-				// Success
-				if (results.orders || results.sessions) {
-					// in order to prevent corrupting orders or sessions, coupons in use are protected
-					res.render("error", {
-						message: "Delete Coupon Error - Coupon in use",
-						error: {
-							status: `There are orders with existing records of this coupon. Thus, the coupon cannot be deleted. If you need to remove the coupon from the store, please change the 'active' property to false.`
-						}
-					});
-					return;
-				} else {
-					// Coupon is unused. It may be deleted
-					Coupon.findByIdAndRemove(req.body.id, function(err) {
-						if (err) {
-							return next(err);
-						}
-						// Success - go to coupon list
-						res.redirect("/store/coupons");
-					});
-				}
+		Coupon.findByIdAndRemove(req.body.id, function(err) {
+			if (err) {
+				return next(err);
 			}
-		);
+			// Success - go to coupon list
+			res.redirect("/store/coupons");
+		});
 	} else {
 		res.redirect("/store/coupons");
 	}
@@ -359,7 +328,7 @@ exports.coupon_update_post = [
 ];
 
 // Display detail page for a specific coupon.
-exports.coupon_detail = function(req, res) {
+exports.coupon_detail = function(req, res, next) {
 	Coupon.findById(req.params.id)
 		.populate("valid_item_groups")
 		.exec(function(err, coupon_detail) {
@@ -377,7 +346,7 @@ exports.coupon_detail = function(req, res) {
 };
 
 // Display list of all coupon.
-exports.coupon_list = function(req, res) {
+exports.coupon_list = function(req, res, next) {
 	Coupon.find({}, "name description discount_percent valid_range")
 		.populate("valid_item_groups")
 		.exec(function(err, coupon_list) {

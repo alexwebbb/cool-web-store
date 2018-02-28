@@ -17,16 +17,15 @@ const User = require("../models/user"),
 			.custom(function(value, { req }) {
 				// uniqueness validation
 				return new Promise((resolve, reject) => {
-					User.findOne({ username: value.toLowerCase() }).exec(function(
-						err,
-						existing_user
-					) {
-						if (existing_user) {
-							reject("Username is not unique.");
-						} else {
-							resolve(value);
+					User.findOne({ username: value.toLowerCase() }).exec(
+						function(err, existing_user) {
+							if (existing_user) {
+								reject("Username is not unique.");
+							} else {
+								resolve(value);
+							}
 						}
-					});
+					);
 				});
 			}),
 		body("password")
@@ -135,7 +134,6 @@ exports.user_create_post = [
 			// Extract the validation errors from a request.
 			const errors = validationResult(req);
 			errors.array().push({ msg: "testing 123" });
-			console.log(errors.array());
 			if (!errors.isEmpty()) {
 				// There are errors. Render form again with sanitized values/errors messages.
 				res.render("user/form", {
@@ -175,70 +173,49 @@ exports.user_create_post = [
 ];
 
 // Handle user delete on POST.
-exports.user_delete_get = function(req, res) {
+exports.user_delete_get = function(req, res, next) {
 	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
-		async.parallel(
-			{
-				user: function(callback) {
-					User.findById(req.params.id).exec(callback);
-				}
-			},
-			function(err, results) {
-				if (err) return next(err);
-				if (results.user === null) {
-					const err = new Error("Item not found");
-					err.status = 404;
-					return next(err);
-				}
-				res.render("user/delete", {
-					title: "User Delete",
-					user: results.user
-				});
+		User.findById(req.params.id).exec(function(err, user) {
+			if (err) return next(err);
+			if (user === null) {
+				const err = new Error("User not found");
+				err.status = 404;
+				return next(err);
 			}
-		);
+			res.render("user/delete", {
+				title: "User Delete",
+				user: user
+			});
+		});
 	} else {
 		res.redirect("/login");
 	}
 };
 
 // Handle user delete on POST.
-exports.user_delete_post = function(req, res) {
+exports.user_delete_post = function(req, res, next) {
 	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
-		async.parallel(
-			{
-				user: function(callback) {
-					User.findById(req.params.id).exec(callback);
-				}
-			},
-			function(err, results) {
-				if (err) {
-					return next(err);
-				}
-				// Success
-
-				User.findByIdAndRemove(req.body.id, function(err) {
-					if (err) {
-						return next(err);
-					}
-
-					if (req.user.user_group === "admin") {
-						// Success - go to user list
-						res.redirect("/users");
-					} else {
-						// User Has deleted themself, log them out
-						req.logout();
-						res.redirect("/");
-					}
-				});
+		User.findByIdAndRemove(req.body.id, function(err) {
+			if (err) {
+				return next(err);
 			}
-		);
+
+			if (req.user.user_group === "admin") {
+				// Success - go to user list
+				res.redirect("/users");
+			} else {
+				// User Has deleted themself, log them out
+				req.logout();
+				res.redirect("/");
+			}
+		});
 	} else {
 		res.redirect("/login");
 	}
 };
 
 // Display user update form on GET.
-exports.user_update_get = function(req, res) {
+exports.user_update_get = function(req, res, next) {
 	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
 		User.findById(req.params.id).exec(function(err, user) {
 			if (err) {
@@ -246,7 +223,7 @@ exports.user_update_get = function(req, res) {
 			}
 			if (user == null) {
 				// No results.
-				const err = new Error("item not found");
+				const err = new Error("User not found");
 				err.status = 404;
 				return next(err);
 			}
@@ -318,7 +295,7 @@ exports.user_update_post = [
 ];
 
 // Display detail page for a specific user.
-exports.user_detail = function(req, res) {
+exports.user_detail = function(req, res, next) {
 	if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
 		async.parallel(
 			{
@@ -354,7 +331,7 @@ exports.user_detail = function(req, res) {
 };
 
 // Display list of all users.
-exports.user_list = function(req, res) {
+exports.user_list = function(req, res, next) {
 	if (req.user.user_group === "admin") {
 		User.find().exec(function(err, user_list) {
 			if (err) {
