@@ -21,7 +21,7 @@ const Coupon = require("../models/coupon"),
 						err,
 						existing_coupon
 					) {
-						if (existing_coupon) {
+						if (existing_coupon && !existing_coupon._id.equals(req.body.id)) {
 							reject("Coupon name is not unique.");
 						} else {
 							resolve(value);
@@ -264,7 +264,7 @@ exports.coupon_update_post = [
 					expiration_date: req.body.expiration_date,
 					img_100: req.body.img_100,
 					valid_item_groups: req.body.item_groups,
-					_id: req.params.id
+					_id: req.body.id
 				});
 
 			if (!errors.isEmpty()) {

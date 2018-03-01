@@ -22,7 +22,7 @@ const Item = require("../models/item"),
 						err,
 						existing_item
 					) {
-						if (existing_item) {
+						if (existing_item && !existing_item._id.equals(req.body.id)) {
 							reject("Item name is not unique.");
 						} else {
 							resolve(value);
@@ -305,7 +305,7 @@ exports.item_update_post = [
 					img_100: req.body.img_100,
 					img_700_400: req.body.img_700_400,
 					item_groups: req.body.item_groups,
-					_id: req.params.id
+					_id: req.body.id
 				});
 
 			if (!errors.isEmpty()) {

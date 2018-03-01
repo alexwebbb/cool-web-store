@@ -19,7 +19,10 @@ const User = require("../models/user"),
 				return new Promise((resolve, reject) => {
 					User.findOne({ username: value.toLowerCase() }).exec(
 						function(err, existing_user) {
-							if (existing_user) {
+							if (
+								existing_user &&
+								!existing_user._id.equals(req.body.id)
+							) {
 								reject("Username is not unique.");
 							} else {
 								resolve(value);
@@ -246,17 +249,30 @@ exports.user_update_post = [
 			req.user._id.equals(req.params.id) ||
 			req.user.user_group === "admin"
 		) {
-			const errors = validationResult(req),
+			const hash = new Promise(resolve => {
+					if (req.body.password) {
+						salt(req.body.password).hash(function(err, hash) {
+							resolve(hash);
+						});
+					} else {
+						resolve(null);
+					}
+				}),
+				errors = validationResult(req),
 				user = new User({
 					username: req.body.username,
-					hashedPassword: hash,
 					email: req.body.email,
 					names: {
 						first_name: req.body.first_name,
 						middle_name: req.body.middle_name,
 						last_name: req.body.last_name
-					}
+					},
+					_id: req.body.id
 				});
+			if(hash) {
+				console.log("checking hash thingy");
+				// user.hashedPassword = hash;
+			}
 
 			if (!errors.isEmpty()) {
 				// There are errors. Render form again with sanitized values/errors messages.

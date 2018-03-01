@@ -30,18 +30,23 @@ block main
         value=(undefined===item ? '' : item.price)
         )
       label(for='img_100') Square Image (100 by 100 pixels):
-      input#price.form-control(
+      input#img_100.form-control(
         type='text' 
         placeholder='Small square image url (100 by 100 pixels)' 
         name='img_100'  
         value=(undefined===item ? '' : item.img_100)
         )
       label(for='img_700_400') Landscape Image (700 by 400 pixels):
-      input#price.form-control(
+      input#img_700_400.form-control(
         type='text' 
         placeholder='Wide rectangular picture url (700 by 400 pixels)' 
         name='img_700_400'  
         value=(undefined===item ? '' : item.img_700_400)
+        )
+      input#id.form-control(
+        type='hidden' 
+        name='id'  
+        value=(undefined===item ? '' : item._id)
         )
     div.form-group
       label Group:

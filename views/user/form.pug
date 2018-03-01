@@ -17,8 +17,8 @@ block main
       input#password.form-control(
         type='password' 
         placeholder='Password (7 to 256 characters)' 
-        name='password' 
-        required='true' 
+        name='password'
+        required=(undefined===user._id ? true : false) 
         value=(undefined===user ? '' : user.password)
         )
       label(for='email') Email:
@@ -36,14 +36,14 @@ block main
         placeholder='First name' 
         name='first_name' 
         required='true' 
-        value=(undefined===user ? '' : user.first_name)
+        value=(undefined===user ? '' : user.names.first_name)
         )
       label(for='middle_name') Middle Name:
       input#middle_name.form-control(
         type='text' 
         placeholder='Middle name' 
         name='middle_name'
-        value=(undefined===user ? '' : user.middle_name)
+        value=(undefined===user ? '' : user.names.middle_name)
         )
       label(for='last_name') Last Name:
       input#last_name.form-control(
@@ -51,7 +51,12 @@ block main
         placeholder='Last name (surname)' 
         name='last_name' 
         required='true' 
-        value=(undefined===user ? '' : user.last_name)
+        value=(undefined===user ? '' : user.names.last_name)
+        )
+      input#id.form-control(
+        type='hidden' 
+        name='id'  
+        value=(undefined===user ? '' : user._id)
         )
       if current_user && current_user.user_group==="admin"
         div(style='display: inline; padding-right:10px;')

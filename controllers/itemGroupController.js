@@ -21,7 +21,7 @@ const Item_group = require("../models/item_group"),
 						err,
 						existing_group
 					) {
-						if (existing_group) {
+						if (existing_group && !existing_group._id.equals(req.body.id)) {
 							reject("Group name is not unique.");
 						} else {
 							resolve(value);
@@ -188,7 +188,7 @@ exports.group_update_post = [
 					name: req.body.group_name,
 					description: req.body.description,
 					img_100: req.body.img_100,
-					_id: req.params.id
+					_id: req.body.id
 				});
 
 			if (!errors.isEmpty()) {
