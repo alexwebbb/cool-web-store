@@ -22,7 +22,10 @@ const Item = require("../models/item"),
 						err,
 						existing_item
 					) {
-						if (existing_item && !existing_item._id.equals(req.body.id)) {
+						if (
+							existing_item &&
+							!existing_item._id.equals(req.body.id)
+						) {
 							reject("Item name is not unique.");
 						} else {
 							resolve(value);
@@ -40,7 +43,7 @@ const Item = require("../models/item"),
 			.optional({ checkFalsy: true })
 			.isLength({ max: 124 })
 			.withMessage("price is too long.")
-			.isCurrency()
+			.isCurrency({ digits_after_decimal: [1, 2] })
 			.withMessage("price has non-numeric characters."),
 		body("img_100")
 			.optional({ checkFalsy: true })

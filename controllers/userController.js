@@ -32,11 +32,16 @@ const User = require("../models/user"),
 				});
 			}),
 		body("password")
-			.trim()
-			.exists()
-			.withMessage("Password must be specified.")
+			.optional({ checkFalsy: true })
 			.isLength({ min: 7, max: 256 })
-			.withMessage("Password must be between 7 and 256 characters."),
+			.withMessage("Password must be between 7 and 256 characters.")
+			.custom(function(value, { req }) {
+				if (value === req.body.password_confirm) {
+					return value;
+				} else {
+					throw new Error("Passwords do not match");
+				}
+			}),
 		body("email")
 			.exists()
 			.withMessage("Email must be specified.")
@@ -152,11 +157,9 @@ exports.user_create_post = [
 						username: req.body.username,
 						hashedPassword: hash,
 						email: req.body.email,
-						names: {
-							first_name: req.body.first_name,
-							middle_name: req.body.middle_name,
-							last_name: req.body.last_name
-						},
+						first_name: req.body.first_name,
+						middle_name: req.body.middle_name,
+						last_name: req.body.last_name,
 						user_group: req.body.admin ? "admin" : "user"
 					});
 
@@ -262,16 +265,14 @@ exports.user_update_post = [
 				user = new User({
 					username: req.body.username,
 					email: req.body.email,
-					names: {
-						first_name: req.body.first_name,
-						middle_name: req.body.middle_name,
-						last_name: req.body.last_name
-					},
+					first_name: req.body.first_name,
+					middle_name: req.body.middle_name,
+					last_name: req.body.last_name,
 					_id: req.body.id
 				});
-			if(hash) {
-				console.log("checking hash thingy");
-				// user.hashedPassword = hash;
+
+			if (hash !== null) {
+				user.hashedPassword = hash;
 			}
 
 			if (!errors.isEmpty()) {

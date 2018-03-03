@@ -106,7 +106,7 @@ exports.order_create_get = function(req, res, next) {
             });
         });
 
-    // this is the shopping cart
+    // this is the checkout
     // this checks the user object and then returns the list of items
     // in the cart. It then renders a form with those objects,
     // with a stripe form at the bottom
@@ -213,6 +213,7 @@ exports.order_update_get = function(req, res, next) {
             function(callback) {
                 User.findById(req.user._id)
                     .populate("current_cart.item")
+                    .populate("active_coupons")
                     .exec(function(err, user) {
                         callback(null, user);
                     });
@@ -244,7 +245,8 @@ exports.order_update_get = function(req, res, next) {
             res.render("order/cart_form", {
                 title: "Cart",
                 cart_total: total,
-                user_cart: user.current_cart
+                user_cart: user.current_cart,
+                user_coupons: user.active_coupons
             });
         }
     );
