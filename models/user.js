@@ -95,21 +95,21 @@ UserSchema.virtual("address")
 
 UserSchema.virtual("first_name")
 	.get(function(v) {
-		return this.first_name;
+		return this.names.first_name;
 	})
 	.set(function(v) {
 		this.names.first_name = v;
 	});
 UserSchema.virtual("middle_name")
 	.get(function(v) {
-		return this.middle_name;
+		return this.names.middle_name;
 	})
 	.set(function(v) {
 		this.names.middle_name = v;
 	});
 UserSchema.virtual("last_name")
 	.get(function(v) {
-		return this.last_name;
+		return this.names.last_name;
 	})
 	.set(function(v) {
 		this.names.last_name = v;
