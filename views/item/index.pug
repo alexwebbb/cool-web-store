@@ -7,8 +7,7 @@ block main
       h1.my-4 #{title}
       .list-group
         each group in item_groups
-          a.list-group-item(href=group.url) #{group.name}
-
+          a.list-group-item.border-primary.text-primary(href=group.url) #{group.name}
     .col-lg-9
       #carouselExampleIndicators.carousel.slide.my-4(data-ride='carousel')
         ol.carousel-indicators

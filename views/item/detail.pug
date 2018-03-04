@@ -1,34 +1,34 @@
 extends ../layout
 
 block main
-  h1= title
-    if current_user && current_user.user_group==="admin"
-      br
-      a.btn.btn-success.mt-2.mr-2(href=item.url + '/update')
-        | Edit 
-        i.fa.fa-pencil
-      a.btn.btn-danger.mt-2(href=item.url + '/delete')
-        | Delete 
-        i.fa.fa-trash-o
-  h2 #[strong Name: #{item.name}]
-  p #{item.description}
-  hr
-  section
-    h3 Groups
-    ul
-      each group in item.item_groups
-        li 
-          p #{group.name}
-      else
-        li There are no valid groups.
-  hr
-
-  form(method='POST' action=item.url+'/add')
-    div.form-group
-      input#itemid.form-control(
-        type='hidden'
-        name='id'
-        required='true'
-        value=item._id
-        )
-    button.btn.btn-primary(type='submit') Add to Cart
+  h1.pl-3.text-secondary.css-small-text #{title}
+  .container
+    .row.row-offcanvas.row-offcanvas-right
+      .col-12.col-md-9
+        img.img-fluid.rounded-top(src=item.img_700_400)
+        .jumbotron.css-jumbotron-adjustment
+          h1 #{item.name}
+          span.css-large-text.text-dark.float-md-right.pl-md-4.text-right $#{item.formatted_price}  
+          p #{item.description}
+          form(method='POST' action=item.url+'/add')
+            div.form-group
+              input#itemid.form-control(
+                type='hidden'
+                name='id'
+                required='true'
+                value=item._id
+                )
+            button.btn.btn-primary(type='submit') Add to Cart
+      #sidebar.col-6.col-md-3.sidebar-offcanvas
+        .list-group
+          each group in item.item_groups
+            a.list-group-item.border-primary.text-primary(href=group.url) #{group.name}
+          else
+            li There are no valid groups.
+        if current_user && current_user.user_group==="admin"
+          a.btn.btn-success.mt-2.mr-2(href=item.url + '/update')
+            | Edit 
+            i.fa.fa-pencil
+          a.btn.btn-danger.mt-2(href=item.url + '/delete')
+            | Delete 
+            i.fa.fa-trash-o

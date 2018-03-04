@@ -1,4 +1,20 @@
-.link-unstyled, .link-unstyled:link, .link-unstyled:hover {
-  color: inherit;
-  text-decoration: inherit;
+.css-link-unstyled,
+.css-link-unstyled:link,
+.css-link-unstyled:hover {
+	color: inherit;
+	text-decoration: inherit;
+}
+
+.css-jumbotron-adjustment {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	max-width: 700px;
+}
+
+.css-small-text {
+	font-size: small;
+}
+
+.css-large-text {
+	font-size: x-large;
 }
