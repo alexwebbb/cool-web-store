@@ -1,7 +1,7 @@
 extends ../layout
 
 block main
-  h1= title
+  h1.text-success.pl-2.css-small-text= title
 
   form(method='POST' action='')
     p Coming soon..... coupons!
@@ -17,8 +17,6 @@ block main
             td(data-th='Product')
               a.css-link-unstyled(href=coupon.url)
                 .row
-                  .col-md-2.d-none.d-sm-block
-                    img.img-fluid(src=coupon.img_100, alt='...')
                   .col-md-10
                     h4.nomargin #{coupon.name}
                     p #{coupon.description}

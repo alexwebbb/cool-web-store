@@ -1,8 +1,9 @@
 extends ../layout
 
 block main
-  h1= title
-  p User: #{user_detail.name} - #{user_detail.username}
+  h1.pl-3.text-info.css-small-text= title
+  p User: #{user_detail.name}
+  p Username: #{user_detail.username}
 
   div(style='margin-left:20px;margin-top:20px')
 
@@ -16,7 +17,9 @@ block main
       form(method='POST' action='')
         each order in order_list
           tr
-            td(data-th='Price') $#{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+            td(data-th='Total') 
+              a.css-link-unstyled(href=order.url)
+                p $#{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
             td.text-center(data-th='Date') #{order.created_at}
         else
           tr There are no items.
@@ -24,6 +27,6 @@ block main
     a.btn.btn-success.mt-2.mr-2(href=user_detail.url + '/update')
       | Edit 
       i.fa.fa-pencil
-    //- a.btn.btn-danger.mt-2(href=user_detail.url + '/delete')
-    //-   | Delete 
-    //-   i.fa.fa-trash-o
+    a.btn.btn-danger.mt-2(href=user_detail.url + '/delete')
+      | Delete 
+      i.fa.fa-trash-o

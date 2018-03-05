@@ -1,28 +1,26 @@
 extends ../layout
 
 block main
-  h1= title
+  h1.pl-2.text-info.css-small-text= title
 
   form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
         tr
-          th(style='width:72%') User
-          th(style='width:15%') Total
-          th(style='width:13%; text-indent:10px') Date
+          th(style='width:30%') User
+          th(style='width:30%') Total
+          th(style='width:40%; text-indent:10px') Date
       tbody
         each order in order_list
           tr
             td(data-th='Product')
               a.css-link-unstyled(href=order.url)
                 .row
-                  .col-md-2.d-none.d-sm-block
-                    img.img-fluid(src='https://placehold.it/100x100', alt='...')
                   .col-md-10
                     h4.nomargin #{order.user.name}
-                    p
-                      | 
-            td(data-th='Price') $#{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+            td(data-th='Price') 
+              a.css-link-unstyled(href=order.url)
+                p $#{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
             td.text-center(data-th='Date') #{order.created_at}
         else
           li There are no items.

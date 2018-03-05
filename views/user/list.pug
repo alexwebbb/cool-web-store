@@ -1,25 +1,29 @@
 extends ../layout
 
 block main
-  h1= title
+  h1.pl-2.text-info.css-small-text= title
 
   form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
         tr
-          th(style='width:90%') User
+          th(style='width:30%') Username
+          th(style='width:60%') Name
           th(style='width:10%; text-indent:15px') Group
 
       tbody
         each user in user_list
           tr
-            td(data-th='Product')
-              a.css-link-unstyled(href=user.url)
+            td(data-th='Name')
+              a.css-link-unstyled(href=user.url)  
                 .row
                   .col-md-2.d-none.d-sm-block
-                    img.img-fluid(src='https://placehold.it/100x100', alt='...')
+                    h4.nomargin #{user.username}
+            td(data-th='Name')
+              a.css-link-unstyled(href=user.url)  
+                .row
                   .col-md-10
-                    h4.nomargin #{user.name} - #{user.username}
+                    h4.nomargin #{user.name}
             td.text-center(data-th='Group') #{user.user_group}
         else
           li There are no users.

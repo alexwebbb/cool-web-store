@@ -7,4 +7,7 @@ const express = require("express"),
 /* GET home page. */
 router.get("/", index_controller.index);
 
+/* GET home page. */
+router.get("/about", index_controller.about);
+
 module.exports = router;
