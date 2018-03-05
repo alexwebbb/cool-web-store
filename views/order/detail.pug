@@ -1,7 +1,7 @@
 extends ../layout
 
 block main
-  .container
+  form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
         tr
@@ -10,7 +10,6 @@ block main
           th(style='width:11%') Quantity
           th.text-center(style='width:27%') Subtotal
       tbody
-      form(method='POST' action='')
         each element in user_cart
           tr
             td(data-th='Product')
@@ -25,16 +24,13 @@ block main
             td.text-center(data-th='Quantity') #{element.quantity}
             td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
         tfoot
-          tr.hidden-xs-up
-            td.text-center
-              strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
           tr
             td
               a.btn.btn-warning(href=user.url)
                 i.fa.fa-angle-left
                 |  User View
-            td.d-none.d-sm-block(colspan='2')
-            td.d-none.d-sm-block.text-center
+            td(colspan='2')
+            td.text-center
               strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
-            td            
+            td         
               
