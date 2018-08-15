@@ -7,7 +7,18 @@ exports.session_list = function(req, res, next) {
 			.populate("user")
 			.populate("views.item")
 			.exec(function(err, session_list) {
-				res.send(session_list);
+
+				const data = session_list.map(({user, views}) => {
+					return {
+						name: user.name,
+						views: views.map((v) => {
+							return v.item.name;
+						})
+					};
+				})
+
+
+				res.send(data);
 			});
 	}
 };

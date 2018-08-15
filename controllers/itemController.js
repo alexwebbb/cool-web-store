@@ -385,9 +385,6 @@ exports.item_detail = function(req, res, next) {
 			if (req.user) {
 				User.findById(req.user._id).exec(function(err, user) {
 					user.current_view = req.params.id;
-					user.save().then(function(res) {
-						console.log("session updated");
-					});
 				});
 			}
 
