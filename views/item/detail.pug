@@ -8,7 +8,7 @@ block main
         img.img-fluid.rounded-top(src=item.img_700_400)
         .jumbotron.css-jumbotron-adjustment
           h1 #{item.name}
-          span.css-large-text.text-dark.float-md-right.pl-md-4.text-right $#{item.formatted_price}  
+          span.css-large-text.text-dark.float-md-right.pl-md-4.text-right $#{item.formattedPrice}  
           p #{item.description}
           form(method='POST' action=item.url+'/add')
             div.form-group

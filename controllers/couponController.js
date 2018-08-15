@@ -92,7 +92,7 @@ exports.coupon_create_post = [
 					name: req.body.coupon_name,
 					description: req.body.description,
 					discount_percent: req.body.discount_percent,
-					expiration_date: req.body.expiration_date,
+					expirationDate: req.body.expirationDate,
 					img_100: req.body.img_100,
 					valid_item_groups: req.body.item_groups
 				});
@@ -261,7 +261,7 @@ exports.coupon_update_post = [
 					name: req.body.coupon_name,
 					description: req.body.description,
 					discount_percent: req.body.discount_percent,
-					expiration_date: req.body.expiration_date,
+					expirationDate: req.body.expirationDate,
 					img_100: req.body.img_100,
 					valid_item_groups: req.body.item_groups,
 					_id: req.body.id

@@ -20,7 +20,7 @@ block main
                   h4.nomargin #{element.item.name}
                   p
                     | #{element.item.description}
-          td(data-th='Price') $#{element.item.formatted_price}
+          td(data-th='Price') $#{element.item.formattedPrice}
           td.text-center(data-th='Quantity') #{element.quantity}
           td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
       tfoot

@@ -63,7 +63,7 @@ exports.coupon_add_post = function(req, res, next) {
             },
             function(coupon, callback) {
                 User.findById(req.user._id).exec(function(err, user) {
-                    user.activate_coupon(coupon._id);
+                    user.activateCoupon(coupon._id);
                     user.save().then(function(res) {
                         callback(null);
                     });

@@ -21,7 +21,7 @@ block main
                     h4.nomargin #{coupon.name}
                     p #{coupon.description}
             td.text-center(data-th='Discount') #{coupon.discount_percent}% off
-            td.text-center(data-th='Expiration') #{coupon.expiration_date} 
+            td.text-center(data-th='Expiration') #{coupon.expirationDate} 
         else
           li There are no coupons.
   if current_user && current_user.user_group==="admin"

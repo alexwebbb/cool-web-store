@@ -8,9 +8,9 @@ block main
       a(href=coupon_detail.url) #{coupon_detail.name}
     p #{coupon_detail.description}
     p Discount: #{coupon_detail.discount_percent}%
-    p Valid from #{coupon_detail.begin_date_formatted} 
-    if  coupon_detail.expiration_date
-      | til #{coupon_detail.expiration_date}
+    p Valid from #{coupon_detail.beginDateFormatted} 
+    if  coupon_detail.expirationDate
+      | til #{coupon_detail.expirationDate}
     section
       h2 Valid Groups
       ul

@@ -22,7 +22,7 @@ block main
                     p
                       | #{group.description}
             //- td.text-center(data-th='Items') #{coupon}
-            //- td.text-center(data-th='Coupons') #{group.formatted_groups} 
+            //- td.text-center(data-th='Coupons') #{group.formattedGroups} 
         else
           li There are no groups.
   if current_user && current_user.user_group==="admin"
