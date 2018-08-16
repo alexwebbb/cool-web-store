@@ -12,7 +12,7 @@ const express = require("express"),
 /// item ROUTES ///
 
 // GET catalog home page.
-router.get("/", item_controller.index);
+router.get("/", item_controller.root);
 
 // GET request for creating a item. NOTE This must come before routes that display item (uses id).
 router.get("/item/create", ensureLoggedIn(), item_controller.item_create_get);

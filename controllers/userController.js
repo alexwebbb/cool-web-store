@@ -5,7 +5,7 @@ const User = require("../models/user"),
 	{ rootCredentials: root } = require("../config/keys"),
 	{ body, validationResult } = require("express-validator/check"),
 	{ sanitizeBody } = require("express-validator/filter"),
-	validateAndSanitizeFields = [
+	ValidateAndSanitizeFields = [
 		// Validate fields.
 		body("username")
 			.exists()
@@ -132,7 +132,7 @@ exports.user_create_get = function(req, res, next) {
 // Display user create form on post.
 exports.user_create_post = [
 	// Validate fields.
-	...validateAndSanitizeFields,
+	...ValidateAndSanitizeFields,
 	// Process request after validation and sanitization.
 	(req, res, next) => {
 		// Extract the validation errors from a request.
@@ -239,7 +239,7 @@ exports.user_update_get = function(req, res, next) {
 
 // Handle user update on POST.
 exports.user_update_post = [
-	...validateAndSanitizeFields,
+	...ValidateAndSanitizeFields,
 	(req, res, next) => {
 		if (
 			req.user._id.equals(req.params.id) ||
