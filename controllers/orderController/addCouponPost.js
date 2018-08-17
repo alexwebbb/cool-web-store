@@ -2,10 +2,7 @@
 
 const User = require("../../models/user"),
   Coupon = require("../../models/coupon"),
-  keys = require("../../config/keys"),
-  async = require("async"),
-  // Initialize stripe
-  stripe = require("stripe")(keys.stripeSecret);
+  async = require("async");
 
 module.exports = function(req, res, next) {
   async.waterfall(

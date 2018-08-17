@@ -32,7 +32,4 @@ module.exports = function(req, res, next) {
       res.redirect("/store/cart");
     }
   );
-
-  // this is called from each item page as a button
-  // adds an item to the user object cart
 };

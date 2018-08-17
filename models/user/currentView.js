@@ -19,19 +19,15 @@ UserSchema.virtual("current_view")
           err,
           existing_session
         ) {
-          if (existing_session === null) {
-            that.current_session = null;
-            that.save();
-            return;
-          }
           if (
+            existing_session === null ||
             moment(
               existing_session.views[existing_session.views.length - 1].time
             )
-              .add(10, "minutes")
+              .add(15, "minutes")
               .isBefore(moment(Date.now()))
           ) {
-            // timeout, save session and start new one
+            // start new session
             const session = new Session({
               user: that._id,
               views: [{ item: v }]

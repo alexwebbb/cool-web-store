@@ -19,6 +19,7 @@ module.exports = [
           discount_percent: req.body.discount_percent,
           expirationDate: req.body.expirationDate,
           img_100: req.body.img_100,
+          code: req.body.code,
           valid_item_groups: req.body.item_groups
         });
 

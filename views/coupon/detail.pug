@@ -8,6 +8,7 @@ block main
       a(href=coupon_detail.url) #{coupon_detail.name}
     p #{coupon_detail.description}
     p Discount: #{coupon_detail.discount_percent}%
+    p Code: #{coupon_detail.code} 
     p Valid from #{coupon_detail.beginDateFormatted} 
     if  coupon_detail.expirationDate
       | til #{coupon_detail.expirationDate}

@@ -24,12 +24,11 @@ block main
       label(for='discount_percent') Price:
       input#discount_percent.form-control(
         type='text' 
-        placeholder='discount percent (put your discount_percent)' 
+        placeholder='discount percent (put the percent that you want the discount to be, i.e 20 for 20%)' 
         name='discount_percent' 
         required='true' 
         value=(undefined===coupon ? '' : coupon.discount_percent)
         )
-    div.form-group
       label(for='expirationDate') Expiration Date:
       input#expirationDate.form-control(
         type='date'
@@ -41,6 +40,13 @@ block main
         placeholder='Small square image url (100 by 100 pixels)' 
         name='img_100'  
         value=(undefined===coupon ? '' : coupon.img_100)
+        )
+      label(for='code') Code:
+      input#code.form-control(
+        type='text' 
+        placeholder='Code users will enter to activate the coupon' 
+        name='code'  
+        value=(undefined===coupon ? '' : coupon.code)
         )
       input#id.form-control(
         type='hidden' 

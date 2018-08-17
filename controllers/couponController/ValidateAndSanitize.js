@@ -41,7 +41,7 @@ const Coupon = require("../../models/coupon"),
       .withMessage(
         "A reference to an image needs to be a url. A CDN would be ideal!"
       ),
-
+    body("code").exists(),
     // Sanitize fields.
     sanitizeBody("coupon_name")
       .trim()
