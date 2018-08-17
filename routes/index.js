@@ -1,13 +1,13 @@
 "use strict";
 
 const express = require("express"),
-	router = express.Router(),
-	index_controller = require("../controllers/indexController");
+  router = express.Router(),
+  root_controller = require("../controllers/rootController");
 
 /* GET home page. */
-router.get("/", index_controller.index);
+router.get("/", root_controller.root);
 
 /* GET home page. */
-router.get("/about", index_controller.about);
+router.get("/about", root_controller.about);
 
 module.exports = router;

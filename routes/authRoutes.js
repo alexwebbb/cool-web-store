@@ -1,31 +1,27 @@
 "use strict";
 
 const passport = require("passport"),
-	{ ensureLoggedIn } = require("connect-ensure-login");
+  { ensureLoggedIn } = require("connect-ensure-login");
 
 module.exports = app => {
-	app.get("/login", function(req, res) {
-		res.render("login");
-	});
+  app.get("/login", function(req, res) {
+    res.render("login");
+  });
 
-	app.post(
-		"/login",
-		passport.authenticate("local", { failureRedirect: "/login" }),
-		function(req, res) {
-			res.redirect("/store");
-		}
-	);
+  app.post(
+    "/login",
+    passport.authenticate("local", { failureRedirect: "/login" }),
+    function(req, res) {
+      res.redirect("/store");
+    }
+  );
 
-	app.get("/logout", function(req, res) {
-		req.logout();
-		res.redirect("/store");
-	});
+  app.get("/logout", function(req, res) {
+    req.logout();
+    res.redirect("/store");
+  });
 
-	app.get(
-		"/profile",
-		ensureLoggedIn(),
-		function(req, res) {
-			res.render("profile", { user: req.user });
-		}
-	);
+  app.get("/profile", ensureLoggedIn(), function(req, res) {
+    res.render("profile", { user: req.user });
+  });
 };

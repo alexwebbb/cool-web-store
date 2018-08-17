@@ -2,6 +2,7 @@
 
 const User = require("../../models/user"),
   salt = require("password-hash-and-salt"),
+  { validationResult } = require("express-validator/check"),
   ValidateAndSanitizeFields = require("./ValidateAndSanitize");
 
 // Display user create form on post.

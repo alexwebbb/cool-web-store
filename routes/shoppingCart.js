@@ -1,18 +1,25 @@
 "use strict";
 
 const express = require("express"),
-	router = express.Router(),
-	user_controller = require("../controllers/userController"),
-	order_controller = require("../controllers/orderController"),
-	{ ensureLoggedIn } = require("connect-ensure-login");
+  router = express.Router(),
+  user_controller = require("../controllers/userController"),
+  order_controller = require("../controllers/orderController"),
+  { ensureLoggedIn } = require("connect-ensure-login");
 
 /// SHOPPING CART MODIFICATION ROUTES ///
 
 // POST request for creating item.
-router.post("/item/:id/add", ensureLoggedIn(), order_controller.order_add_item_post);
+router.post(
+  "/item/:id/add",
+  ensureLoggedIn(),
+  order_controller.order_add_item_post
+);
 
-router.post("/coupon/add", ensureLoggedIn(), order_controller.order_add_coupon_post);
-
+router.post(
+  "/coupon/add",
+  ensureLoggedIn(),
+  order_controller.order_add_coupon_post
+);
 
 /// ORDER CREATION AND MODIFICATION ROUTES ///
 
@@ -27,7 +34,6 @@ router.get("/cart", ensureLoggedIn(), order_controller.order_update_get);
 
 // POST request to update order.
 router.post("/cart", ensureLoggedIn(), order_controller.order_update_post);
-
 
 /// ORDER VIEWING ROUTES ///
 

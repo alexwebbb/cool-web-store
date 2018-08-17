@@ -2,6 +2,7 @@
 
 const Item = require("../../models/item"),
   Item_group = require("../../models/item_group"),
+  { validationResult } = require("express-validator/check"),
   ValidateAndSanitizeFields = require("./ValidateAndSanitize");
 
 module.exports = [
