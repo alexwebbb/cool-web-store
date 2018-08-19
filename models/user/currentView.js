@@ -3,7 +3,16 @@
 const mongoose = require("mongoose"),
   moment = require("moment"),
   Session = require("../../models/session"),
-  UserSchema = require("./schema");
+  UserSchema = require("./schema"),
+  resetSession = async (user, view) => {
+    const session = new Session({
+        user: user._id,
+        views: [{ item: view }]
+      }),
+      res = await session.save();
+    user.current_session = res._id;
+    user.save();
+  };
 
 UserSchema.virtual("current_view")
   .get(function() {
@@ -11,50 +20,29 @@ UserSchema.virtual("current_view")
       return this.current_session[this.current_session.length - 1];
     }
   })
-  .set(function(v) {
-    const that = this;
+  .set(async function(v) {
     if (mongoose.Types.ObjectId.isValid(v)) {
       if (this.current_session) {
-        Session.findById(this.current_session, "user views").exec(function(
-          err,
-          existing_session
+        const existing_session = await Session.findById(
+          this.current_session,
+          "user views"
+        ).exec();
+
+        if (
+          existing_session === null ||
+          moment(existing_session.views[existing_session.views.length - 1].time)
+            .add(15, "minutes")
+            .isBefore(moment(Date.now()))
         ) {
-          if (
-            existing_session === null ||
-            moment(
-              existing_session.views[existing_session.views.length - 1].time
-            )
-              .add(15, "minutes")
-              .isBefore(moment(Date.now()))
-          ) {
-            // start new session
-            const session = new Session({
-              user: that._id,
-              views: [{ item: v }]
-            });
-
-            session.save().then(function(res) {
-              that.current_session = res._id;
-              that.save();
-            });
-          } else {
-            existing_session.views.push({
-              item: v
-            });
-            existing_session.save();
-          }
-        });
+          resetSession(this, v);
+        } else {
+          existing_session.views.push({
+            item: v
+          });
+          existing_session.save();
+        }
       } else {
-        // set initial item
-        const session = new Session({
-          user: this._id,
-          views: [{ item: v }]
-        });
-
-        session.save().then(function(res) {
-          that.current_session = res._id;
-          that.save();
-        });
+        resetSession(this._id, v);
       }
     } else {
       return new Error(
