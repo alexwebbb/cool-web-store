@@ -7,7 +7,6 @@ module.exports = async function(req, res, next) {
     try {
       // retrieve all coupon groups for use in the form
       const item_group_list = await Item_group.find().exec();
-
       //Successful, so render
       res.render("coupon/form", {
         title: "Create Coupon",

@@ -8,28 +8,26 @@ const Item = require("../../models/item"),
 module.exports = [
   ...ValidateAndSanitizeFields,
   // Process request after validation and sanitization.
-  (req, res, next) => {
+  async (req, res, next) => {
     if (req.user.user_group === "admin") {
-      // Extract the validation errors from a request.
-      const errors = validationResult(req),
-        // Create an item object with escaped and trimmed data.
-        item = new Item({
-          name: req.body.item_name,
-          description: req.body.description,
-          price: req.body.price,
-          img_100: req.body.img_100,
-          img_700_400: req.body.img_700_400,
-          item_groups: req.body.item_groups
-        });
+      try {
+        // Extract the validation errors from a request.
+        const errors = validationResult(req),
+          // Create an item object with escaped and trimmed data.
+          item = new Item({
+            name: req.body.item_name,
+            description: req.body.description,
+            price: req.body.price,
+            img_100: req.body.img_100,
+            img_700_400: req.body.img_700_400,
+            item_groups: req.body.item_groups
+          });
 
-      if (!errors.isEmpty()) {
-        // There are errors. Render form again with sanitized values/errors messages.
+        if (!errors.isEmpty()) {
+          // There are errors. Render form again with sanitized values/errors messages.
+          // retrieve all item groups for use in the form
 
-        // retrieve all item groups for use in the form
-        Item_group.find().exec(function(err, item_group_list) {
-          if (err) {
-            return next(err);
-          }
+          const item_group_list = await Item_group.find().exec();
 
           // Mark our selected item groups as checked.
           for (let i = 0; i < item_group_list.length; i++) {
@@ -44,18 +42,16 @@ module.exports = [
             item: req.body,
             errors: errors.array()
           });
-        });
 
-        return;
-      } else {
-        // Data from form is valid. Save the record
-        item.save(function(err) {
-          if (err) {
-            return next(err);
-          }
+          return;
+        } else {
+          // Data from form is valid. Save the record
+          await item.save();
           // Successful - redirect to new item record.
           res.redirect(item.url);
-        });
+        }
+      } catch (err) {
+        return next(err);
       }
     } else {
       res.redirect("/store/items");
