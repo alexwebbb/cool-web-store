@@ -26,3 +26,6 @@ exports.item_detail = require("./detail");
 
 // Display list of all items.
 exports.item_list = require("./list");
+
+// check user level
+exports.CheckCreds = require("./CheckCreds");

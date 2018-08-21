@@ -2,23 +2,18 @@
 
 const User = require("../../models/user");
 
-module.exports = function(req, res, next) {
-  if (req.user._id.equals(req.params.id) || req.user.user_group === "admin") {
-    User.findByIdAndRemove(req.body.id, function(err) {
-      if (err) {
-        return next(err);
-      }
+module.exports = async function(req, res, next) {
+  try {
+    await User.findByIdAndRemove(req.body.id);
 
-      if (req.user.user_group === "admin") {
-        // Success - go to user list
-        res.redirect("/users");
-      } else {
-        // User Has deleted themself, log them out
-        req.logout();
-        res.redirect("/");
-      }
-    });
-  } else {
-    res.redirect("/login");
+    if (req.user.user_group === "admin") {
+      res.redirect("/users");
+    } else {
+      // User Has deleted themself, log them out
+      req.logout();
+      res.redirect("/");
+    }
+  } catch (err) {
+    return next(err);
   }
 };

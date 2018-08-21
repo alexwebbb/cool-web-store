@@ -4,25 +4,21 @@ const Coupon = require("../../models/coupon"),
   Order = require("../../models/order");
 
 module.exports = async function(req, res, next) {
-  if (req.user.user_group === "admin") {
-    try {
-        const coupon = await Coupon.findById(req.params.id).exec(), 
-        orders = await Order.findOne({ coupons_present: req.body.id }).exec();
-        
-      if (coupon === null) {
-          const err = new Error("Coupon not found");
-          err.status = 404;
-          return next(err);
-      }
-        res.render("coupon/delete", {
-          title: "Coupon Delete",
-          orders: orders,
-          coupon: coupon
-        });
-      } catch (err) {
-        return next(err);
+  try {
+    const coupon = await Coupon.findById(req.params.id).exec(),
+      orders = await Order.findOne({ coupons_present: req.body.id }).exec();
+
+    if (coupon === null) {
+      const err = new Error("Coupon not found");
+      err.status = 404;
+      return next(err);
     }
-  } else {
-    res.redirect("/store/coupons");
+    res.render("coupon/delete", {
+      title: "Coupon Delete",
+      orders: orders,
+      coupon: coupon
+    });
+  } catch (err) {
+    return next(err);
   }
 };

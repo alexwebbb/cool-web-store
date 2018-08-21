@@ -26,3 +26,6 @@ exports.user_detail = require("./detail");
 
 // Display list of all users.
 exports.user_list = require("./list");
+
+// check user level
+exports.CheckCreds = require("./CheckCreds");

@@ -14,7 +14,7 @@ module.exports = async function(req, res, next) {
 
     const user = await User.findById(req.user._id).exec();
     user.add_to_cart(item.id);
-    user.save();
+    await user.save();
 
     res.redirect("/store/cart");
   } catch (err) {

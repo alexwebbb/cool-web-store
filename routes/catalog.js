@@ -6,6 +6,7 @@ const express = require("express"),
   item_controller = require("../controllers/itemController"),
   item_group_controller = require("../controllers/itemGroupController"),
   coupon_controller = require("../controllers/couponController"),
+  { CheckCreds } = coupon_controller,
   session_controller = require("../controllers/sessionController"),
   { ensureLoggedIn } = require("connect-ensure-login");
 
@@ -110,6 +111,7 @@ router.get("/groups", item_group_controller.group_list);
 router.get(
   "/coupon/create",
   ensureLoggedIn(),
+  CheckCreds,
   coupon_controller.coupon_create_get
 );
 

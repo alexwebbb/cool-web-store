@@ -1,13 +1,17 @@
 "use strict";
 
-const express = require("express"),
-  router = express.Router(),
-  root_controller = require("../controllers/rootController");
+exports.authRoutes = require("./authRoutes");
 
-/* GET home page. */
-router.get("/", root_controller.root);
+exports.coupons = require("./coupons");
 
-/* GET home page. */
-router.get("/about", root_controller.about);
+exports.groups = require("./groups");
 
-module.exports = router;
+exports.items = require("./items");
+
+exports.orders = require("./orders");
+
+exports.root = require("./root");
+
+exports.sessions = require("./sessions");
+
+exports.users = require("./users");

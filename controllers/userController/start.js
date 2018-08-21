@@ -4,14 +4,14 @@ const User = require("../../models/user"),
   salt = require("password-hash-and-salt"),
   { rootCredentials: root } = require("../../config/keys");
 
-module.exports = function(req, res, next) {
-  User.findOne({}).exec(function(err, users) {
+module.exports = async function(req, res, next) {
+  try {
+    const users = await User.findOne({}).exec();
     if (users) {
       res.redirect("/");
     } else {
-      salt(root.password).hash(function(err, hash) {
-        // Create a user object with escaped and trimmed data.
-        const user = new User({
+      const hash = await salt(root.password).hash(),
+        user = new User({
           username: root.user,
           hashedPassword: hash,
           email: "admin@null.com",
@@ -21,15 +21,11 @@ module.exports = function(req, res, next) {
           },
           user_group: "admin"
         });
+      await user.save();
 
-        user.save(function(err) {
-          if (err) {
-            return next(err);
-          }
-          // Successful - redirect to login screen
-          res.redirect("/login");
-        });
-      });
+      res.redirect("/login");
     }
-  });
+  } catch (err) {
+    return next(err);
+  }
 };

@@ -2,16 +2,12 @@
 
 const Item_group = require("../../models/item_group");
 
-module.exports = function(req, res, next) {
-  if (req.user.user_group === "admin") {
-    Item_group.findByIdAndRemove(req.body.id, function(err) {
-      if (err) {
-        return next(err);
-      }
-      // Success - go to item list
-      res.redirect("/store/groups");
-    });
-  } else {
+module.exports = async function(req, res, next) {
+  try {
+    await Item_group.findByIdAndRemove(req.body.id);
+    // Success - go to item list
     res.redirect("/store/groups");
+  } catch (err) {
+    return next(err);
   }
 };

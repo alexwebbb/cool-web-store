@@ -23,3 +23,6 @@ exports.group_detail = require("./detail");
 
 // Display list of all item_groups.
 exports.group_list = require("./list");
+
+// check user level
+exports.CheckCreds = require("./CheckCreds");

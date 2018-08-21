@@ -1,3 +1,5 @@
+"use strict";
+
 exports.root = function(req, res, next) {
 	res.redirect("/store");
 };

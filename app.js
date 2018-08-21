@@ -1,27 +1,17 @@
 "use strict";
 
 const express = require("express"),
-	// Middleware
 	mongoose = require("mongoose"),
 	path = require("path"),
 	favicon = require("serve-favicon"),
 	logger = require("morgan"),
 	cookieParser = require("cookie-parser"),
 	bodyParser = require("body-parser"),
-	// security middleware
 	helmet = require("helmet"),
-	// passport
 	cookieSession = require("cookie-session"),
 	passport = require("passport"),
-	// Secure info
 	keys = require("./config/keys"),
-	// Routes
-	index = require("./routes/index"),
-	users = require("./routes/users"),
-	catalog = require("./routes/catalog"),
-	shoppingCart = require("./routes/shoppingCart"),
-	authRoutes = require("./routes/authRoutes"),
-	// Instantiate express
+	{ authRoutes, coupons, groups, items, orders, root, sessions, users } = require("./routes"),
 	app = express();
 
 app.use(helmet());
@@ -57,7 +47,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-require("./routes/authRoutes")(app);
+authRoutes(app);
 
 // always make the user object available in the pug templates
 app.use((req, res, next) => {
@@ -66,10 +56,13 @@ app.use((req, res, next) => {
 });
 
 // Declare routes as middleware
-app.use("/", index);
+app.use("/", root);
 app.use("/", users);
-app.use("/store", catalog);
-app.use("/store", shoppingCart);
+app.use("/store", items);
+app.use("/store", groups);
+app.use("/store", coupons);
+app.use("/store", sessions);
+app.use("/store", orders);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

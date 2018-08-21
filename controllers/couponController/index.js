@@ -23,3 +23,6 @@ exports.coupon_detail = require("./detail");
 
 // Display list of all coupon.
 exports.coupon_list = require("./list");
+
+// check user level
+exports.CheckCreds = require("./CheckCreds");

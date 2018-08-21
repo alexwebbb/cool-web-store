@@ -25,3 +25,6 @@ exports.order_detail = require("./detail");
 
 // Display list of all orders.
 exports.order_list = require("./list");
+
+// check user level
+exports.CheckCreds = require("./CheckCreds");
