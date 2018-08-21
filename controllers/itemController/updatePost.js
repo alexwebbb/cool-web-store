@@ -40,8 +40,8 @@ module.exports = [
             item_groups: req.body.item_groups,
             _id: req.body.id
           }),
-          { url } = Item.findByIdAndUpdate(req.params.id, item, {});
-
+          { url } = await Item.findByIdAndUpdate(req.params.id, item, {});
+          console.log(url);
         res.redirect(url);
       }
     } catch (err) {
