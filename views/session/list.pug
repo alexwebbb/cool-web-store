@@ -1,0 +1,17 @@
+extends ../layout
+
+block main
+  h1= title
+
+  ul
+  each session in session_list
+    li
+      |   User: #{session.user.name}
+      br
+      |   Start Time: #{session.date_created.toLocaleString()}
+      br
+      each view in session.views
+        |   -> #{view.item.name}
+
+  else
+    li There are no sessions.

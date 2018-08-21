@@ -49,7 +49,7 @@ module.exports = async function(req, res, next) {
         source: req.body.stripeToken
       }),
       charge = await stripe.charges.create({
-        totalTimes100,
+        amount: totalTimes100,
         description: "Sample Charge",
         currency: "usd",
         customer: customer.id
