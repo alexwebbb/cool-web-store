@@ -37,7 +37,7 @@ block main
                   value=element.quantity
                   min='1'
                   )
-              td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+              td.text-center(data-th='Subtotal') #{element.subtotal}
               td.actions(data-th='Cart')
                 .form-check.text-center
                   input.form-check-input(
@@ -55,7 +55,7 @@ block main
             td
             td
               .alert.alert-info.text-center(role='alert')
-                | - $12.00   
+                | - #{totalDiscount} 
           tfoot
             tr.d-none.d-sm-table-row
               td
@@ -66,7 +66,7 @@ block main
               td
                 button.btn.btn-primary(type='submit') Update
               td.text-center
-                strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+                strong Total #{cart_total}
               td
                 a.btn.btn-success.btn-block(href='/store/checkout')
                   | Checkout 
@@ -74,7 +74,7 @@ block main
     .d-block.d-sm-none
       //- .alert.alert-info(role='alert')
       //-   | This is a info alert—check it out!                  
-      strong.row.justify-content-center.mb-2 Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+      strong.row.justify-content-center.mb-2 Total $#{cart_total}
       button.btn.btn-primary.btn-block(type='submit') Update
       a.btn.btn-success.btn-block(href='/store/checkout')
         | Checkout 
