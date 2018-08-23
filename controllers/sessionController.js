@@ -1,4 +1,6 @@
-var Session = require("../models/session");
+"use strict";
+
+const Session = require("../models/session");
 
 // Display list of all sessions.
 exports.session_list = async function(req, res, next) {

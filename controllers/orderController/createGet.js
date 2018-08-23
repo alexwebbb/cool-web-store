@@ -18,9 +18,12 @@ module.exports = async function(req, res, next) {
       return a + c.quantity * c.item.price;
     }, 0);
 
+    // console.log(user.active_coupons);
+
     res.render("order/checkout_form", {
       title: "Checkout",
       cart_total: total,
+      // coupons: user.active_coupons,
       user_cart: user.current_cart,
       keyPublishable: keys.stripePublishable
     });

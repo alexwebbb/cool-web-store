@@ -8,60 +8,72 @@ block main
       input#inputPassword2.form-control(placeholder='Coupon Code', type='text' name='coupon' required='true' value='')
     button.btn.btn-primary.mb-2(type='submit') Add Coupon
   form(method='POST' action='')
-    table#cart.table.table-hover.table-sm
-      thead
-        tr
-          th(style='width:45%') Product
-          th(style='width:5%') Price
-          th(style='width:3%') Quantity
-          th.text-center(style='width:17%') Subtotal
-          th(style='width:5%') Remove
-      tbody
-        each element in user_cart
+    .table-responsive
+      table#cart.table.table-hover.table-sm
+        thead
           tr
-            td(data-th='Product')
-              .row
-                .col-md-2.d-none.d-sm-block
-                  img.img-fluid(src=element.item.img_100, alt='...')
-                .col-md-10
-                  h4.nomargin #{element.item.name}
-                  p
-                    | #{element.item.description}
-            td(data-th='Price') $#{element.item.formattedPrice}
-            td(data-th='Quantity')
-              input.form-control.text-center(
-                type='number'
-                name='quantity'
-                id='#{element.item._id}_quantity' 
-                value=element.quantity
-                min='1'
-                )
-            td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
-            td.actions(data-th='Cart')
-              .form-check.text-center
-                input.form-check-input(
-                  type='checkbox'
-                  name='cart'
-                  id='#{element.item._id}_remove'
-                  value=element.item._id
-                  checked=false
+            th(style='width:45%') Product
+            th(style='width:5%') Price
+            th(style='width:3%') Quantity
+            th.text-center(style='width:17%') Subtotal
+            th(style='width:5%') Remove
+        tbody
+          each element in user_cart
+            tr
+              td(data-th='Product')
+                .row
+                  .col-md-2.d-block
+                    img.img-fluid(src=element.item.img_100, alt='...')
+                  .col-md-10
+                    h4.nomargin #{element.item.name}
+                    p
+                      | #{element.item.description}
+              td(data-th='Price') $#{element.item.formattedPrice}
+              td(data-th='Quantity')
+                input.form-control.text-center(
+                  type='number'
+                  name='quantity'
+                  id='#{element.item._id}_quantity' 
+                  value=element.quantity
+                  min='1'
                   )
-        tfoot
-          tr.d-none.d-sm-table-row
+              td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+              td.actions(data-th='Cart')
+                .form-check.text-center
+                  input.form-check-input(
+                    type='checkbox'
+                    name='cart'
+                    id='#{element.item._id}_remove'
+                    value=element.item._id
+                    checked=false
+                    )
+          tr
             td
-              a.btn.btn-warning(href='/store/items')
-                i.fa.fa-angle-left
-                |  Continue Shopping
+              .alert.alert-info(role='alert')
+                | #{coupons[0].name} Coupon
             td
             td
-              button.btn.btn-primary(type='submit') Update
-            td.text-center
-              strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
             td
-              a.btn.btn-success.btn-block(href='/store/checkout')
-                | Checkout 
-                i.fa.fa-angle-right
-    .d-block.d-sm-none                  
+              .alert.alert-info.text-center(role='alert')
+                | - $12.00   
+          tfoot
+            tr.d-none.d-sm-table-row
+              td
+                a.btn.btn-warning(href='/store/items')
+                  i.fa.fa-angle-left
+                  |  Continue Shopping
+              td
+              td
+                button.btn.btn-primary(type='submit') Update
+              td.text-center
+                strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+              td
+                a.btn.btn-success.btn-block(href='/store/checkout')
+                  | Checkout 
+                  i.fa.fa-angle-right
+    .d-block.d-sm-none
+      //- .alert.alert-info(role='alert')
+      //-   | This is a info alert—check it out!                  
       strong.row.justify-content-center.mb-2 Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
       button.btn.btn-primary.btn-block(type='submit') Update
       a.btn.btn-success.btn-block(href='/store/checkout')
