@@ -2,6 +2,7 @@
 
 const mongoose = require("mongoose"),
   Schema = mongoose.Schema,
+  { item_group_schema } = require("./item_group"),
   OrderSchema = new Schema(
     {
       user: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -14,7 +15,7 @@ const mongoose = require("mongoose"),
             item_groups: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }],
             img_100: String,
             img_700_400: String,
-            id: { type: String, required: true }
+            _id: { type: String, required: true }
           },
           quantity: { type: Number, required: true, min: 1 }
         }

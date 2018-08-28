@@ -1,6 +1,6 @@
 "use strict";
 
-const Item_group = require("../../models/item_group");
+const Item_group = require("../../models/item_group").default;
 
 module.exports = async function(req, res, next) {
   try {

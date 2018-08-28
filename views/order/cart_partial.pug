@@ -1,0 +1,19 @@
+td(data-th='Product')
+	.row
+		.col-md-2.d-block
+			img.img-fluid(src=element.item.img_100, alt='...')
+		.col-md-10
+			h4.nomargin #{element.item.name}
+			p
+				| #{element.item.description}
+td(data-th='Price') #{element.item.formattedPrice}
+td(data-th='Quantity')
+	input.form-control.text-center(
+		type='number'
+		name='quantity'
+		id='#{element.item._id}_quantity' 
+		value=element.quantity
+		min='1'
+		)
+td.text-center(data-th='Subtotal') #{element.subtotalValue}
+	span.text-danger #{element.subtotalDiscount}

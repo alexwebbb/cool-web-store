@@ -3,13 +3,14 @@
 const Order = require("../../models/order"),
   User = require("../../models/user"),
   keys = require("../../config/keys"),
-  stripe = require("stripe")(keys.stripeSecret);
+  stripe = require("stripe")(keys.stripeSecret),
+  GenerateCartData = require("./GenerateCartData");
 
 module.exports = async function(req, res, next) {
   try {
     const user = await User.findById(req.user._id, "current_cart")
       .populate("current_cart.item")
-      .populate("current_cart.item.price_history.price")
+      .populate("active_coupons")
       .exec();
 
     if (user === null) {
@@ -18,28 +19,11 @@ module.exports = async function(req, res, next) {
       return next(err);
     }
 
-    const total = user.current_cart.reduce((a, c) => {
-        return a + c.quantity * c.item.price;
-      }, 0),
-      totalTimes100 = total * 100,
-      newCart = user.current_cart.map(function(element) {
-        const item = element.item;
-        return {
-          item: {
-            name: item.name,
-            description: item.description,
-            price: item.price,
-            img_100: item.img_100,
-            img_700_400: item.img_700_400,
-            item_groups: item.item_groups,
-            id: item._id
-          },
-          quantity: element.quantity
-        };
-      }),
+    const { total, adjustedCart } = GenerateCartData(user.current_cart, user.active_coupons),
       order = new Order({
         user: req.user._id,
-        cart: newCart,
+        cart: adjustedCart,
+        coupons_present: user.active_coupons,
         total: total
       });
 
@@ -49,7 +33,7 @@ module.exports = async function(req, res, next) {
         source: req.body.stripeToken
       }),
       charge = await stripe.charges.create({
-        amount: totalTimes100,
+        amount: total * 100,
         description: "Sample Charge",
         currency: "usd",
         customer: customer.id

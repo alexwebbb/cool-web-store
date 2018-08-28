@@ -11,18 +11,7 @@ block main
     tbody
       each element in user_cart
         tr
-          td(data-th='Product')
-            a.css-link-unstyled(href=element.item.url)
-              .row
-                .col-md-2.d-none.d-sm-block
-                  img.img-fluid(src=element.item.img_100, alt='...')
-                .col-md-10
-                  h4.nomargin #{element.item.name}
-                  p
-                    | #{element.item.description}
-          td(data-th='Price') $#{element.item.formattedPrice}
-          td.text-center(data-th='Quantity') #{element.quantity}
-          td.text-center(data-th='Subtotal') $#{(element.item.price * element.quantity).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+          include cart_partial.pug
       tfoot
         tr
           td
@@ -32,7 +21,7 @@ block main
           td
           td
           td.text-center
-            strong Total $#{cart_total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+            strong Total #{cart_total}
   .row.justify-content-center
     form(action="/store/charge", method="post")
       script(
@@ -42,7 +31,7 @@ block main
         data-locale="auto",
         data-name="Item Store"
         data-description="Sample Charge",
-        data-amount=cart_total * 100
+        data-amount=real_total * 100
         data-zip-code="true"
         )
       p Payment Info: 4242 4242 4242 4242

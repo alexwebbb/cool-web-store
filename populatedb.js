@@ -3,7 +3,7 @@
 console.log("This script populates some test data to the database.");
 
 const async = require("async"),
-  Group = require("./models/item_group"),
+  Group = require("./models/item_group").default,
   Item = require("./models/item"),
   Coupon = require("./models/coupon");
 

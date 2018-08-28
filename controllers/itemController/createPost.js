@@ -1,7 +1,7 @@
 "use strict";
 
 const Item = require("../../models/item"),
-  Item_group = require("../../models/item_group"),
+  Item_group = require("../../models/item_group").default,
   { validationResult } = require("express-validator/check"),
   ValidateAndSanitizeFields = require("./ValidateAndSanitize");
 

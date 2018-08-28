@@ -38,7 +38,7 @@ block main
               .card-body.px-1
                 h4.card-title
                   a(href=item.url) #{item.name}
-                h5 $#{item.formattedPrice}
+                h5 #{item.formattedPrice}
                 p.card-text #{item.description}
               .card-footer 
                 form(method='POST' action=item.url+'/add')

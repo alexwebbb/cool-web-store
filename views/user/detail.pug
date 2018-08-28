@@ -19,7 +19,7 @@ block main
           tr
             td(data-th='Total') 
               a.css-link-unstyled(href=order.url)
-                p $#{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+                p #{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
             td.text-center(data-th='Date') #{order.created_at}
         else
           tr There are no items.

@@ -1,7 +1,6 @@
 extends ../layout
 
 block main
-  //- To be implemented
   form.form-inline(method='POST' action='/store/coupon/add')
     .form-group.mx-sm-3.mb-2
       label.mr-2(for='coupon') Enter Coupon Code
@@ -20,24 +19,7 @@ block main
         tbody
           each element in user_cart
             tr
-              td(data-th='Product')
-                .row
-                  .col-md-2.d-block
-                    img.img-fluid(src=element.item.img_100, alt='...')
-                  .col-md-10
-                    h4.nomargin #{element.item.name}
-                    p
-                      | #{element.item.description}
-              td(data-th='Price') $#{element.item.formattedPrice}
-              td(data-th='Quantity')
-                input.form-control.text-center(
-                  type='number'
-                  name='quantity'
-                  id='#{element.item._id}_quantity' 
-                  value=element.quantity
-                  min='1'
-                  )
-              td.text-center(data-th='Subtotal') #{element.subtotal}
+              include cart_partial.pug
               td.actions(data-th='Cart')
                 .form-check.text-center
                   input.form-check-input(
@@ -56,6 +38,7 @@ block main
             td
               .alert.alert-info.text-center(role='alert')
                 | - #{totalDiscount} 
+          //- /////
           tfoot
             tr.d-none.d-sm-table-row
               td
@@ -74,7 +57,7 @@ block main
     .d-block.d-sm-none
       //- .alert.alert-info(role='alert')
       //-   | This is a info alert—check it out!                  
-      strong.row.justify-content-center.mb-2 Total $#{cart_total}
+      strong.row.justify-content-center.mb-2 Total #{cart_total}
       button.btn.btn-primary.btn-block(type='submit') Update
       a.btn.btn-success.btn-block(href='/store/checkout')
         | Checkout 

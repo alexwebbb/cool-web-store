@@ -1,9 +1,8 @@
 "use strict";
 
-const ItemSchema = require("./schema");
+const ItemSchema = require("./schema"),
+  Monetize = require("./../../utils/Monetize");
 
 ItemSchema.virtual("formattedPrice").get(function() {
-	return this.price_history[0].price
-		.toFixed(2)
-		.replace(/(\d)(?=(\d{3})+\.)/g, "$1,");
+  return Monetize(this.price_history[0].price);
 });

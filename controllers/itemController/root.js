@@ -1,7 +1,7 @@
 "use strict";
 
 const Item = require("../../models/item"),
-  Item_group = require("../../models/item_group");
+  Item_group = require("../../models/item_group").default;
   
 module.exports = async function (req, res, next) {
   const item_list = await Item.find({}, "name description price_history availability img_700_400")
