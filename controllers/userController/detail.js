@@ -1,7 +1,8 @@
 "use strict";
 
 const User = require("../../models/user"),
-  Order = require("../../models/order");
+  Order = require("../../models/order"),
+  Monetize = require("./../../utils/Monetize");
 
 module.exports = async function(req, res, next) {
   try {
@@ -20,6 +21,7 @@ module.exports = async function(req, res, next) {
     res.render("user/detail", {
       title: "User Detail",
       user_detail: user,
+      Monetize,
       order_list: orders
     });
   } catch (err) {

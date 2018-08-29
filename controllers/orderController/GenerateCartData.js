@@ -8,6 +8,7 @@ module.exports = (cart, active_coupons) => {
   const adjustedCart = cart.map(({ item, quantity }) => {
     let discount = 0;
     if (
+      active_coupons[0] &&
       item.item_groups.indexOf(active_coupons[0].valid_item_groups[0]) != -1
     ) {
       discount = item.price * (active_coupons[0].discount_percent / 100);

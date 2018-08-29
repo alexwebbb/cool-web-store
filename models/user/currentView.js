@@ -42,7 +42,8 @@ UserSchema.virtual("current_view")
           existing_session.save();
         }
       } else {
-        resetSession(this._id, v);
+        resetSession(this, v);
+        console.log("fuck off");
       }
     } else {
       return new Error(

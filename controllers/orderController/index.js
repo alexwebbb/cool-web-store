@@ -15,10 +15,10 @@ exports.order_create_get = require("./createGet");
 exports.order_create_post = require("./createPost");
 
 // Display order update form on GET. maps to /cart
-exports.order_update_get = require("./updateGet");
+exports.order_update_get = require("./updateCartGet");
 
 // Handle order update on POST.
-exports.order_update_post = require("./updatePost");
+exports.order_update_post = require("./updateCartPost");
 
 // Display detail page for a specific order.
 exports.order_detail = require("./detail");

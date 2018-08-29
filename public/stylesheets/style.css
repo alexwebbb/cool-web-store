@@ -1,3 +1,9 @@
+h2 {
+	margin-top: 20px;
+	font-size: 20px;
+	color:darkblue;
+}
+
 .css-link-unstyled,
 .css-link-unstyled:link,
 .css-link-unstyled:hover {
@@ -18,3 +24,4 @@
 .css-large-text {
 	font-size: x-large;
 }
+

@@ -19,10 +19,11 @@ block main
           tr
             td(data-th='Total') 
               a.css-link-unstyled(href=order.url)
-                p #{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
+                p #{Monetize(order.total)}
             td.text-center(data-th='Date') #{order.created_at}
         else
-          tr There are no items.
+          tr 
+            td There are no items.
   if current_user && current_user.user_group==="admin"
     a.btn.btn-success.mt-2.mr-2(href=user_detail.url + '/update')
       | Edit 

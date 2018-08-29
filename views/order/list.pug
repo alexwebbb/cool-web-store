@@ -23,4 +23,7 @@ block main
                 p #{order.total.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,')}
             td.text-center(data-th='Date') #{order.created_at}
         else
-          li There are no items.
+          tr
+            td
+            td
+              li There are no orders.
