@@ -36,6 +36,15 @@ exports.session_detail = async function(req, res, next) {
   }
 };
 
+exports.clear_session_list = async function(req, res, next) {
+  try {
+    await Session.remove({}).exec();
+    res.redirect("");
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.CheckCreds = (req, res, next) => {
   if (!req.user.user_group === "admin") {
     res.redirect("/login");

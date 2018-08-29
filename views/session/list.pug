@@ -2,7 +2,8 @@ extends ../layout
 
 block main
   h1= title
-
+  form.form-inline(method='POST' action='')
+    button.btn.btn-primary.mb-2(type='submit') Clear Sessions
   ul
   each session in session_list
     li

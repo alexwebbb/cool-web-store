@@ -4,7 +4,7 @@ block main
   form.form-inline(method='POST' action='/store/coupon/add')
     .form-group.mx-sm-3.mb-2
       label.mr-2(for='coupon') Enter Coupon Code
-      input#inputPassword2.form-control(placeholder='Coupon Code', type='text' name='coupon' required='true' value='')
+      input.form-control(placeholder='Coupon Code', type='text' name='coupon' required='true' value='')
     button.btn.btn-primary.mb-2(type='submit') Add Coupon
   form(method='POST' action='')
     .table-responsive

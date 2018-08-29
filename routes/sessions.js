@@ -6,10 +6,20 @@ const express = require("express"),
   { CheckCreds } = session_controller,
   { ensureLoggedIn } = require("connect-ensure-login");
 
-// GET request for one session.
-// router.get("/session/:id", ensureLoggedIn(), CheckCreds, session_controller.session_detail);
+// DELETE all sessions
+router.post(
+  "/sessions",
+  ensureLoggedIn(),
+  CheckCreds,
+  session_controller.clear_session_list
+);
 
 // GET request for list of all session.
-router.get("/sessions", ensureLoggedIn(), CheckCreds, session_controller.session_list);
+router.get(
+  "/sessions",
+  ensureLoggedIn(),
+  CheckCreds,
+  session_controller.session_list
+);
 
 module.exports = router;
