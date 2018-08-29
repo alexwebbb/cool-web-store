@@ -43,7 +43,6 @@ UserSchema.virtual("current_view")
         }
       } else {
         resetSession(this, v);
-        console.log("fuck off");
       }
     } else {
       return new Error(
