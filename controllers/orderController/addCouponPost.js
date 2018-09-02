@@ -5,10 +5,10 @@ const User = require("../../models/user"),
 
 module.exports = async function(req, res, next) {
   try {
-    const coupon = await Coupon.findOne({ code: req.body.code });
+    const coupon = await Coupon.findOne({ code: req.body.coupon });
     if (coupon === null) {
       const err = new Error("Coupon not found");
-      err.status = 404;
+      err.status = 422;
       return next(err);
     }
 

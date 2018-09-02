@@ -4,7 +4,6 @@ block main
   h1.text-success.pl-2.css-small-text= title
 
   form(method='POST' action='')
-    p Coming soon..... coupons!
     table#cart.table.table-hover.table-sm
       thead
         tr
@@ -23,7 +22,9 @@ block main
             td.text-center(data-th='Discount') #{coupon.discount_percent}% off
             td.text-center(data-th='Expiration') #{coupon.expirationDate} 
         else
-          li There are no coupons.
+          tr
+            td
+              li There are no coupons.
   if current_user && current_user.user_group==="admin"
     a.btn.btn-success.btn-block(href='/store/coupon/create')
       | Add New 

@@ -21,8 +21,8 @@ module.exports = [
       });
     } else {
       try {
-        const hash = await salt(req.body.password).hash(),
-          user = new User({
+        salt(req.body.password).hash(async (err, hash) => {
+          const user = new User({
             username: req.body.username,
             hashedPassword: hash,
             email: req.body.email,
@@ -30,9 +30,10 @@ module.exports = [
             middle_name: req.body.middle_name,
             last_name: req.body.last_name,
             user_group: req.body.admin ? "admin" : "user"
-          }),
-          { url } = await user.save();
-        res.redirect(url);
+          });
+          const { url } = await user.save();
+          res.redirect(url);
+        });
       } catch (err) {
         return next(err);
       }

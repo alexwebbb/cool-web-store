@@ -23,7 +23,7 @@ module.exports = async function(req, res, next) {
       order = new Order({
         user: req.user._id,
         cart: adjustedCart,
-        coupons_present: user.active_coupons,
+        coupons_present: user.active_coupons.toObject(),
         total: total
       });
 
@@ -42,6 +42,7 @@ module.exports = async function(req, res, next) {
     await order.save();
     // remove the cart from the user object
     user.current_cart = [];
+    user.active_coupons = [];
     await user.save();
     // Successful - redirect to confirmation screen.
     res.render("order/charge_result", {

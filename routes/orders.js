@@ -14,6 +14,12 @@ router.post(
   ensureLoggedIn(),
   order_controller.order_add_item_post
 );
+// POST request for clearing the coupons
+router.post(
+  "/coupon/remove",
+  ensureLoggedIn(),
+  order_controller.order_remove_coupon_post
+);
 // POST request for applying a coupon
 router.post(
   "/coupon/add",

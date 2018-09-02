@@ -6,6 +6,9 @@ block main
       label.mr-2(for='coupon') Enter Coupon Code
       input.form-control(placeholder='Coupon Code', type='text' name='coupon' required='true' value='')
     button.btn.btn-primary.mb-2(type='submit') Add Coupon
+  form.form-inline(method='POST' action='/store/coupon/remove')
+    .form-group.mx-sm-3.mb-2
+      input.btn.btn-primary.mb-2(type='submit' name="remove coupon" value="Remove Coupon")
   form(method='POST' action='')
     .table-responsive
       table#cart.table.table-hover.table-sm
@@ -29,17 +32,7 @@ block main
                     value=element.item._id
                     checked=false
                     )
-          tr
-            if coupons[0]
-              td
-                .alert.alert-info(role='alert')
-                  | #{coupons[0].name} Coupon
-              td
-              td
-              td
-                .alert.alert-info.text-center(role='alert')
-                  | - #{totalDiscount} 
-          //- /////
+            include cart_coupon_display.pug
           tfoot
             tr.d-none.d-sm-table-row
               td

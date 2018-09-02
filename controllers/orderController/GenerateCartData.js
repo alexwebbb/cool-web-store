@@ -7,12 +7,17 @@ module.exports = (cart, active_coupons) => {
 
   const adjustedCart = cart.map(({ item, quantity }) => {
     let discount = 0;
-    if (
+
+    const isCouponActive =
       active_coupons[0] &&
-      item.item_groups.indexOf(active_coupons[0].valid_item_groups[0]) != -1
-    ) {
+      active_coupons[0].valid_item_groups.reduce((a, c) => {
+        return a + item.item_groups.indexOf(c) + 1;
+      }) != -1;
+
+    if (isCouponActive) {
       discount = item.price * (active_coupons[0].discount_percent / 100);
     }
+
     totalDiscount += discount * quantity;
 
     const adjustedprice =

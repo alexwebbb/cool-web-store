@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose"),
   Schema = mongoose.Schema,
-  { item_group_schema } = require("./item_group"),
+  CouponSchema = require("./coupon/schema"),
   OrderSchema = new Schema(
     {
       user: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -21,7 +21,7 @@ const mongoose = require("mongoose"),
         }
       ],
       total: { type: Number, required: true },
-      coupons_present: [{ type: Schema.Types.ObjectId, ref: "Coupon" }],
+      coupons_present: [CouponSchema],
       item_groups_present: [{ type: Schema.Types.ObjectId, ref: "ItemGroup" }],
       shipping_address: {
         street_address: { type: String },

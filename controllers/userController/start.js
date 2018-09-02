@@ -10,8 +10,8 @@ module.exports = async function(req, res, next) {
     if (users) {
       res.redirect("/");
     } else {
-      const hash = await salt(root.password).hash(),
-        user = new User({
+      salt(root.password).hash(async (err, hash) => {
+        const user = new User({
           username: root.user,
           hashedPassword: hash,
           email: "admin@null.com",
@@ -21,9 +21,9 @@ module.exports = async function(req, res, next) {
           },
           user_group: "admin"
         });
-      await user.save();
-
-      res.redirect("/login");
+        await user.save();
+        res.redirect("/login");
+      });
     }
   } catch (err) {
     return next(err);

@@ -38,15 +38,13 @@ const mongoose = require("mongoose"),
     active_coupons: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Coupon",
-        required: true
+        ref: "Coupon"
       }
     ],
     used_coupons: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Coupon",
-        required: true
+        ref: "Coupon"
       }
     ],
     current_session: {

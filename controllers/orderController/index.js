@@ -8,6 +8,9 @@ exports.order_add_item_post = require("./addItemPost");
 // adds coupon in question to the user cart
 exports.order_add_coupon_post = require("./addCouponPost");
 
+// clears all coupons off the user cart
+exports.order_remove_coupon_post = require("./removeCouponPost");
+
 // Display order create form on GET.
 exports.order_create_get = require("./createGet");
 

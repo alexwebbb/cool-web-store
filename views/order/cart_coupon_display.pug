@@ -1,0 +1,10 @@
+tr
+  if coupons[0]
+    td
+      .alert.alert-info(role='alert')
+        | #{coupons[0].name} Coupon
+    td
+    td
+    td
+      .alert.alert-info.text-center(role='alert')
+        | - #{totalDiscount} 

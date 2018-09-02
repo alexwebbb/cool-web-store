@@ -11,7 +11,7 @@ const mongoose = require("mongoose"),
       }),
       res = await session.save();
     user.current_session = res._id;
-    user.save();
+    await user.save();
   };
 
 UserSchema.virtual("current_view")

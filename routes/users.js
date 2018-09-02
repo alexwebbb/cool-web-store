@@ -15,7 +15,11 @@ router.get("/start/", user_controller.start);
 router.get(routeString + "create", CheckCreds, user_controller.user_create_get);
 
 // POST request for creating user.
-router.post(routeString + "create", CheckCreds, user_controller.user_create_post);
+router.post(
+  routeString + "create",
+  CheckCreds,
+  user_controller.user_create_post
+);
 
 // GET request to delete user.
 router.get(
@@ -58,6 +62,11 @@ router.get(
 );
 
 // GET request for list of all user users.
-router.get(routeStringPlural, ensureLoggedIn(), CheckCreds, user_controller.user_list);
+router.get(
+  routeStringPlural,
+  ensureLoggedIn(),
+  CheckCreds,
+  user_controller.user_list
+);
 
 module.exports = router;
