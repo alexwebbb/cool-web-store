@@ -14,14 +14,8 @@ const mongoose = require("mongoose"),
     await user.save();
   };
 
-UserSchema.virtual("current_view")
-  .get(function() {
-    if (this.current_session) {
-      return this.current_session[this.current_session.length - 1];
-    }
-  })
-  .set(async function(v) {
-    if (mongoose.Types.ObjectId.isValid(v)) {
+UserSchema.methods.set_current_view = async function(view) {
+    if (mongoose.Types.ObjectId.isValid(view)) {
       if (this.current_session) {
         const existing_session = await Session.findById(
           this.current_session,
@@ -34,19 +28,19 @@ UserSchema.virtual("current_view")
             .add(15, "minutes")
             .isBefore(moment(Date.now()))
         ) {
-          resetSession(this, v);
+          resetSession(this, view);
         } else {
           existing_session.views.push({
-            item: v
+            item: view
           });
           existing_session.save();
         }
       } else {
-        resetSession(this, v);
+        resetSession(this, view);
       }
     } else {
       return new Error(
         "Invalid item id. Something is wrong with the call of this function"
       );
     }
-  });
+  };

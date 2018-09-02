@@ -4,7 +4,7 @@ block main
   h1.pl-3.text-secondary.css-small-text #{title}
   .container
     .row.row-offcanvas.row-offcanvas-right
-      .col-12.col-md-9
+      .col-12.col-lg-9.col-md-7
         img.img-fluid.rounded-top(src=item.img_700_400)
         .jumbotron.css-jumbotron-adjustment
           h1 #{item.name}
@@ -19,12 +19,12 @@ block main
                 value=item._id
                 )
             button.btn.btn-primary(type='submit') Add to Cart
-      #sidebar.col-6.col-md-3.sidebar-offcanvas
+      #sidebar.col-12.col-lg-3.col-md-5.sidebar-offcanvas
         .list-group
           each group in item.item_groups
             a.list-group-item.border-primary.text-primary(href=group.url) #{group.name}
           else
-            li There are no valid groups.
+            li This item isn't in a group right now.
         if current_user && current_user.user_group==="admin"
           a.btn.btn-success.mt-2.mr-2(href=item.url + '/update')
             | Edit 
@@ -32,3 +32,12 @@ block main
           a.btn.btn-danger.mt-2(href=item.url + '/delete')
             | Delete 
             i.fa.fa-trash-o
+
+        each item in related_items
+            .card.mt-4.css-link-unstyled
+              a(href=item.url)
+                .card-img-caption.text-white
+                  h1.card-text.text-center #{item.name}
+                  img.card-img-top(src=item.img_700_400, alt='Card image cap')
+                .card-body.text-info
+                  p.card-text.small #{item.description}
