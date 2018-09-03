@@ -29,7 +29,7 @@ UserSchema.methods.set_current_view = async function(view) {
             .add(15, "minutes")
             .isBefore(moment(Date.now()))
         ) {
-          resetSession(this, view);
+          await resetSession(this, view);
         } else {
           existing_session.views.push({
             item: view
