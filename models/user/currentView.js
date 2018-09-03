@@ -36,7 +36,7 @@ UserSchema.methods.set_current_view = async function(view) {
           existing_session.save();
         }
       } else {
-        resetSession(this, view);
+        await resetSession(this, view);
       }
     } else {
       return new Error(
