@@ -16,7 +16,6 @@ const mongoose = require("mongoose"),
 
 UserSchema.methods.set_current_view = async function(view) {
     if (mongoose.Types.ObjectId.isValid(view)) {
-      console.log(this.current_session);
       if (this.current_session) {
         const existing_session = await Session.findById(
           this.current_session,
