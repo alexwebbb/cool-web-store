@@ -33,7 +33,7 @@ UserSchema.methods.set_current_view = async function(view) {
           existing_session.views.push({
             item: view
           });
-          existing_session.save();
+          await existing_session.save();
         }
       } else {
         await resetSession(this, view);
