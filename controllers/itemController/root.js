@@ -8,7 +8,7 @@ module.exports = async function (req, res, next) {
     .populate("item_groups").exec(),
   item_groups = await Item_group.find();
 
-    res.render("item/index", {
+    res.render("index", {
       title: "Item Store",
       item_groups: item_groups,
       item_list: item_list
