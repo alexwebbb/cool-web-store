@@ -1,7 +1,7 @@
 "use strict";
 
 const Item = require("../../models/item"),
-  Item_group = require("../../models/item_group").default;
+  Item_group = require("../../models/item_group");
 
 module.exports = async function(req, res, next) {
   try {

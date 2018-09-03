@@ -1,7 +1,7 @@
 "use strict";
 
 const Coupon = require("../../models/coupon"),
-  Item_group = require("../../models/item_group").default;
+  Item_group = require("../../models/item_group");
 
 module.exports = async function(req, res, next) {
   // Get coupons and groups for form.

@@ -13,6 +13,4 @@ ItemGroupSchema.virtual("url").get(function() {
   return "/store/group/" + this._id;
 });
 
-exports.default = mongoose.model("ItemGroup", ItemGroupSchema);
-
-exports.item_group_schema = ItemGroupSchema;
+module.exports = mongoose.model("ItemGroup", ItemGroupSchema);
