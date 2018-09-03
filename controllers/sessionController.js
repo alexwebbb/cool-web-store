@@ -5,7 +5,7 @@ const Session = require("../models/session");
 // Display list of all sessions.
 exports.session_list = async function(req, res, next) {
   try {
-    const session_list = await Session.find({}, "user views date_created")
+    const session_list = await Session.find({}, "user views createdAt")
       .populate("user")
       .populate("views.item")
       .exec();
@@ -22,7 +22,7 @@ exports.session_list = async function(req, res, next) {
 // Display detail page for a specific session.
 exports.session_detail = async function(req, res, next) {
   try {
-    const session_detail = await Session.find({}, "user views")
+    const session_detail = await Session.find({}, "user views createdAt")
       .populate("user")
       .populate("views.item")
       .exec();

@@ -9,7 +9,7 @@ require("./address");
 
 require("./name");
 
-require("./currentView");
+require("./setCurrentView");
 
 require("./addToCart");
 

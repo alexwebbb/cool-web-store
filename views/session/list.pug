@@ -9,7 +9,7 @@ block main
     li
       |   User: #{session.user.name}
       br
-      |   Start Time: #{session.date_created.toLocaleString()}
+      |   Start Time: #{session.createdAt.toLocaleString()}
       br
       each view in session.views
         |   -> #{view.item.name}
