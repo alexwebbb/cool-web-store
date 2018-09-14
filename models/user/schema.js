@@ -41,17 +41,12 @@ const mongoose = require("mongoose"),
         ref: "Coupon"
       }
     ],
-    used_coupons: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Coupon"
-      }
-    ],
-    current_session: {
-      type: Schema.Types.ObjectId,
-      ref: "Session",
-      default: null
-    },
+    // used_coupons: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Coupon"
+    //   }
+    // ],
     user_group: {
       type: String,
       required: true,

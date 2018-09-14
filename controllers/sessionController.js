@@ -6,10 +6,15 @@ const Session = require("../models/session");
 exports.session_list = async function(req, res, next) {
   try {
     const session_list = await Session.find({}, "user views createdAt")
-      .populate("user")
-      .populate("views.item")
-      .exec();
-
+        .populate("user")
+        .populate("views.item")
+        .exec(),
+      flat_list = session_list.reduce((a, v) => a.concat(v.views), []),
+      counts = {};
+    for (let i = 0; i < flat_list.length; i++) {
+      counts[flat_list[i].item.name] = 1 + (counts[flat_list[i].item.name] || 0);
+    }
+    console.log(counts);
     res.render("session/list", {
       title: "Session List",
       session_list: session_list
