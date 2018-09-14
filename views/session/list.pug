@@ -5,6 +5,7 @@ block main
   form.form-inline(method='POST' action='')
     button.btn.btn-primary.mb-2(type='submit') Clear Sessions
   ul
+  canvas#myChart(width='400', height='200')
   each session in session_list
     li
       |   User: #{session.user.name}
@@ -13,6 +14,40 @@ block main
       br
       each view in session.views
         |   -> #{view.item.name}
-
   else
     li There are no sessions.
+    
+  script(src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js')
+  script.
+    var ctx = document.getElementById("myChart"),
+    // Create gradient
+    grd = ctx.getContext('2d').createLinearGradient(0.000, 150.000, (window.innerWidth / 1.4), 150.000);
+    
+    grd.addColorStop(0.000, 'rgb(90, 210, 244)');
+    grd.addColorStop(0.200, 'rgb(98, 190, 193)');
+    grd.addColorStop(0.600, 'rgb(100, 104, 129)');
+    grd.addColorStop(0.800, 'rgb(99, 89, 92)');
+    grd.addColorStop(1.000, 'rgb(64, 78, 77)');
+    
+    var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+    labels: !{JSON.stringify(data["names"])},
+    datasets: [{
+    label: '# of Views',
+    data: !{JSON.stringify(data["values"])},
+    backgroundColor: grd,
+    borderColor: grd,
+    borderWidth: 1
+    }]
+    },
+    options: {
+    scales: {
+    yAxes: [{
+    ticks: {
+    beginAtZero:true
+    }
+    }]
+    }
+    }
+    });

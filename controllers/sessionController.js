@@ -2,7 +2,34 @@
 
 const Session = require("../models/session");
 
-// Display list of all sessions.
+const constructChartData = data => {
+  return {
+    type: "bar",
+    data: {
+      labels: Object.keys(data),
+      datasets: [
+        {
+          label: "# of Views",
+          data: Object.values(data),
+          borderWidth: 1
+        }
+      ]
+    },
+    options: {
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true
+            }
+          }
+        ]
+      }
+    }
+  };
+};
+
+// Display list of all sessions and prepares data for the graph.
 exports.session_list = async function(req, res, next) {
   try {
     const session_list = await Session.find({}, "user views createdAt")
@@ -11,13 +38,31 @@ exports.session_list = async function(req, res, next) {
         .exec(),
       flat_list = session_list.reduce((a, v) => a.concat(v.views), []),
       counts = {};
+
     for (let i = 0; i < flat_list.length; i++) {
-      counts[flat_list[i].item.name] = 1 + (counts[flat_list[i].item.name] || 0);
+      counts[flat_list[i].item.name] =
+        1 + (counts[flat_list[i].item.name] || 0);
     }
-    console.log(counts);
+
+    let data = Object.keys(counts).map(v => {
+      return { name: v, value: counts[v] };
+    });
+    data.sort((a, b) => {
+      return b.value - a.value;
+    });
+    data = data.reduce(
+      (a, { name, value }) => {
+        a["names"].push(name);
+        a["values"].push(value);
+        return a;
+      },
+      { names: [], values: [] }
+    );
+
     res.render("session/list", {
       title: "Session List",
-      session_list: session_list
+      session_list,
+      data
     });
   } catch (err) {
     return next(err);
