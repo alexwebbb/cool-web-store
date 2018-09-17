@@ -2,33 +2,6 @@
 
 const Session = require("../models/session");
 
-const constructChartData = data => {
-  return {
-    type: "bar",
-    data: {
-      labels: Object.keys(data),
-      datasets: [
-        {
-          label: "# of Views",
-          data: Object.values(data),
-          borderWidth: 1
-        }
-      ]
-    },
-    options: {
-      scales: {
-        yAxes: [
-          {
-            ticks: {
-              beginAtZero: true
-            }
-          }
-        ]
-      }
-    }
-  };
-};
-
 // Display list of all sessions and prepares data for the graph.
 exports.session_list = async function(req, res, next) {
   try {
