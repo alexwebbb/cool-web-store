@@ -2,6 +2,11 @@ extends ../layout
 
 block main
   h1.text-warning.pl-2.css-small-text= title
+  .input-group.mb-3
+    .input-group-prepend
+      span#search-label.input-group-text Search
+    input#js-search-input.form-control(type='text', placeholder='Type to search...', aria-label='Search', aria-describedby='search-label')
+
   form(method='POST' action='')
     table#cart.table.table-hover.table-sm
       thead
@@ -10,9 +15,9 @@ block main
           th(style='width:10%') Price
           //- th(style='width:8%; text-indent:10px') No. Left
           th.text-center(style='width:32%') Groups
-      tbody
+      tbody#js-search-container
         each item in item_list
-          tr
+          tr.js-search-element(data-label=item.name)
             td(data-th='Product')
               a.css-link-unstyled(href=item.url)
                 .row
